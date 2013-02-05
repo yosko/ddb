@@ -16,6 +16,11 @@ function setRainTpl() {
     raintpl::configure("tpl_dir", "tpl/" );
     raintpl::configure("cache_dir", "tmp/" );
     $tpl = new RainTPL;
+        
+    //define base url for RSS & others
+    $ddbUrl = $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']);
+    $tpl->assign( "ddbUrl", $ddbUrl );
+        
     return $tpl;
 }
 
@@ -40,40 +45,82 @@ function openDatabase() {
     }
 }
 
+//inspired by:
+// - http://www.tonylea.com/2011/creating-a-simple-php-login-without-a-database/
+// - sebsauvage's shaarli authentication method (http://sebsauvage.net/wiki/doku.php?id=php:shaarli)
 function logUser($tpl) {
     global $config;
     $error = false;
     
-    //Session management
-    session_start();
-    $hash = md5($config['salt1'].$config['password'].$config['salt2']);
-    $self = $_SERVER['REQUEST_URI'];
+    //force cookie path
+    $cookie=session_get_cookie_params();
+    session_set_cookie_params($cookie['lifetime'],dirname($_SERVER['SCRIPT_NAME']).'/');
     
-    //if user is logging out
-    if(isset($_GET['logout']))
-    {
+    ini_set('session.use_cookies', 1);       // Use cookies to store session.
+    ini_set('session.use_only_cookies', 1);  // Force cookies for session (phpsessionID forbidden in URL)
+    ini_set('session.use_trans_sid', false); // Prevent php to use sessionID in URL if cookies are disabled.
+    
+    //Session management
+    session_name('ddb');
+    session_start();
+    
+    //if user is logging out or if session has expired or if IP doesn't match
+    if(isset($_GET['logout']) || isset($_SESSION['expires_on']) && time()>=$_SESSION['expires_on'] || isset($_SESSION['ip']) && $_SESSION['ip']!=getIpAddress()) {
+        unset($_SESSION['uid']);
+        unset($_SESSION['ip']);
         unset($_SESSION['login']);
+        unset($_SESSION['expires_on']);
     }
     
     //if user trying to log in
     if (isset($_POST['submit'])) {
-        if (htmlentities($_POST['login']) == $config['login'] && md5($_POST['password']) == $config['password']){
+        if (htmlentities($_POST['login']) == $config['login'] && sha1($_POST['password']) == $config['password']) {
             //set session
-            $_SESSION["login"] = $hash;
+            $_SESSION['uid']=sha1(uniqid('',true).'_'.mt_rand()); // generate unique random number (different than phpsessionid)
+            $_SESSION['ip']=getIpAddress();
+            $_SESSION['login']=$config['login'];
+            $_SESSION['remember']=$config['login'];
+            $_SESSION['remember']=(isset($_POST['remember']) && $_POST['remember'] == "remember");
+            
             header("Location: $_SERVER[PHP_SELF]");
         } else {
             $error = true;
         }
     }
     
-    //if user already logged in (session is set)
-    if (isset($_SESSION['login']) && $_SESSION['login'] == $hash) {
+    //if user already logged in (session is set and has not expired)
+    if (!empty($_SESSION['uid'])) {
+        //update timeout
+        if(isset($_SESSION['remember']) && $_SESSION['remember']) {
+            $_SESSION['expires_on']=time()+31536000;    //1 year
+            session_set_cookie_params($_SESSION['expires_on'],dirname($_SERVER["SCRIPT_NAME"]).'/');
+        } else {
+            $_SESSION['expires_on']=time()+3600;        //1 hour
+            session_set_cookie_params(0,dirname($_SERVER["SCRIPT_NAME"]).'/');
+        }
+        session_regenerate_id(true);
+        
         return true;
     } else {
         $tpl->assign( "error", $error );
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
         return false;
+    }
+}
+
+//based on: http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php
+function getIpAddress(){
+    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        if (array_key_exists($key, $_SERVER) === true){
+            foreach (explode(',', $_SERVER[$key]) as $ip){
+                $ip = trim($ip); // just to be safe
+                
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    return $ip;
+                }
+            }
+        }
     }
 }
 
@@ -90,7 +137,7 @@ function updateParams($login, $password) {
     $string = "<?php\n\n"
     ."/* AUTOMATICALLY GENERATED - DO NOT ADD ANYTHING: IT WILL BE LOST */\n\n"
     ."\$config['login'] = \"".htmlentities(trim($login))."\";\n"
-    ."\$config['password'] = \"".md5($password)."\";\n"
+    ."\$config['password'] = \"".sha1($password)."\";\n"
     ."\$config['salt1'] = \"".randomString()."\";\n"
     ."\$config['salt2'] = \"".randomString()."\";\n"
     ."\n?>";

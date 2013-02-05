@@ -81,7 +81,8 @@ CREATE TABLE IF NOT EXISTS ddb_dream (
 	'dreamText'			TEXT,
 	'dreamPointOfVue'	TEXT,
     'dreamFunFacts'		TEXT,
-    'dreamFeelings'		TEXT
+    'dreamFeelings'		TEXT,
+    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp
 );
 
 CREATE TABLE IF NOT EXISTS ddb_dream_tag (

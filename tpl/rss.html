@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+		<title>DDb - Dream Database</title>
+		<link>http://{$ddbUrl}/index.php</link>
+		<description>Latest dreams</description>
+		<language>en-en</language>
+		<copyright>{$ddbUrl}/index.php</copyright>
+        {loop="dreams"}
+        <item>
+			<title>{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</title>
+			<guid>http://{$ddbUrl}/dream.php?id={$value.dreamId}</guid>
+			<link>http://{$ddbUrl}/dream.php?id={$value.dreamId}</link>
+    		<pubDate>{$value.dreamCreation}</pubDate>
+			<category domain="{$ddbUrl}/index.php">fun</category>
+			<description><![CDATA[<a href="http://{$ddbUrl}/dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>, par {$value.dreamerName}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}]]></description>
+            <dc:creator>{$value.dreamerName}</dc:creator>
+		</item>{/loop}
+        
+    </channel>
+</rss>

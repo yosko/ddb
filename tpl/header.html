@@ -5,6 +5,7 @@
     <title>{$pageTitle}</title>
     <link rel="stylesheet" href="style.css">
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
+    {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/list.php?feed" title="Flux RSS" />{/if}
 </head>
 <body>
     <h1><a href="index.php"><img src="img/ddb-logo.png" /></a></h1>
@@ -19,6 +20,7 @@
             <a href="delete.php?id={$dream.id}" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
         {/if}
             <a href="search.php" title="Effectuer une recherche"><img src="img/magnifier.png" alt="Recherche" /></a>
+            <a href="list.php?feed" title="S&apos;abonner au flux RSS"><img src="img/feed.png" alt="Flux RSS" /></a>
             <a href="form.php" title="Ajouter un rêve"><img src="img/plus-button.png" alt="Nouveau" /></a>
             <a href="config.php" title="Configurer DDb"><img src="img/gear.png" alt="Configuration" /></a>
             <a href="index.php?logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>

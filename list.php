@@ -10,7 +10,7 @@ $tpl = setRainTpl();
 
 $db = openDatabase();
 
-if(logUser($tpl)) {
+if(isset($_GET['feed']) || logUser($tpl)) {
     
     //filters
     $where = "";
@@ -91,13 +91,17 @@ if(logUser($tpl)) {
         $orderBy = " ORDER BY d.dreamDate DESC";
     }
     
-    //pagination
+    //pagination and limit for RSS
     $limit = "";
+    if(isset($_GET['feed'])) {
+        $orderBy = " ORDER BY d.dreamCreation DESC, d.dreamId DESC";
+        $limit = " LIMIT 10";
+    }
     
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation"
         .", Group_Concat(t.tagName,'|') as tags"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
@@ -132,7 +136,19 @@ if(logUser($tpl)) {
     
     $qryDreams->execute();
     
-    if(isset($_GET['csv'])) {
+    if(isset($_GET['feed'])) {
+        header("Content-Type: application/rss+xml; charset=UTF-8");
+        $dreams = $qryDreams->fetchAll();
+        //format creation date to RFC822
+        foreach($dreams as $key => $value) {
+            $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
+        }
+        
+        $tpl->assign( "dreams", $dreams );
+        $tpl->assign( "criteria", $criteria );
+        $tpl->draw( "rss" );
+        
+    } elseif(isset($_GET['csv'])) {
         header("Content-type: text/csv");
         header("Content-Disposition: attachment; filename=ddb_".date("Y-m-d_H-i").".csv");
         header("Pragma: no-cache");
@@ -155,7 +171,6 @@ if(logUser($tpl)) {
             //dreams
             echo "\"".implode("\",\"", $row)."\"\n";
         }
-        
         
     } else {
         $dreams = $qryDreams->fetchAll();
