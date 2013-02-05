@@ -165,12 +165,11 @@ if(logUser($tpl)) {
         $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
         $qry->execute();
         
-        $tagArray = array();
+        $tagList = "";
         while ( $row = $qry->fetch(PDO::FETCH_ASSOC) ) {
-            $tagArray[] = $row['tagName'];
+            $tagList .= $row['tagName'].", ";
         }
-        $dream['tagList'] = implode(", ", $tagArray);
-        $dream['tagList'] = htmlspecialchars($dream['tagList']);
+        $dream['tagList'] = htmlspecialchars($tagList);
         
         $tpl->assign( "dream", $dream );
     } else {
@@ -185,7 +184,19 @@ if(logUser($tpl)) {
         $dreamers[] = $row;
     }
     
+    //feed the tag list with existing tags
+    $qry = $db->prepare(
+        "SELECT tagName FROM ddb_tag ORDER BY tagName ASC");
+    $qry->execute();
+    
+    while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
+        $tags[] = $row['tagName'];
+    }
+    
     $tpl->assign( "dreamers", $dreamers );
+    $tpl->assign( "js", true );
+    if(!empty($tags))
+        $tpl->assign( "tagList", json_encode($tags) );
     $tpl->assign( "today", date("d/m/Y") );
     $tpl->draw( "form" );
 }

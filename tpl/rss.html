@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
-		<title>DDb - Dream Database</title>
+    	<title>DDb - Dream Database</title>
 		<link>http://{$ddbUrl}/index.php</link>
 		<description>Latest dreams</description>
 		<language>en-en</language>
@@ -13,7 +13,15 @@
 			<link>http://{$ddbUrl}/dream.php?id={$value.dreamId}</link>
     		<pubDate>{$value.dreamCreation}</pubDate>
 			<category domain="{$ddbUrl}/index.php">fun</category>
-			<description><![CDATA[<a href="http://{$ddbUrl}/dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>, par {$value.dreamerName}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}]]></description>
+			<description><![CDATA[Par {$value.dreamerName}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
+            <div>{$value.dreamText}</div>
+            <ul>
+                <li>Personnages : {$value.dreamCharacters}</li>
+                <li>Lieux : {$value.dreamPlace}</li>
+                <li>Point de vue : {$value.dreamPointOfVue}</li>
+                <li>Fun facts : {$value.dreamFunFacts}</li>
+                <li>Emotions, état au réveil : {$value.dreamFeelings}</li>
+            </ul>]]></description>
             <dc:creator>{$value.dreamerName}</dc:creator>
 		</item>{/loop}
         

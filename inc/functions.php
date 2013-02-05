@@ -7,8 +7,8 @@
 // error_reporting(E_ALL);
 // ini_set('display_errors', 'On');
 
-include_once "inc/param.php";
-include "inc/rain.tpl.class.php";
+require_once "inc/param.php";
+require_once "inc/rain.tpl.class.php";
 
 function setRainTpl() {
     //RainTPL config
@@ -64,40 +64,72 @@ function logUser($tpl) {
     session_name('ddb');
     session_start();
     
-    //if user is logging out or if session has expired or if IP doesn't match
-    if(isset($_GET['logout']) || isset($_SESSION['expires_on']) && time()>=$_SESSION['expires_on'] || isset($_SESSION['ip']) && $_SESSION['ip']!=getIpAddress()) {
+    //if user is logging out or if IP doesn't match
+    if(isset($_GET['logout']) || isset($_SESSION['ip']) && $_SESSION['ip']!=getIpAddress()) {
+        //unset long-term session server-side
+        unsetLTSession($_SESSION['uid']);
+        //delete long-term cookie client-side
+        setcookie('ddblt', null, time()-31536000, dirname($_SERVER['SCRIPT_NAME']).'/', '', false, true);
+        
+        //unset PHP session
         unset($_SESSION['uid']);
         unset($_SESSION['ip']);
         unset($_SESSION['login']);
-        unset($_SESSION['expires_on']);
-    }
-    
+        
+        session_set_cookie_params(time()-31536000, dirname($_SERVER['SCRIPT_NAME']).'/');
+        session_destroy();
+        
+        header("Location: index.php");
+        
+    //user doesn't have a PHP session but have a long-term cookie, reload session
+    } elseif(!isset($_SESSION['uid']) && isset($_COOKIE['ddblt'])) {
+        
+        $LTSession = getLTSession($_COOKIE['ddblt']);
+        
+        if($LTSession !== false) {
+            //set session
+            $_SESSION['uid']=$_COOKIE['ddblt']; // generate unique random number (different than phpsessionid)
+            $_SESSION['ip']=$LTSession['ip'];
+            $_SESSION['login']=$LTSession['login'];
+        } else {
+            //delete long-term cookie client-side
+            setcookie('ddblt', null, time()-31536000, dirname($_SERVER['SCRIPT_NAME']).'/', '', false, true);
+        }
+        
     //if user trying to log in
-    if (isset($_POST['submit'])) {
-        if (htmlentities($_POST['login']) == $config['login'] && sha1($_POST['password']) == $config['password']) {
+    } elseif (isset($_POST['submitLogin']) && isset($_POST['login']) && trim($_POST['login']) != "" && isset($_POST['password']) && trim($_POST['password']) != "") {
+        //find user
+        $user = getUser($_POST['login']);
+        
+        //check user/password
+        if(!empty($user) && sha1($_POST['password']) == $user['password']) {
             //set session
             $_SESSION['uid']=sha1(uniqid('',true).'_'.mt_rand()); // generate unique random number (different than phpsessionid)
             $_SESSION['ip']=getIpAddress();
             $_SESSION['login']=$config['login'];
-            $_SESSION['remember']=$config['login'];
-            $_SESSION['remember']=(isset($_POST['remember']) && $_POST['remember'] == "remember");
             
-            header("Location: $_SERVER[PHP_SELF]");
+            if(isset($_POST['remember']) && $_POST['remember'] == "remember") {
+                //save the long term session on server-side
+                $LTSession = array();
+                $LTSession['login'] = $_SESSION['login'];
+                $LTSession['ip'] = $_SESSION['ip'];
+                setLTSession($_SESSION['uid'], $LTSession);
+                
+                //delete old sessions
+                flushOldLTSessions();
+            }
+            
+            //rederict user
+            header("Location: $_SERVER[REQUEST_URI]");
         } else {
             $error = true;
         }
     }
     
-    //if user already logged in (session is set and has not expired)
+    //if user is logged in
     if (!empty($_SESSION['uid'])) {
-        //update timeout
-        if(isset($_SESSION['remember']) && $_SESSION['remember']) {
-            $_SESSION['expires_on']=time()+31536000;    //1 year
-            session_set_cookie_params($_SESSION['expires_on'],dirname($_SERVER["SCRIPT_NAME"]).'/');
-        } else {
-            $_SESSION['expires_on']=time()+3600;        //1 hour
-            session_set_cookie_params(0,dirname($_SERVER["SCRIPT_NAME"]).'/');
-        }
+        //set or update the long term session on client-side
+        setcookie('ddblt', $_SESSION['uid'], time()+$config['LTDuration'], dirname($_SERVER['SCRIPT_NAME']).'/', '', false, true);
         session_regenerate_id(true);
         
         return true;
@@ -109,13 +141,96 @@ function logUser($tpl) {
     }
 }
 
+//get user informations
+// returns: array with user's login and passord
+function getUser($login) {
+    global $config;
+    
+    $foundUser = array();
+    $foundUser['login'] = $config['login'];
+    $foundUser['password'] = $config['password'];
+    return($foundUser);
+}
+
+//save (create/update) a long term session
+function setLTSession($sid, $value) {
+    global $config;
+    
+    $fp = fopen($config['LTDir'].$sid, 'w');
+    fwrite($fp, gzdeflate(json_encode($value)));
+    fclose($fp);
+}
+
+//get a long term session informations (when PHP session expires)
+function getLTSession($sid) {
+    global $config;
+    
+    $dir = $config['LTDir'];
+    
+    $value = false;
+    if (file_exists($dir.$sid)) {
+        
+        //unset long-term session if expired
+        if(filemtime($dir.$sid)+$config['LTDuration'] <= time()) {
+            unsetLTSession($sid);
+            $value = false;
+        } else {
+            $value = json_decode(gzinflate(file_get_contents($dir.$sid)), true);
+            //update last access time on file
+            touch($dir.$sid);
+        }
+    }
+    return($value);
+}
+
+//delete a long term session
+function unsetLTSession($sid) {
+    global $config;
+    
+    if (file_exists($config['LTDir'].$sid)) {
+        unlink($config['LTDir'].$sid);
+    }
+}
+
+//flush old long-term sessions exceeding their duration or the maximum number of long-term sessions
+//based on http://avinash6784.wordpress.com/2011/05/13/delete-old-files-from-directory-in-php/
+function flushOldLTSessions() {
+    global $config;
+    
+    $dir = $config['LTDir'];
+    
+    //list all the session files
+    $files = array();
+    if ($dh = opendir($dir)) {
+        while ($file = readdir($dh)) {
+            if(!is_dir($dir.$file)) {
+                if ($file != "." && $file != "..") {
+                    $files[$file] = filemtime($dir.$file);
+                }
+            }
+        }
+        closedir($dh);
+    }
+    
+    //sort files by date (descending)
+    arsort($files);
+    
+    //check each file
+    $i = 1;
+    foreach($files as $file => $date) {
+        if ($i > $config['nbLTSession'] || $date+$config['LTDuration'] <= time()) {
+            unsetLTSession($file);
+        }
+        ++$i;
+    } 
+}
+
 //based on: http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php
 function getIpAddress(){
     foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
         if (array_key_exists($key, $_SERVER) === true){
             foreach (explode(',', $_SERVER[$key]) as $ip){
                 $ip = trim($ip); // just to be safe
-                
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
                     return $ip;
                 }
@@ -140,94 +255,14 @@ function updateParams($login, $password) {
     ."\$config['password'] = \"".sha1($password)."\";\n"
     ."\$config['salt1'] = \"".randomString()."\";\n"
     ."\$config['salt2'] = \"".randomString()."\";\n"
+    ."\$config['LTDir'] = 'cache/';\n"
+    ."\$config['nbLTSession'] = 200;\n"
+    ."\$config['LTDuration'] = 2592000;\n"
     ."\n?>";
     
     $fp = fopen("inc/param.php", "w");
     fwrite($fp, $string);
     fclose($fp);
 }
-
-/*
-//righteous CSV handling in PHP, from http://uk.php.net/manual/en/function.fgetcsv.php#98800
-function array_to_csvstring($items, $CSV_SEPARATOR = ';', $CSV_ENCLOSURE = '"', $CSV_LINEBREAK = "\n") {
-    $string = '';
-    $o = array();
-    
-    foreach ($items as $item) {
-        if (stripos($item, $CSV_ENCLOSURE) !== false) {
-            $item = str_replace($CSV_ENCLOSURE, $CSV_ENCLOSURE . $CSV_ENCLOSURE, $item);
-        }
-        
-        if ((stripos($item, $CSV_SEPARATOR) !== false)
-            || (stripos($item, $CSV_ENCLOSURE) !== false)
-            || (stripos($item, $CSV_LINEBREAK !== false))) {
-            $item = $CSV_ENCLOSURE . $item . $CSV_ENCLOSURE;
-        }
-        
-        $o[] = $item;
-    }
-    
-    $string = implode($CSV_SEPARATOR, $o) . $CSV_LINEBREAK;
-    
-    return $string;
-}
-
-//righteous CSV handling in PHP, from http://uk.php.net/manual/en/function.fgetcsv.php#98800
-function csvstring_to_array(&$string, $CSV_SEPARATOR = ';', $CSV_ENCLOSURE = '"', $CSV_LINEBREAK = "\n") {
-    $o = array();
-    
-    $cnt = strlen($string);
-    $esc = false;
-    $escesc = false;
-    $num = 0;
-    $i = 0;
-    while ($i < $cnt) {
-        $s = $string[$i];
-
-        if ($s == $CSV_LINEBREAK) {
-            if ($esc) {
-                $o[$num] .= $s;
-            } else {
-                $i++;
-                break;
-            }
-        } elseif ($s == $CSV_SEPARATOR) {
-            if ($esc) {
-                $o[$num] .= $s;
-            } else {
-                $num++;
-                $esc = false;
-                $escesc = false;
-            }
-        } elseif ($s == $CSV_ENCLOSURE) {
-            if ($escesc) {
-                $o[$num] .= $CSV_ENCLOSURE;
-                $escesc = false;
-            }
-            
-            if ($esc) {
-                $esc = false;
-                $escesc = true;
-            } else {
-                $esc = true;
-                $escesc = false;
-            }
-        } else {
-            if ($escesc) {
-                $o[$num] .= $CSV_ENCLOSURE;
-                $escesc = false;
-            }
-            
-            $o[$num] .= $s;
-        }
-        
-        $i++;
-    }
-
-//  $string = substr($string, $i);
-
-    return $o;
-}
-*/
 
 ?>

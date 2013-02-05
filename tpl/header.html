@@ -6,6 +6,58 @@
     <link rel="stylesheet" href="style.css">
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
     {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/list.php?feed" title="Flux RSS" />{/if}
+    {if="isset($js)"}<script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/jquery-ui-1.9.2.custom.min.js"></script>
+    <style>
+        .ui-menu { list-style: none outside none;margin:0;padding:2px;text-align:left;background:#eee;border: 1px solid #aaa;border-radius:3px; }
+        .ui-autocomplete { position: absolute; }
+        .ui-menu .ui-menu-item {}
+        .ui-menu .ui-menu-item a { display:block;line-height: 1.5;padding:2px; }
+        .ui-menu .ui-menu-item a.ui-state-focus,
+        .ui-menu .ui-menu-item a.ui-state-active { background-color:#ccc;padding:1px;border:1px solid #aaa;border-radius:3px; }
+        .ui-helper-hidden { display: none; }
+        .ui-helper-hidden-accessible { display:none; }
+    </style>
+    <script>
+        $(function() {
+            var availableTags = {$tagList};
+            function split( val ) { return val.split( /,\s*/ ); }
+            function extractLast( term ) { return split( term ).pop(); }
+            
+            $( "#tags" )
+                // don't navigate away from the field on tab when selecting an item
+                .bind( "keydown", function( event ) {
+                    if ( event.keyCode === $.ui.keyCode.TAB &&
+                            $( this ).data( "autocomplete" ).menu.active ) {
+                        event.preventDefault();
+                    }
+                })
+                .autocomplete({
+                    minLength: 1,
+                    position: { my : "left bottom", at: "left top" },
+                    source: function( request, response ) {
+                        // delegate back to autocomplete, but extract the last term
+                        response( $.ui.autocomplete.filter(
+                            availableTags, extractLast( request.term ) ) );
+                    },
+                    focus: function() {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+                    select: function( event, ui ) {
+                        var terms = split( this.value );
+                        // remove the current input
+                        terms.pop();
+                        // add the selected item
+                        terms.push( ui.item.value );
+                        // add placeholder to get the comma-and-space at the end
+                        terms.push( "" );
+                        this.value = terms.join( ", " );
+                        return false;
+                    }
+                });
+        });
+    </script>{/if}
 </head>
 <body>
     <h1><a href="index.php"><img src="img/ddb-logo.png" /></a></h1>

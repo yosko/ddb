@@ -3,8 +3,6 @@
 	DDb by Yosko (http://www.yosko.net/ddb.php)
 	Licence: LGPL
 	DDb uses Rain TPL (under LGPL too)
-    authentication inspired by:
-		http://www.tonylea.com/2011/creating-a-simple-php-login-without-a-database/
 */
 
 include_once "inc/functions.php";
