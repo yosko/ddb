@@ -1,0 +1,36 @@
+{$pageTitle="DDb - Configuration"}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Configuration</p>
+        <h2>Modifier les identifiants à la DDb</h2>
+        <form id="loginForm" method="post" action="">
+            <fieldset>
+                <label for="login">Identifiant</label>
+                <input type="text" autofocus="autofocus" name="login" id="login"{if="isset($values.login)"} value="{$values.login}"{/if}>
+                {if="isset($errors.login) && $errors.login"}<div class="error">Identifiant obligatoire</div>
+                {/if}
+                <label for="password">Mot de passe</label>
+                <input type="password" name="password" id="password">
+                {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
+                {elseif="isset($errors)"}<div class="warning">Veuillez resaisir le mot de passe</div>
+                {/if}
+                <input type="submit" name="submitLogin" id="submitLogin" value="Sauver les identifiants" />
+                <img class="inline" src="img/exclamation-button.png" /> Vous serez déconnecté
+            </fieldset>
+        </form>
+        <hr />
+        <h2>Importer des rêves</h2>
+        <form id="import" method="post" action="" enctype="multipart/form-data">
+            <fieldset>
+                <label for="csvFile">Fichier CSV à importer</label>
+                <input type="file" name="csvFile" id="csvFile">
+                
+                <div>
+                    <input type="checkbox" name="replace" id="replace" value="replace">
+                    <label for="replace">Remplacer la base (<img class="inline" src="img/exclamation-button.png" /> Pensez d&apos;abord à effectuer une sauvegarde : <a href="file.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a>)</label>
+                </div>
+                
+                <input type="submit" name="import" id="submitImport" value="Importer" />
+            </fieldset>
+        </form>
+        <hr />
+{include="footer"}

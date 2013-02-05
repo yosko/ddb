@@ -1,0 +1,25 @@
+{$pageTitle="DDb - Rêves"}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Liste des rêves</p>
+        <div class="right">
+            <form class="smallForm" method="get" action="">
+                {loop="getParam"}{if condition="$key != 'sortOrder'"}<input type="hidden" value="{$value}" name="{$key}" />
+                {/if}{/loop}
+                <select name="sortOrder">
+                    <option value="date|asc" {if condition="isset($getParam.sortOrder) && $getParam.sortOrder=='date|asc'"}selected="true"{/if}>Date ▲</option>
+                    <option value="date|desc" {if condition="!isset($getParam.sortOrder) || (isset($getParam.sortOrder) && $getParam.sortOrder=='date|desc')"}selected="true"{/if}>Date ▼</option>
+                    <option value="dreamer|asc" {if condition="isset($getParam.sortOrder) && $getParam.sortOrder=='dreamer|asc'"}selected="true"{/if}>Rêveur ▲</option>
+                    <option value="dreamer|desc" {if condition="isset($getParam.sortOrder) && $getParam.sortOrder=='dreamer|desc'"}selected="true"{/if}>Rêveur ▼</option>
+                </select>
+                <input type="submit" id="submitSort" value="Trier" />
+            </form>
+        </div>
+        <h2>Rêves
+        {if condition="isset($criteria.dreamer)"} de {$criteria.dreamer}{/if}
+        {if condition="isset($criteria.tag)"} tagués "{$criteria.tag}"{/if}
+        {if condition="isset($criteria.text)"} contenant "{$criteria.text}"{/if}</h2>
+        <ul>
+            {loop="dreams"}<li><a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>,
+            par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}</li>{else}Aucun rêve trouvé{/loop}
+        </ul>
+{include="footer"}

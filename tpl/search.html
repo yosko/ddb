@@ -1,0 +1,30 @@
+{$pageTitle="DDb - Recherche"}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Recherche</p>
+        <h2>Rechercher les rêves...</h2>
+        <form id="searchForm" method="get" action="list.php">
+        <fieldset>
+            <label for="text">Contenant le texte</label>
+            <input type="text" autofocus="autofocus" name="text" placeholder="">
+            
+            <label for="dreamer">Rêvés par</label>
+            <select name="dreamer">
+                <option value="">-</option>
+{loop="dreamers"}
+                <option value="{$value.dreamerId}">{$value.dreamerName}</option>
+{/loop}
+            </select>
+            
+            <label for="tag">Comportant le tag</label>
+            <select name="tag">
+                <option value="">-</option>
+{loop="tags"}
+                <option value="{$value.tagId}">{$value.tagName}</option>
+{/loop}
+            </select>
+            
+            <br />
+            <input type="submit" name="" id="search" value="Rechercher" />
+        </fieldset>
+        </form>
+{include="footer"}

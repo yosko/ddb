@@ -1,0 +1,56 @@
+{if condition="isset($dream)"}{$pageTitle="DDb - Modifier le rêve n°".$dream.id}{else}{$pageTitle="DDb - Ajouter un rêve"}{/if}
+{include="header"}
+{if condition="isset($dream)"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > <a href="dream.php?id={$dream.id}">Rêve n°{$dream.id}</a> > Modifier</p>
+        <h2>Modifier le rêve n°{$dream.id}</h2>
+{else}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Ajouter</p>
+        <h2>Ajouter un rêve</h2>
+{/if}
+        <form id="dream" method="post" action="">
+        <fieldset>
+            <label for="title">Titre <span class="required">*</span></label>
+            <input type="text" autofocus="autofocus" name="title" value="{if condition="isset($dream)"}{$dream.title}{/if}" placeholder="Titre du rêve">
+            
+            <label for="dreamer">Rêveur <span class="required">*</span></label>
+            <select name="dreamer">
+{loop="dreamers"}
+                <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId"}selected="true"{/if}>{$value.dreamerName}</option>
+{/loop}
+            </select>
+            <a href="#" title="Ajouter un rêveur" hidden="true"><img src="img/plus-button.png" alt="Nouveau" /></a>
+            
+            <label for="newdreamer">Nouveau rêveur</label>
+            <input type="text" name="newdreamer" placeholder="Sélectionnez un rêveur existant ci-dessus ou saisissez en un nouveau ici">
+            
+            <label for="date">Date du rêve</label>
+            <input type="text" name="date" id="date" value="{if condition="isset($dream)"}{$dream.date}{else}{$today}{/if}" placeholder="jj/mm/aaaa">
+            
+            <label for="characters">Personnages</label>
+            <input type="text" name="characters" id="characters" value="{if condition="isset($dream)"}{$dream.characters}{/if}" placeholder="Persos réels ou imaginaires">
+            
+            <label for="place">Lieu</label>
+            <input type="text" name="place" id="place" value="{if condition="isset($dream)"}{$dream.place}{/if}">
+            
+            <label for="text">Le rêve <span class="required">*</span></label>
+            <textarea name="text" placeholder="Description détaillée ou résumée du rêve">{if condition="isset($dream)"}{$dream.text}{/if}</textarea>
+            
+            <label for="pointofvue">Point de vue</label>
+            <input type="text" name="pointofvue" id="pointofvue" value="{if condition="isset($dream)"}{$dream.pointOfVue}{/if}" placeholder="Interne, externe, omniscient, etc...">
+            
+            <label for="funfacts">Fun Facts</label>
+            <input type="text" name="funfacts" id="funfacts" value="{if condition="isset($dream)"}{$dream.funFacts}{/if}">
+            
+            <label for="feelings">Sentiments</label>
+            <input type="text" name="feelings" id="feelings" value="{if condition="isset($dream)"}{$dream.feelings}{/if}" placeholder="Emotions ressenties, état au réveil, etc...">
+            
+            <label for="tags">Tags</label>
+            <input type="text" name="tags" id="tags" value="{if condition="isset($dream)"}{$dream.tagList}{/if}" placeholder="Séparés par des virgules. Ex : chute, dinosaures, ski">
+            
+            <p><span class="required">*</span> Champs requis</p>
+            
+            <input type="submit" name="submit" id="submit" value="Enregistrer" />
+        </fieldset>
+        </form>
+        
+{include="footer"}

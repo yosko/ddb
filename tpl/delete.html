@@ -1,0 +1,29 @@
+{$pageTitle="DDb - Supprimer le rêve n°".$dream.id}
+{include="header"}
+{if condition="$exists"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > <a href="dream.php?id={$dream.id}">Rêve n°{$dream.id}</a> > Supprimer</p>
+        <h2>Supprimer un rêve</h2>
+    {if condition="$deleteAction"}
+        <p class="success">Le rêve a été supprimé</p>
+        <p><a href="index.php">Retour à l&apos;accueil</a></p>
+    {else}
+
+        <p>Vous êtes sur le point de supprimer <b>définitivement</b> le rêve suivant. Êtes-vous sûr de vouloir continuer ?</p>
+        <ul>
+            <li><b>
+                {if condition="$dream.title == ''"}# Sans titre #{else}{$dream.title}{/if},
+                par {$dream.dreamerName}{if="$dream.date != ''"} le {$dream.date}{/if}
+            </b></li>
+        </ul>
+        <form id="dream-delete" method="post" action="">
+            <fieldset>
+                <input type="submit" name="delete" id="delete" value="Supprimer" />
+                <input type="submit" name="cancel" id="cancel" value="Annuler" />
+            </fieldset>
+        </form>
+    {/if}
+{else}
+        <h2>Supprimer un rêve</h2>
+        <p>Identifiant inconnu, action impossible.</p>
+{/if}
+{include="footer"}

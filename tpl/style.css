@@ -1,0 +1,178 @@
+body { 
+    margin: 10px 0; 
+    padding:0 0 0 10px;
+    background-color: #eee;
+    text-align: center; 
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}
+
+html, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+h1 {
+    margin: 0 auto;
+    padding: 0;
+    width: 640px;
+    text-align: left;
+}
+
+h1 a {
+    text-decoration: none;
+}
+
+img {
+    vertical-align: middle;
+}
+
+img.inline {
+    vertical-align: text-bottom;
+}
+
+.content {
+    margin: 10px auto;
+    padding: 10px 20px 20px;
+	border: 0;
+	background-color: #fff;
+	width: 600px;
+	text-align: left;
+	border-radius: 5px;
+    box-shadow: 0 0 10px #ccc; 
+}
+
+input[type="text"], input[type="password"], input[type="date"], textarea {
+    margin: 3px 0 0 0;
+	padding: 4px;
+	width: 590px; 
+    font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	border: 1px solid #ccc;
+    background: -webkit-gradient(linear, left top, left 15, from(#FFFFFF), color-stop(4%, #f4f4f4), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #f4f4f4 1px, #FFFFFF 15px);
+}
+
+input[type="checkbox"] {
+    float: left;
+    margin: 2px 4px 1px;
+}
+
+textarea {
+	height: 150px;
+    resize: vertical;
+    text-align: justify;
+    border: 1px solid #ccc;
+}
+
+select {
+    margin: 3px 0 0 0;
+    padding: 4px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+label, .content header {
+    display: block;
+	font-size: 13px;
+	color: #666;
+	margin-top: 10px;
+	font-weight: bold;
+}
+
+label.error { 
+    width: 590px;
+	margin: 3px 0 0 0;
+	display: block;
+	color: #ff0000;                              
+	font-size: 11px; 
+	text-align: right;
+}
+
+input[type="submit"] {
+    display: inline-block;
+    /*width: 600px;*/
+    margin: 10px 0;
+	padding: 5px;
+}
+
+#login, #password, #date, #characters, #place, #pointofvue, #funfacts, #feelings, #tags {
+    padding-left: 22px;
+    width: 572px;
+}
+
+#login      { background: url(img/user.png) no-repeat scroll 3px 3px; }
+#password   { background: url(img/key.png) no-repeat scroll 3px 3px; }
+#date       { background: url(img/calendar-day.png) no-repeat scroll 3px 3px; }
+#characters { background: url(img/users.png) no-repeat scroll 3px 3px; }
+#place      { background: url(img/map-pin.png) no-repeat scroll 3px 3px; }
+#pointofvue { background: url(img/eye.png) no-repeat scroll 3px 3px; }
+#funfacts   { background: url(img/smiley-lol.png) no-repeat scroll 3px 3px; }
+#feelings   { background: url(img/heart.png) no-repeat scroll 3px 3px; }
+#tags       { background: url(img/tag-label.png) no-repeat scroll 3px 3px; }
+
+.smallForm input {
+    margin: 0;
+    padding: 0;
+}
+
+.smallForm select {
+    margin: 0;
+    padding: 2px;
+}
+
+.text {
+    text-indent: 2em;
+    text-align: justify;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #eee;
+    border: none;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 2px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.tag:hover {
+    background-color: #ccc;
+}
+
+.no-bullet {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.left { float: left; }
+.right { float: right; }
+
+.required { color: red; font-weight: bold; }
+.recommanded { color: yellow; font-weight: bold; }
+
+.disabled { font-style: italic; color: grey; }
+
+.error { color: red; background: url(img/cross-button.png) no-repeat scroll 0 0; min-height: 16px; padding-left: 22px; }
+.success { color: green; background: url(img/tick-button.png) no-repeat scroll 0 0; min-height: 16px; padding-left: 22px; }
+.warning { color: darkorange; background: url(img/exclamation-button.png) no-repeat scroll 0 0; min-height: 16px; padding-left: 22px; }
+
+.code {
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    background-color: LightYellow;
+    border: 1px solid black;
+    margin: 2px 0;
+    padding: 2px 5px;
+}
+
+footer {
+    font-size: 0.8em;
+    color: #666;
+}

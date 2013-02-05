@@ -1,0 +1,9 @@
+{$pageTitle="DDb - Rêveurs"}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêveurs</p>
+        <h2>Tous les rêveurs</h2>
+        <div>
+            {loop="dreamers"}<b><a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value.nbDream} rêves"><img src="img/user.png" /> {$value.dreamerName}</a></b>{/loop}
+        </div>
+        </ul>
+{include="footer"}

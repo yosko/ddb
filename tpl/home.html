@@ -1,0 +1,22 @@
+{$pageTitle="DDb - Dream Database"}
+{include="header"}
+        <header>Derniers rêves ajoutés</header>
+        <ul>
+            {loop="lastDreams"}<li>
+                <b><a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a></b>,
+                par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
+            </li>{/loop}
+        </ul>
+        <p><a href="list.php">Tous les rêves</a></p>
+        <header>Derniers tags ajoutés</header>
+        <div>
+            {loop="lastTags"}<b><a class="tag" href="list.php?tag={$value.tagId}" title="utilisé {$value.nbUse} fois"><img src="img/tag-label.png" /> {if condition="$value.tagName == ''"}# Sans nom #{else}{$value.tagName}{/if}</a></b>{/loop}
+        </div>
+        <p><a href="taglist.php">Tous les tags</a></p>
+        <header>Statistiques</header>
+        <ul>
+            <li>Rêveurs : {$nbDreamers} (<a href="dreamerlist.php">Tous les rêveurs</a>)</li>
+            <li>Rêves : {$nbDreams}</li>
+            <li>Tags : {$nbTags} différents, pour un total de {$nbDreamTags} utilisations</li>
+        </ul>
+{include="footer"}

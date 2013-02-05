@@ -1,0 +1,24 @@
+{$pageTitle="DDb - Consulter le rêve n°".$dream.id}
+{include="header"}
+        
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêve n°{$dream.id}</p>
+        <h2>{if condition="$dream.title == ''"}{if condition="$dream.text == ''"}# Sans titre #{else}{$dream.text|substr:0,40}...{/if}{else}{$dream.title}{/if}</h2>
+        <p>
+            <span class="right">{loop="tagArray"}<a class="tag" href="list.php?tag={$value}"><img class="inline" src="img/tag-label.png" /> {$key}</a>{/loop}</span>
+        </p>
+        <ul class="no-bullet">
+            <li>Rêvé par <b><a class="tag" href="list.php?dreamer={$dream.dreamerId}"><img class="inline" src="img/user.png">{$dream.dreamerName}</a></b>{if="$dream.date != ''"} le <img class="inline" src="img/clock.png"> {$dream.date}{/if}</li>
+            <li><b><img class="inline" src="img/users.png" /> Personnages :</b> {$dream.characters}</li>
+            <li><b><img class="inline" src="img/map-pin.png" /> Lieux :</b> {$dream.place}</li>
+        </ul>
+        <header>Description</header>
+        <div class="text">
+            {$dream.text}
+        </div>
+        <ul class="no-bullet">
+            <li><b><img class="inline" src="img/eye.png" /> Point de vue :</b> {$dream.pointOfVue}</li>
+            <li><b><img class="inline" src="img/smiley-lol.png" /> Fun facts :</b> {$dream.funFacts}</li>
+            <li><b><img class="inline" src="img/heart.png" /> Emotions, état au réveil :</b> {$dream.feelings}</li>
+        </ul>
+        
+{include="footer"}

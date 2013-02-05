@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>{$pageTitle}</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
+</head>
+<body>
+    <h1><a href="index.php"><img src="img/ddb-logo.png" /></a></h1>
+    <div class="content">
+    {if condition="!isset($noLogout) || $noLogout == false"}
+        <span class="right">
+        {if condition="isset($csvLink)"}
+            <a href="{$csvLink}" title="Télécharger au format CSV les rêves sélectionnés"><img src="img/navigation-270-button.png" alt="Télécharger" /></a>
+        {/if}
+        {if condition="isset($dream)"}
+            <a href="form.php?id={$dream.id}" title="Modifier le rêve"><img src="img/pencil-button.png" alt="Modification" /></a>
+            <a href="delete.php?id={$dream.id}" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
+        {/if}
+            <a href="search.php" title="Effectuer une recherche"><img src="img/magnifier.png" alt="Recherche" /></a>
+            <a href="form.php" title="Ajouter un rêve"><img src="img/plus-button.png" alt="Nouveau" /></a>
+            <a href="config.php" title="Configurer DDb"><img src="img/gear.png" alt="Configuration" /></a>
+            <a href="index.php?logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>
+        </span>
+    {/if}
