@@ -1,3 +1,7 @@
- *.sublime-project
- *.sublime-workspace
- tpl/image/unused/
+cache/session/*
+cache/tpl/*
+tpl/img/unused/
+.ssh/
+database.sqlite
+*.sublime-project
+*.sublime-workspace

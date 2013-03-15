@@ -6,9 +6,9 @@
 
 include_once "inc/functions.php";
 
-$tpl = setRainTpl();
-
 $db = openDatabase();
+$settings = getSettings();
+$tpl = setRainTpl();
 
 if(isset($_GET['feed']) || logUser($tpl)) {
     

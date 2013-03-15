@@ -6,9 +6,9 @@
 
 include_once "inc/functions.php";
 
-$tpl = setRainTpl();
-
 $db = openDatabase();
+$settings = getSettings();
+$tpl = setRainTpl();
 
 if(logUser($tpl)) {
     //feed the dreamer list with existing dreamers

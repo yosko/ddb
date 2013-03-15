@@ -9,10 +9,10 @@ ini_set('display_errors', 'On');
 
 include_once "inc/functions.php";
 
-$tpl = setRainTpl();
+$tpl = setRainTpl('tpl/', 'cache/tpl/');
 
 $serverConfig['phpVersion'] = PHP_VERSION;
-$serverConfig['phpMinVersion'] = '5.2.0';
+$serverConfig['phpMinVersion'] = '5.3.0';
 $serverConfig['phpIsVersionValid'] = (version_compare(PHP_VERSION, $serverConfig['phpMinVersion']) >= 0);
 $serverConfig['pdo'] = extension_loaded('pdo');
 $serverConfig['pdoSqlite'] = extension_loaded('pdo_sqlite');
@@ -36,12 +36,15 @@ if(file_exists("database.sqlite")) {
     $values["login"] = trim($_POST['login']);
     $values["password"] = trim($_POST['password']);
     $values["firstDreamer"] = trim($_POST['firstDreamer']);
+    $values["hash"] = YosLoginTools::hashPassword($values["password"]);
     
     $errors["login"] = (!isset($_POST['login']) || trim($_POST['login']) == "");
     $errors["password"] = (!isset($_POST['password']) || trim($_POST['password']) == "");
     $errors["firstDreamer"] = (!isset($_POST['firstDreamer']) || trim($_POST['firstDreamer']) == "");
+    $errors["hash"] = (strlen($values["hash"]) < 60);
+
     
-    if(!$errors["login"] && !$errors["password"] && !$errors["firstDreamer"]) {
+    if(!$errors["login"] && !$errors["password"] && !$errors["firstDreamer"] && !$errors["hash"]) {
         //save login/password
         updateParams($values["login"], $values["password"]);
         
@@ -60,6 +63,8 @@ DROP TABLE IF EXISTS ddb_dreamer;
 DROP TABLE IF EXISTS ddb_tag;
 DROP TABLE IF EXISTS ddb_dream;
 DROP TABLE IF EXISTS ddb_dream_tag;
+DROP TABLE IF EXISTS ddb_user;
+DROP TABLE IF EXISTS ddb_settings;
 
 CREATE TABLE IF NOT EXISTS ddb_dreamer (
     'dreamerId'			INTEGER NULL PRIMARY KEY AUTOINCREMENT,
@@ -90,6 +95,20 @@ CREATE TABLE IF NOT EXISTS ddb_dream_tag (
 	'tagId_FK'			INT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS ddb_user (
+    'userId'            INTEGER NULL PRIMARY KEY AUTOINCREMENT,
+    'userLogin'         VARCHAR(256) NOT NULL,
+    'userPassword'      VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ddb_settings (
+    'LTDir'             TEXT NOT NULL DEFAULT 'cache/session/',
+    'nbLTSession'       INT NOT NULL DEFAULT 200,
+    'LTDuration'        INT NOT NULL DEFAULT 2592000,
+    'tplDir'            TEXT NOT NULL DEFAULT 'tpl/',
+    'tplCache'          TEXT NOT NULL DEFAULT 'cache/tpl/'
+);
+
 QUERY;
 
         try {
@@ -102,6 +121,18 @@ QUERY;
         $qry = $db->prepare(
             'INSERT INTO ddb_dreamer (dreamerName) VALUES (:name)');
         $qry->bindParam(':name', trim($values["firstDreamer"]), PDO::PARAM_STR);
+        $qry->execute();
+        
+        //insert user
+        $qry = $db->prepare(
+            'INSERT INTO ddb_user (userLogin, userPassword) VALUES (:login, :password)');
+        $qry->bindParam(':login', $values["login"], PDO::PARAM_STR);
+        $qry->bindParam(':password', $values["hash"], PDO::PARAM_STR);
+        $qry->execute();
+
+        //insert settings
+        $qry = $db->prepare(
+            'INSERT INTO ddb_settings DEFAULT VALUES');
         $qry->execute();
         
         //install done: redirect to avoid second execution

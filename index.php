@@ -7,9 +7,9 @@
 
 include_once "inc/functions.php";
 
-$tpl = setRainTpl();
-
 $db = openDatabase();
+$settings = getSettings();
+$tpl = setRainTpl();
 
 if(logUser($tpl)) {
     $qryLastDreams = $db->prepare(

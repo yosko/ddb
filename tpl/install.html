@@ -48,7 +48,9 @@
                 <input type="text" name="firstDreamer" id="firstDreamer"{if="isset($values.firstDreamer)"} value="{$values.firstDreamer}"{/if}>
                 {if="isset($errors.firstDreamer) && $errors.firstDreamer"}<div class="error">Pour fonctionner, la DDb a besoin d&apos;au moins un rêveur.</div>
                 {/if}
-                
+
+                {if="isset($errors.hash) && $errors.hash"}<div class="error">Erreur lors du hashage du mot-de-passe</div>
+                {/if}
             </fieldset>
             
             <input type="submit" name="submitInstall" id="submitInstall" value="Installer DDb &raquo;" />

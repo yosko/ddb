@@ -4,10 +4,16 @@
         <form id="loginForm" method="post" action="">
             <fieldset>
                 <label for="login">Identifiant</label>
-                <input type="text" autofocus="autofocus" name="login" id="login">
+                <input type="text" autofocus="autofocus" name="login" id="login" value="{if="isset($user['login'])"}{$user['login']} {/if}">
+                {if="isset($user['error']['unknownLogin']) && $user['error']['unknownLogin']==true"}
+                <div class="error">Identifiant inconnu</div>
+                {/if}
                 
                 <label for="password">Mot de passe</label>
                 <input type="password" name="password" id="password">
+                {if="isset($user['error']['wrongPassword']) && $user['error']['wrongPassword']==true"}
+                <div class="error">Mot de passe incorrect</div>
+                {/if}
                 
                 <div>
                     <input type="checkbox" name="remember" id="remember" value="remember">
@@ -17,7 +23,5 @@
                 <input type="submit" name="submitLogin" id="submitLogin" value="Se connecter" />
             </fieldset>
         </form>
-{if condition="isset($error) && $error==true"}
-        <div class="error">Identifiant ou mot de passe incorrect</div>
-{/if}
+
 {include="footer"}
