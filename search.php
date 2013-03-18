@@ -9,8 +9,9 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$user = logUser($tpl);
 
-if(logUser($tpl)) {
+if($user['isLoggedIn']) {
     //feed the dreamer list with existing dreamers
     $dreamers = array();
     $qry = $db->prepare(

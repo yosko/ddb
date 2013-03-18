@@ -9,8 +9,9 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$user = logUser($tpl);
 
-if(isset($_GET['feed']) || logUser($tpl)) {
+if(isset($_GET['feed']) || $user['isLoggedIn']) {
     
     //filters
     $where = "";

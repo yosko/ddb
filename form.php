@@ -9,8 +9,9 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$user = logUser($tpl);
 
-if(logUser($tpl)) {
+if($user['isLoggedIn']) {
 
     //if the form was posted, save (new?) dream to ddb
     if( isset($_POST["text"]) ) {

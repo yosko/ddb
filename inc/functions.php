@@ -160,10 +160,9 @@ function logUser($tpl) {
     if($user['isLoggedIn'] === false) {
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
-        return false;
     }
 
-    return true;
+    return $user;
 }
 
 function getUser($login) {

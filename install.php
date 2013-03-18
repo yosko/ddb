@@ -45,9 +45,6 @@ if(file_exists("database.sqlite")) {
 
     
     if(!$errors["login"] && !$errors["password"] && !$errors["firstDreamer"] && !$errors["hash"]) {
-        //save login/password
-        updateParams($values["login"], $values["password"]);
-        
         //Create and open database
         try {
             $db = new PDO('sqlite:database.sqlite');

@@ -1,19 +1,15 @@
 {$pageTitle="DDb - Configuration"}
 {include="header"}
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Configuration</p>
-        <h2>Modifier les identifiants de connexion</h2>
-        <form id="loginForm" method="post" action="">
+        <h2>Modifier mon mot de passe</h2>
+        <form id="NewPasswordForm" method="post" action="">
             <fieldset>
-                <label for="login">Identifiant</label>
-                <input type="text" autofocus="autofocus" name="login" id="login"{if="isset($values.login)"} value="{$values.login}"{/if}>
-                {if="isset($errors.login) && $errors.login"}<div class="error">Identifiant obligatoire</div>
-                {/if}
-                <label for="password">Mot de passe</label>
+                <label for="password">Nouveau mot de passe</label>
                 <input type="password" name="password" id="password">
                 {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
-                {elseif="isset($errors)"}<div class="warning">Veuillez resaisir le mot de passe</div>
+                {elseif="isset($errors)"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
-                <input type="submit" name="submitLogin" id="submitLogin" value="Sauver les identifiants" />
+                <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
                 <img class="inline" src="img/exclamation-button.png" /> Vous serez déconnecté
             </fieldset>
         </form>

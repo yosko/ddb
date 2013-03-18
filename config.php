@@ -9,32 +9,45 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$user = logUser($tpl);
 
-if(logUser($tpl)) {
+if($user['isLoggedIn']) {
     $dreamers = array();
     $tags = array();
     $unusedDreamers = array();
     $unusedTags = array();
     
     //edit DDb parameters
-    if (isset($_POST["submitLogin"])) {
+    if (isset($_POST["submitNewPassword"])) {
         $values = array();
         $errors = array();
         
-        $values["login"] = trim($_POST['login']);
-        $values["password"] = trim($_POST['password']);
+        $values['password'] = trim($_POST['password']);
         
-        $errors["login"] = (!isset($_POST['login']) || trim($_POST['login']) == "");
-        $errors["password"] = (!isset($_POST['password']) || trim($_POST['password']) == "");
+        $errors['password'] = (!isset($_POST['password']) || trim($_POST['password']) == "");
         
-        //if parameters are ok
-        if(!$errors["login"] && !$errors["password"]) {
+        //if login informations are ok
+        if(!$errors['password']) {
             //save them
-            updateParams($_POST["login"], $_POST["password"]);
-            
-            //redirect to avoid problem on go back
-            header("Location: $_SERVER[PHP_SELF]");
-        } else {
+            $hash = YosLoginTools::hashPassword($values['password']);
+
+            if($hash !== false) {
+                $updateUser = $db->prepare(
+                    'UPDATE ddb_user SET userPassword=:hash'
+                    .' WHERE userLogin=:login'
+                );
+                $updateUser->bindParam(':hash', $hash, PDO::PARAM_STR);
+                $updateUser->bindParam(':login', $user['login'], PDO::PARAM_STR);
+                $updateUser->execute();
+                
+                //logout user to update session context
+                header("Location: index.php?logout");
+            } else {
+                $errors['app'] = true;
+            }
+        }
+
+        if(!empty($errors)) {
             //keep values and show errors
             $tpl->assign( "errors", $errors );
             $tpl->assign( "values", $values );

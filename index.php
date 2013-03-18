@@ -10,8 +10,9 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$user = logUser($tpl);
 
-if(logUser($tpl)) {
+if($user['isLoggedIn']) {
     $qryLastDreams = $db->prepare(
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"

@@ -4,7 +4,7 @@
         <form id="loginForm" method="post" action="">
             <fieldset>
                 <label for="login">Identifiant</label>
-                <input type="text" autofocus="autofocus" name="login" id="login" value="{if="isset($user['login'])"}{$user['login']} {/if}">
+                <input type="text" autofocus="autofocus" name="login" id="login" value="{if="isset($user['login'])"}{$user['login']}{/if}">
                 {if="isset($user['error']['unknownLogin']) && $user['error']['unknownLogin']==true"}
                 <div class="error">Identifiant inconnu</div>
                 {/if}
