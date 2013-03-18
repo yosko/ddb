@@ -11,6 +11,10 @@ $settings = getSettings();
 $tpl = setRainTpl();
 
 if(logUser($tpl)) {
+    $dreamers = array();
+    $tags = array();
+    $unusedDreamers = array();
+    $unusedTags = array();
     
     //edit DDb parameters
     if (isset($_POST["submitLogin"])) {
@@ -41,8 +45,6 @@ if(logUser($tpl)) {
     if(isset($_POST['import'])) {
         $header = array();
         $dream = array();
-        $dreamers = array();
-        $tags = array();
         $dreamerName = "";
         $tagName = "";
         $dreamerId = -1;
@@ -197,12 +199,56 @@ if(logUser($tpl)) {
         }
     }
     
+    //rename a dreamer
+    if (isset($_POST["submitRenameDreamer"])) {
+        if(isset($_POST['dreamer']) && !empty($_POST['dreamer'])
+                && isset($_POST['newDreamerName']) && trim($_POST['newDreamerName']) != "") {
+            
+            $qry = $db->prepare(
+                'UPDATE ddb_dreamer SET dreamerName = :dreamerName'
+                . ' WHERE dreamerId = :dreamerId');
+            $qry->bindParam(':dreamerId', $_POST['dreamer'], PDO::PARAM_INT);
+            $qry->bindParam(':dreamerName', $_POST['newDreamerName'], PDO::PARAM_STR);
+            $qry->execute();
+        }
+    }
+    
+    //rename a tag
+    if (isset($_POST["submitRenameTag"])) {
+        if(isset($_POST['tag']) && !empty($_POST['tag'])
+                && isset($_POST['newTagName']) && trim($_POST['newTagName']) != "") {
+            
+            $qry = $db->prepare(
+                'UPDATE ddb_tag SET tagName = :tagName'
+                . ' WHERE tagId = :tagId');
+            $qry->bindParam(':tagId', $_POST['tag'], PDO::PARAM_INT);
+            $qry->bindParam(':tagName', $_POST['newTagName'], PDO::PARAM_STR);
+            $qry->execute();
+        }
+    }
+    
+    //dreamers
+    $qry = $db->prepare(
+        "SELECT * FROM ddb_dreamer ORDER BY dreamerName ASC");
+    $qry->execute();
+    while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
+        $dreamers[] = $row;
+    }
+    
+    //tags
+    $qry = $db->prepare(
+        "SELECT * FROM ddb_tag ORDER BY tagName ASC");
+    $qry->execute();
+    while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
+        $tags[] = $row;
+    }
+    
     //unused dreamers
     $qry = $db->prepare(
         "SELECT * FROM ddb_dreamer WHERE dreamerId not in (SELECT DISTINCT dreamerId_FK FROM ddb_dream) ORDER BY dreamerName ASC");
     $qry->execute();
     while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
-        $dreamers[] = $row;
+        $unusedDreamers[] = $row;
     }
     
     //unused tags
@@ -210,11 +256,13 @@ if(logUser($tpl)) {
         "SELECT * FROM ddb_tag WHERE tagId not in (SELECT DISTINCT tagId_FK FROM ddb_dream_tag) ORDER BY tagName ASC");
     $qry->execute();
     while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
-        $tags[] = $row;
+        $unusedTags[] = $row;
     }
     
     $tpl->assign( "dreamers", $dreamers );
     $tpl->assign( "tags", $tags );
+    $tpl->assign( "unusedDreamers", $unusedDreamers );
+    $tpl->assign( "unusedTags", $unusedTags );
     $tpl->draw( "config" );
 }
 

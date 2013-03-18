@@ -104,16 +104,16 @@ if(logUser($tpl)) {
                         
                         $tagId = $db->lastInsertId();
                     }
-                    $tagIds[$i] = intval($tagId);
+                    $tagIds[] = intval($tagId);
                 }
             }
             
             //4- save the dream tags
-            for( $i=0; $i < count($tagIds); $i++ ) {
+            foreach( $tagIds as $tagId ) {
                 $qry = $db->prepare(
                     'INSERT INTO ddb_dream_tag (dreamId_FK, tagId_FK) VALUES (:dreamId, :tagId)');
                 $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
-                $qry->bindParam(':tagId', $tagIds[$i], PDO::PARAM_INT);
+                $qry->bindParam(':tagId', $tagId, PDO::PARAM_INT);
                 $qry->execute();
             }
         }
@@ -195,8 +195,11 @@ if(logUser($tpl)) {
     
     $tpl->assign( "dreamers", $dreamers );
     $tpl->assign( "js", true );
-    if(!empty($tags))
-        $tpl->assign( "tagList", json_encode($tags) );
+    if(empty($tags)) {
+        $tagList = '';
+        $tags = array();
+    }
+    $tpl->assign( "tagList", json_encode($tags) );
     $tpl->assign( "today", date("d/m/Y") );
     $tpl->draw( "form" );
 }

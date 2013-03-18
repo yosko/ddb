@@ -21,8 +21,9 @@ if(isset($_GET['feed']) || logUser($tpl)) {
         if(is_numeric($_GET['tag']) && is_int(intval($_GET['tag']))) {
             $where .= " AND t.tagId=:tagId";
             
+            $tagId = intval($_GET['tag']);
             $qryTag = $db->prepare("SELECT tagName FROM ddb_tag WHERE tagId=:tagId LIMIT 1");
-            $qryTag->bindParam(':tagId', intval($_GET['tag']), PDO::PARAM_INT);
+            $qryTag->bindParam(':tagId', $tagId, PDO::PARAM_INT);
             $qryTag->execute();
             $qryTag->bindColumn('tagName', $tagName);
             $row = $qryTag->fetch(PDO::FETCH_BOUND);

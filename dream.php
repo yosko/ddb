@@ -44,10 +44,11 @@ if(logUser($tpl)) {
         $dream['text'] = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $dream['text'])."</p>";
         
         //get dream tags
+        $dreamId = intval($dream['id']);
         $qry = $db->prepare(
             "SELECT t.tagId, t.tagName FROM ddb_dream_tag dt INNER JOIN ddb_tag t on dt.tagId_FK = t.tagId"
             ." WHERE dt.dreamId_FK = :dreamId ORDER BY t.tagName");
-        $qry->bindParam(':dreamId', intval($dream['id']), PDO::PARAM_INT);
+        $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
         $qry->execute();
         
         $tagArray = array();

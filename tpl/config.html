@@ -26,7 +26,7 @@
                 
                 <div>
                     <input type="checkbox" name="replace" id="replace" value="replace">
-                    <label for="replace">Remplacer la base (<img class="inline" src="img/exclamation-button.png" /> Pensez d&apos;abord à effectuer une sauvegarde : <a href="file.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a>)</label>
+                    <label for="replace">Remplacer la base (<img class="inline" src="img/exclamation-button.png" /> Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a>)</label>
                 </div>
                 
                 <input type="submit" name="import" id="submitImport" value="Importer" />
@@ -40,14 +40,50 @@
                     <input type="checkbox" name="purgeDreamers" id="purgeDreamers" value="purgeDreamers">
                     <label for="purgeDreamers">Supprimer les rêveurs inutilisés</label>
                 </div>
-                <div>Rêveurs inutilisés : {loop="dreamers"}<a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a> {else}aucun{/loop}</div>
+                <div>Rêveurs inutilisés : {loop="unusedDreamers"}<a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a> {else}aucun{/loop}</div>
                 <div>
                     <input type="checkbox" name="purgeTags" id="purgeTags" value="purgeTags">
                     <label for="purgeTags">Supprimer les tags inutilisés</label>
                 </div>
-                <div>Tags inutilisés : {loop="tags"}<a href="list.php?tag={$value.tagId}">{$value.tagName}</a> {else}aucun{/loop}</div>
+                <div>Tags inutilisés : {loop="unusedTags"}<a href="list.php?tag={$value.tagId}">{$value.tagName}</a> {else}aucun{/loop}</div>
                 
                 <input type="submit" name="submitPurge" id="submitPurge" value="Purger" />
+            </fieldset>
+        </form>
+        <hr />
+        <h2>Renommer un rêveur</h2>
+        <form id="renameDreamer" method="post" action="">
+            <fieldset>
+            
+                <label for="dreamer">Rêveur</label>
+                <select name="dreamer">
+                    <option value="">-</option>
+{loop="dreamers"}
+                    <option value="{$value.dreamerId}">{$value.dreamerName}</option>
+{/loop}
+                </select>
+                <label for="newDreamerName">Nouveau nom</label>
+                <input type="text" autofocus="autofocus" name="newDreamerName" placeholder="">
+                
+                <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Renommer" />
+            </fieldset>
+        </form>
+        <hr />
+        <h2>Renommer un tag</h2>
+        <form id="renameTag" method="post" action="">
+            <fieldset>
+            
+                <label for="tag">Rêveur</label>
+                <select name="tag">
+                    <option value="">-</option>
+{loop="tags"}
+                    <option value="{$value.tagId}">{$value.tagName}</option>
+{/loop}
+                </select>
+                <label for="newTagName">Nouveau nom</label>
+                <input type="text" autofocus="autofocus" name="newTagName" placeholder="">
+                
+                <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Renommer" />
             </fieldset>
         </form>
         <hr />
