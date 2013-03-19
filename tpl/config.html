@@ -1,19 +1,40 @@
 {$pageTitle="DDb - Configuration"}
 {include="header"}
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Configuration</p>
-        <h2>Modifier mon mot de passe</h2>
+{if="$user.secure == false"}
+        <h2>Accès à la configuration</h2>
+        <form id="SecureAccessForm" method="post" action="">
+            <fieldset>
+                <label for="password">Mot de passe</label>
+                <input type="password" name="password" id="password">
+                {if="isset($errors.wrongPassword) && $errors.wrongPassword"}<div class="error">Mot de passe incorrect</div>
+                {/if}
+                <input type="submit" name="submitSecureAccess" id="submitSecureAccess" value="Accès sécurisé" />
+            </fieldset>
+        </form>
+{else}
+        <h2>Configuration</h2>
+        <ul>
+            <li><a href="?p=password"><img class="inline" src="img/key.png" /> Changer mon mot de passe</a></li>
+            <li><a href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
+            <li><a href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
+            <li><a href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
+            <li><a href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
+        </ul>
+{if="$page=='password'"}
+        <h2>Changer mon mot de passe</h2>
         <form id="NewPasswordForm" method="post" action="">
             <fieldset>
                 <label for="password">Nouveau mot de passe</label>
                 <input type="password" name="password" id="password">
                 {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
-                {elseif="isset($errors)"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
+                {elseif="!empty($errors)"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
                 <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
                 <img class="inline" src="img/exclamation-button.png" /> Vous serez déconnecté
             </fieldset>
         </form>
-        <hr />
+{elseif="$page=='import'"}
         <h2>Importer des rêves</h2>
         <form id="import" method="post" action="" enctype="multipart/form-data">
             <fieldset>
@@ -28,7 +49,7 @@
                 <input type="submit" name="import" id="submitImport" value="Importer" />
             </fieldset>
         </form>
-        <hr />
+{elseif="$page=='purge'"}
         <h2>Nettoyer la base</h2>
         <form id="import" method="post" action="" enctype="multipart/form-data">
             <fieldset>
@@ -46,7 +67,7 @@
                 <input type="submit" name="submitPurge" id="submitPurge" value="Purger" />
             </fieldset>
         </form>
-        <hr />
+{elseif="$page=='renameDreamer'"}
         <h2>Renommer un rêveur</h2>
         <form id="renameDreamer" method="post" action="">
             <fieldset>
@@ -64,7 +85,7 @@
                 <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Renommer" />
             </fieldset>
         </form>
-        <hr />
+{elseif="$page=='renameTag'"}
         <h2>Renommer un tag</h2>
         <form id="renameTag" method="post" action="">
             <fieldset>
@@ -82,5 +103,6 @@
                 <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Renommer" />
             </fieldset>
         </form>
-        <hr />
+{/if}
+{/if}
 {include="footer"}

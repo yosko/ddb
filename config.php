@@ -16,6 +16,23 @@ if($user['isLoggedIn']) {
     $tags = array();
     $unusedDreamers = array();
     $unusedTags = array();
+
+    //reenter password to access the configuration
+    if(isset($_POST['submitSecureAccess'])) {
+        $errors = array();
+        if(isset($user['error'])) {
+            $errors = $user['error'];
+        }
+        $tpl->assign( "errors", $errors );
+    }
+
+    $page = 'homeConfig';
+    if(isset($_GET['p'])) {
+        if(in_array($_GET['p'], array('password', 'import', 'purge', 'renameDreamer', 'renameTag'))) {
+            $page = $_GET['p'];
+        }
+    }
+    $tpl->assign( "page", $page );
     
     //edit DDb parameters
     if (isset($_POST["submitNewPassword"])) {

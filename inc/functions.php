@@ -4,8 +4,12 @@
 	Licence: LGPL
 */
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 'On');
+define("DEBUG_MODE", true);
+
+if(DEBUG_MODE === true) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 'On');
+}
 
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
@@ -54,15 +58,6 @@ function openDatabase() {
 class DDbLogin extends YosLogin {
     protected function getUser($login) {
         return getUser($login);
-        // global $settings;
-        
-        // $foundUser = array();
-        // if($settings['login'] == $login) {
-        //     $foundUser['login'] = $settings['login'];
-        //     $foundUser['password'] = $settings['password'];
-        // }
-
-        // return($foundUser);
     }
 
     protected function setLTSession($login, $sid, $value) {
@@ -147,8 +142,8 @@ function logUser($tpl) {
         $logger->logOut();
     } elseif(isset($_POST['submitLogin']) && isset($_POST['login']) && isset($_POST['password'])) {
         $user = $logger->logIn($_POST['login'], $_POST['password'], isset($_POST['remember']));
-    } elseif(isset($_POST['submitPassword']) && isset($_POST['password'])) {
-        $user = $logger->authUser();
+    } elseif(isset($_POST['submitSecureAccess']) && isset($_POST['password'])) {
+        $user = $logger->authUser($_POST['password']);
     } else {
         $user = $logger->authUser();
     }
