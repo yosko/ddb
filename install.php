@@ -18,11 +18,9 @@ $serverConfig['pdo'] = extension_loaded('pdo');
 $serverConfig['pdoSqlite'] = extension_loaded('pdo_sqlite');
 $serverConfig['dbDirectory'] = dirname($_SERVER['SCRIPT_FILENAME']);
 $serverConfig['dbPermissions'] = is_writable($serverConfig['dbDirectory']);
-$serverConfig['paramFile'] = dirname($_SERVER['SCRIPT_FILENAME'])."/inc/param.php";
-$serverConfig['paramPermissions'] = is_writable($serverConfig['paramFile']);
 
 $serverOk = $serverConfig['phpIsVersionValid'] && $serverConfig['pdo'] &&
-    $serverConfig['pdoSqlite'] && $serverConfig['dbPermissions'] && $serverConfig['paramPermissions'];
+    $serverConfig['pdoSqlite'] && $serverConfig['dbPermissions'];
 
 //STEP 3: install done
 if(file_exists("database.sqlite")) {
@@ -95,7 +93,8 @@ CREATE TABLE IF NOT EXISTS ddb_dream_tag (
 CREATE TABLE IF NOT EXISTS ddb_user (
     'userId'            INTEGER NULL PRIMARY KEY AUTOINCREMENT,
     'userLogin'         VARCHAR(256) NOT NULL,
-    'userPassword'      VARCHAR(256) NOT NULL
+    'userPassword'      VARCHAR(256) NOT NULL,
+    'userRole'          VARCHAR(50) NOT NULL DEFAULT 'user'
 );
 
 CREATE TABLE IF NOT EXISTS ddb_settings (
@@ -103,7 +102,11 @@ CREATE TABLE IF NOT EXISTS ddb_settings (
     'nbLTSession'       INT NOT NULL DEFAULT 200,
     'LTDuration'        INT NOT NULL DEFAULT 2592000,
     'tplDir'            TEXT NOT NULL DEFAULT 'tpl/',
-    'tplCache'          TEXT NOT NULL DEFAULT 'cache/tpl/'
+    'tplCache'          TEXT NOT NULL DEFAULT 'cache/tpl/',
+    'timezone'          VARCHAR(256) NOT NULL,
+    'dusk'              INT NOT NULL DEFAULT 20,
+    'dawn'              INT NOT NULL DEFAULT 7,
+    'useNightSkin'      INT NOT NULL DEFAULT 0
 );
 
 QUERY;
@@ -122,14 +125,16 @@ QUERY;
         
         //insert user
         $qry = $db->prepare(
-            'INSERT INTO ddb_user (userLogin, userPassword) VALUES (:login, :password)');
+            'INSERT INTO ddb_user (userLogin, userPassword, userRole) VALUES (:login, :password, "admin")');
         $qry->bindParam(':login', $values["login"], PDO::PARAM_STR);
         $qry->bindParam(':password', $values["hash"], PDO::PARAM_STR);
         $qry->execute();
 
         //insert settings
+        $values['timezone'] = date_default_timezone_get();
         $qry = $db->prepare(
-            'INSERT INTO ddb_settings DEFAULT VALUES');
+            'INSERT INTO ddb_settings (timezone) VALUES (:timezone)');
+        $qry->bindParam(':timezone', $values['timezone'], PDO::PARAM_STR);
         $qry->execute();
         
         //install done: redirect to avoid second execution
@@ -141,7 +146,7 @@ QUERY;
     }
 }
 
-//STEP 2: ask parameters
+//STEP 2: ask settings
 if(!file_exists("database.sqlite") && isset($_GET['step']) && intval($_GET['step']) == 2) {
     $step = 2;
     

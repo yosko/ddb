@@ -6,7 +6,7 @@
         <form id="SecureAccessForm" method="post" action="">
             <fieldset>
                 <label for="password">Mot de passe</label>
-                <input type="password" name="password" id="password">
+                <input type="password" name="password" id="password" autofocus="autofocus">
                 {if="isset($errors.wrongPassword) && $errors.wrongPassword"}<div class="error">Mot de passe incorrect</div>
                 {/if}
                 <input type="submit" name="submitSecureAccess" id="submitSecureAccess" value="Accès sécurisé" />
@@ -20,18 +20,19 @@
             <li><a href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
             <li><a href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
             <li><a href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
+            <li><a href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
         </ul>
 {if="$page=='password'"}
         <h2>Changer mon mot de passe</h2>
         <form id="NewPasswordForm" method="post" action="">
             <fieldset>
                 <label for="password">Nouveau mot de passe</label>
-                <input type="password" name="password" id="password">
+                <input type="password" name="password" id="password" autofocus="autofocus">
                 {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
                 {elseif="!empty($errors)"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
                 <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
-                <img class="inline" src="img/exclamation-button.png" /> Vous serez déconnecté
+                <img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
             </fieldset>
         </form>
 {elseif="$page=='import'"}
@@ -39,7 +40,7 @@
         <form id="import" method="post" action="" enctype="multipart/form-data">
             <fieldset>
                 <label for="csvFile">Fichier CSV à importer</label>
-                <input type="file" name="csvFile" id="csvFile">
+                <input type="file" name="csvFile" id="csvFile" autofocus="autofocus">
                 
                 <div>
                     <input type="checkbox" name="replace" id="replace" value="replace">
@@ -54,7 +55,7 @@
         <form id="import" method="post" action="" enctype="multipart/form-data">
             <fieldset>
                 <div>
-                    <input type="checkbox" name="purgeDreamers" id="purgeDreamers" value="purgeDreamers">
+                    <input type="checkbox" name="purgeDreamers" id="purgeDreamers" value="purgeDreamers" autofocus="autofocus">
                     <label for="purgeDreamers">Supprimer les rêveurs inutilisés</label>
                 </div>
                 <div>Rêveurs inutilisés : {loop="unusedDreamers"}<a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a> {else}aucun{/loop}</div>
@@ -73,7 +74,7 @@
             <fieldset>
             
                 <label for="dreamer">Rêveur</label>
-                <select name="dreamer">
+                <select name="dreamer" autofocus="autofocus">
                     <option value="">-</option>
 {loop="dreamers"}
                     <option value="{$value.dreamerId}">{$value.dreamerName}</option>
@@ -91,7 +92,7 @@
             <fieldset>
             
                 <label for="tag">Rêveur</label>
-                <select name="tag">
+                <select name="tag" autofocus="autofocus">
                     <option value="">-</option>
 {loop="tags"}
                     <option value="{$value.tagId}">{$value.tagName}</option>
@@ -101,6 +102,43 @@
                 <input type="text" autofocus="autofocus" name="newTagName" placeholder="">
                 
                 <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Renommer" />
+            </fieldset>
+        </form>
+{elseif="$page=='settings'"}
+        <h2>Paramètre de DDb</h2>
+        <form id="settings" method="post" action="">
+            <fieldset>
+                <div>
+                    <input type="checkbox" name="useNightSkin" id="useNightSkin" value="useNightSkin" autofocus="autofocus"{if="$settings.useNightSkin==true"} checked{/if}>
+                    <label for="useNightSkin">Utiliser un thème sombre pendant la nuit</label>
+                </div>
+
+                <label for="timezone">Fuseau Horaire par défaut</label>
+                <select name="timezone">
+                {loop="timezones"}
+                    {if="$key=='UTC'"}
+                    <option value="{$key}"{if="$currentTimezone==$key"} selected{/if}>{$key}</option>
+                    {else}
+                    {$continent=$key}
+                    <optgroup label="{$continent}">
+                    {loop="value"}
+                        <option value="{$continent}/{$value}"{if="$currentTimezone==$continent.'/'.$value"} selected{/if}>{$value}</option>
+                    {/loop}
+                    </optgroup>
+                    {/if}
+                {/loop}
+                </select>
+                <span>
+                    <i>Il est <b>{$time}</b> (fuseau actuel : <b>{$currentTimezone}</b>).</i>
+                </span>
+            
+                <label for="date">Heure du crépuscule</label>
+                <input type="text" name="dusk" id="dusk" value="{$settings.dusk}">
+            
+                <label for="date">Heure de l'aube</label>
+                <input type="text" name="dawn" id="dawn" value="{$settings.dawn}">
+                
+                <input type="submit" name="submitSettings" id="submitSettings" value="Enregistrer" />
             </fieldset>
         </form>
 {/if}

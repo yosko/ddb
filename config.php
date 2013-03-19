@@ -28,21 +28,70 @@ if($user['isLoggedIn']) {
 
     $page = 'homeConfig';
     if(isset($_GET['p'])) {
-        if(in_array($_GET['p'], array('password', 'import', 'purge', 'renameDreamer', 'renameTag'))) {
+        if(in_array($_GET['p'], array('password', 'import', 'purge', 'renameDreamer', 'renameTag', 'settings'))) {
             $page = $_GET['p'];
         }
     }
     $tpl->assign( "page", $page );
+
+    //display settings
+    if($page = 'settings') {
+        $groupedTimezones = array();
+        $timezones = DateTimeZone::listIdentifiers();
+        foreach($timezones as $timezone) {
+            $timezone = explode('/', $timezone, 2);
+            if($timezone[0]=='UTC') {
+                $groupedTimezones[$timezone[0]] = $timezone[0];
+            } else {
+                $groupedTimezones[$timezone[0]][] = $timezone[1];
+            }
+        }
+        $time = date('H:m') ;
+        $tpl->assign( "timezones", $groupedTimezones );
+        $tpl->assign( "time", $time );
+        $tpl->assign( "settings", $settings );
+        $tpl->assign( "currentTimezone", date_default_timezone_get() );
+    }
+
+    //save settings
+    if (isset($_POST["submitSettings"])) {
+        $sql = 'UPDATE ddb_settings';
+
+        $values['useNightSkin'] = isset($_POST['useNightSkin']);
+        $values['timezone'] = trim($_POST['timezone']);
+        $values['dusk'] = trim($_POST['dusk']);
+        $values['dawn'] = trim($_POST['dawn']);
+
+        $set['timezone'] = (in_array($values['timezone'], DateTimeZone::listIdentifiers()));
+        $set['dusk+dawn'] = (is_numeric($values['dusk']) && is_numeric($values['dawn'])
+                                && (int)$values['dusk'] >=0 && (int)$values['dusk'] <24
+                                && (int)$values['dawn'] >=0 && (int)$values['dawn'] <24);
+
+        $sql .= ' SET useNightSkin=:useNightSkin';
+        if($set['timezone'])   $sql .= ', timezone=:timezone';
+        if($set['dusk+dawn'])  $sql .= ', dusk=:dusk';
+        if($set['dusk+dawn'])  $sql .= ', dawn=:dawn';
+
+        $updateSettings = $db->prepare( $sql );
+        $updateSettings->bindParam(':useNightSkin', $values['useNightSkin'], PDO::PARAM_INT);
+        if($set['timezone'])   $updateSettings->bindParam(':timezone', $values['timezone'], PDO::PARAM_STR);
+        if($set['dusk+dawn'])  $updateSettings->bindParam(':dusk', $values['dusk'], PDO::PARAM_INT);
+        if($set['dusk+dawn'])  $updateSettings->bindParam(':dawn', $values['dawn'], PDO::PARAM_INT);
+        $updateSettings->execute();
+
+        //to make sure the settings are taken into account
+        header("Location: $_SERVER[REQUEST_URI]");
+    }
     
     //edit DDb parameters
     if (isset($_POST["submitNewPassword"])) {
         $values = array();
         $errors = array();
-        
+
         $values['password'] = trim($_POST['password']);
-        
+
         $errors['password'] = (!isset($_POST['password']) || trim($_POST['password']) == "");
-        
+
         //if login informations are ok
         if(!$errors['password']) {
             //save them

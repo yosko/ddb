@@ -3,5 +3,6 @@ cache/tpl/*
 tpl/img/unused/
 .ssh/
 database.sqlite
+*.csv
 *.sublime-project
 *.sublime-workspace

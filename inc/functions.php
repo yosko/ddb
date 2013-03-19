@@ -191,6 +191,26 @@ function getSettings() {
         "SELECT * FROM ddb_settings LIMIT 1");
     $qry->execute();
     $settings = $qry->fetch(PDO::FETCH_ASSOC);
+
+    date_default_timezone_set($settings['timezone']);
+
+    $time = date('H');
+    $settings['isNightTime'] = (
+        $settings['useNightSkin'] == true
+        && (
+            $settings['dusk'] > $settings['dawn']
+            && (
+                $time >= $settings['dusk']
+                || $time < $settings['dawn']
+            )
+            || $settings['dusk'] < $settings['dawn']
+            && (
+                $time >= $settings['dusk']
+                && $time < $settings['dawn']
+            )
+        )
+    );
+
     return $settings;
 }
 

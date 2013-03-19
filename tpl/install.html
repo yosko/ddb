@@ -21,12 +21,7 @@
         <div class="error">Le répertoire où sera créé la base de données N&apos;est PAS inscriptible.</div>{/if}
         <div class="code">{$serverConfig.dbDirectory}</div>
         
-        <header>Fichier de paramétrage</header>{if="$serverConfig.paramPermissions"}
-        <div class="success">Le fichier où seront stockées les paramètres est inscriptible.</div>{else}
-        <div class="error">Le fichier où seront stockées les paramètres N&apos;est PAS inscriptible.</div>{/if}
-        <div class="code">{$serverConfig.paramFile}</div>
-        
-        <p>{if condition="$serverConfig.phpIsVersionValid && $serverConfig.pdoSqlite && $serverConfig.pdo && $serverConfig.dbPermissions && $serverConfig.paramPermissions"}
+        <p>{if condition="$serverConfig.phpIsVersionValid && $serverConfig.pdoSqlite && $serverConfig.pdo && $serverConfig.dbPermissions"}
             <a href="install.php?step=2">Etape suivante &raquo;</a>{else}
             <span class="disabled">Installation impossible</span>{/if}
         </p>
