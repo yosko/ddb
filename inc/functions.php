@@ -4,7 +4,7 @@
 	Licence: LGPL
 */
 
-define("DEBUG_MODE", true);
+define("DEBUG_MODE", false);
 
 if(DEBUG_MODE === true) {
     error_reporting(E_ALL);
