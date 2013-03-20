@@ -1,47 +1,58 @@
-body {
+body { background-color: #000; color: #aaa; }
+
+a               { color: #638fe8; }
+a:hover         { color: #7aa3f5; }
+a:visited       { color: #8c9dbf; }
+a:visited:hover { color: #a3b1cc; }
+
+h2, b, label, .content header { color: #ccc; }
+
+input, textarea, select, footer { color: #aaa; }
+
+input[type="text"], input[type="password"], input[type="date"], textarea, select {
+    border: 1px solid #666;
+    background: #000;
+}
+
+#login, #password, #date, #characters, #place, #pointofvue, #funfacts, #feelings, #tags {
+    border: 1px solid #666;
     background-color: #000;
-    color: #aaa;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus,
+#login:focus, #password:focus, #date:focus, #characters:focus, #place:focus, #pointofvue:focus, #funfacts:focus, #feelings:focus, #tags:focus {
+    border: 1px solid #888;
 }
 
-a {
-    /*color: #acaaff;*/
-    color: orange;
-}
-
-a:visited {
-    color: #acaa00;
-}
-
-h2, b, label, .content header {
-    color: #eee;
-}
-
-input, textarea, footer {
-    color: #999;
-}
 
 input[type="submit"] {
-    color: #000;
+    color: #fff;
+    background: #638fe8;
+    outline: 1px solid #fff;
+    background: -webkit-linear-gradient(top, #638fe8 0%, #325290 100%);
+    background: -moz-linear-gradient(top, #638fe8 0%, #325290 100%);
+    background: linear-gradient(top, #638fe8 0%, #325290 100%);
+    border-top-color: #638fe8;
+    border-left-color: #638fe8;
+    border-right-color: #325290;
+    border-bottom-color: #325290;
+    /*border-radius: 2px 2px 2px 2px;*/
+}
+input[type=submit]:active {
+    background: #325290;
 }
 
 .content {
-    background-color: #222;
+    background-color: #333;
     box-shadow: 0 0 10px #111; 
 }
 
-input[type="text"], input[type="password"], input[type="date"], textarea {
-    border: 1px solid #444;
-    background: -webkit-gradient(linear, left top, left 15, from(#000000), color-stop(4%, #0a0a0a), to(#000000));
-    background: -moz-linear-gradient(top, #000000, #0a0a0a 1px, #000000 15px);
-}
-
 .tag {
-    background-color: #333;
-    color: orange;
+    background-color: #111;
+    color: #638fe8;
     font-weight: normal;
 }
 
 .tag:hover {
     background-color: #000;
+    color: #7aa3f5;
 }
-

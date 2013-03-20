@@ -131,7 +131,7 @@ label.error {
 #characters { background: url(img/users.png) no-repeat scroll 3px center; }
 #place      { background: url(img/map-pin.png) no-repeat scroll 3px center; }
 #pointofvue { background: url(img/eye.png) no-repeat scroll 3px center; }
-#funfacts   { background: url(img/smiley-lol.png) no-repeat scroll center center; }
+#funfacts   { background: url(img/smiley-lol.png) no-repeat scroll 3px center; }
 #feelings   { background: url(img/heart.png) no-repeat scroll 3px center; }
 #tags       { background: url(img/tag-label.png) no-repeat scroll 3px center; }
 

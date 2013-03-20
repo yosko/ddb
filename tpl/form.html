@@ -18,10 +18,18 @@
                 <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId"}selected="true"{/if}>{$value.dreamerName}</option>
 {/loop}
             </select>
-            <a href="#" title="Ajouter un rêveur" hidden="true"><img src="img/plus-button.png" alt="Nouveau" /></a>
+            <a href="#" title="Ajouter un rêveur" class="inline" id="addDreamer"><img src="img/plus-button.png" alt="Nouveau" /></a>
+            <script>
+                $(function() {
+                    $(".hidden").hide();
+                });
+                $("#addDreamer").click(function () {
+                    $(".hidden").toggle("fast");
+                });
+            </script>
             
-            <label for="newdreamer">Nouveau rêveur</label>
-            <input type="text" name="newdreamer" placeholder="Sélectionnez un rêveur existant ci-dessus ou saisissez en un nouveau ici">
+            <label class="hidden" for="newdreamer">Nouveau rêveur</label>
+            <input class="hidden" type="text" name="newdreamer" placeholder="Sélectionnez un rêveur existant ci-dessus ou saisissez en un nouveau ici">
             
             <label for="date">Date du rêve</label>
             <input type="text" name="date" id="date" value="{if condition="isset($dream)"}{$dream.date}{else}{$today}{/if}" placeholder="jj/mm/aaaa">
