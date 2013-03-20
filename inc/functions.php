@@ -14,6 +14,14 @@ if(DEBUG_MODE === true) {
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 
+function initDDb(&$db, &$settings, &$tpl, &$user) {
+    $db = openDatabase();
+    $settings = getSettings();
+    $tpl = setRainTpl();
+    $tpl->assign( "settings", $settings );
+    $user = logUser($tpl);
+}
+
 function setRainTpl($tplDir = '', $tplCache = '') {
     if(empty($tplDir) || empty($tplCache)) {
         global $settings;

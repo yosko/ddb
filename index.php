@@ -7,11 +7,7 @@
 
 include_once "inc/functions.php";
 
-$db = openDatabase();
-$settings = getSettings();
-$tpl = setRainTpl();
-$tpl->assign( "settings", $settings );
-$user = logUser($tpl);
+initDDb($db, $settings, $tpl, $user);
 
 if($user['isLoggedIn']) {
     $qryLastDreams = $db->prepare(
