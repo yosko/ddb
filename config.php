@@ -9,6 +9,7 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$tpl->assign( "settings", $settings );
 $user = logUser($tpl);
 
 if($user['isLoggedIn']) {
@@ -49,7 +50,6 @@ if($user['isLoggedIn']) {
         $time = date('H:m') ;
         $tpl->assign( "timezones", $groupedTimezones );
         $tpl->assign( "time", $time );
-        $tpl->assign( "settings", $settings );
         $tpl->assign( "currentTimezone", date_default_timezone_get() );
     }
 

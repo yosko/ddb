@@ -2,14 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{$pageTitle}</title>
     <link rel="stylesheet" href="style.css">
+    {if="$settings.useNightSkin==true"}<link rel="stylesheet" href="style-night.css" />{/if}
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
     {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/list.php?feed" title="Flux RSS" />{/if}
     {if="isset($js)"}<script src="js/jquery-1.8.3.min.js"></script>
     <script src="js/jquery-ui-1.9.2.custom.min.js"></script>
     <style>
-        .ui-menu { list-style: none outside none;margin:0;padding:2px;text-align:left;background:#eee;border: 1px solid #aaa;border-radius:3px; }
+        .ui-menu { list-style: none outside none;margin:0;padding:2px;text-align:left;background:#eee;border: 1px solid #aaa;border-radius:3px;
+            max-height: 150px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
         .ui-autocomplete { position: absolute; }
         .ui-menu .ui-menu-item {}
         .ui-menu .ui-menu-item a { display:block;line-height: 1.5;padding:2px; }
@@ -33,8 +40,8 @@
                     }
                 })
                 .autocomplete({
-                    minLength: 1,
-                    position: { my : "left bottom", at: "left top" },
+                    minLength: 3,
+                    position: { my : "left top", at: "left bottom" },
                     source: function( request, response ) {
                         // delegate back to autocomplete, but extract the last term
                         response( $.ui.autocomplete.filter(
@@ -60,21 +67,21 @@
     </script>{/if}
 </head>
 <body>
-    <h1><a href="index.php"><img src="img/ddb-logo.png" /></a></h1>
+    <h1><a href="index.php" class="logo"><img src="img/ddb-logo.png" /></a></h1>
     <div class="content">
     {if condition="!isset($noLogout) || $noLogout == false"}
-        <span class="right">
+        <span class="right menu-icon">
         {if condition="isset($csvLink)"}
-            <a href="{$csvLink}" title="Télécharger au format CSV les rêves sélectionnés"><img src="img/navigation-270-button.png" alt="Télécharger" /></a>
+            <a href="{$csvLink}" class="menu-download" title="Télécharger au format CSV les rêves sélectionnés"><img src="img/navigation-270-button.png" alt="Télécharger" /></a>
         {/if}
         {if condition="isset($dream)"}
-            <a href="form.php?id={$dream.id}" title="Modifier le rêve"><img src="img/pencil-button.png" alt="Modification" /></a>
-            <a href="delete.php?id={$dream.id}" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
+            <a href="form.php?id={$dream.id}" class="menu-edit" title="Modifier le rêve"><img src="img/pencil-button.png" alt="Modification" /></a>
+            <a href="delete.php?id={$dream.id}" class="menu-delete" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
         {/if}
-            <a href="search.php" title="Effectuer une recherche"><img src="img/magnifier.png" alt="Recherche" /></a>
-            <a href="list.php?feed" title="S&apos;abonner au flux RSS"><img src="img/feed.png" alt="Flux RSS" /></a>
-            <a href="form.php" title="Ajouter un rêve"><img src="img/plus-button.png" alt="Nouveau" /></a>
-            <a href="config.php" title="Configurer DDb"><img src="img/gear.png" alt="Configuration" /></a>
-            <a href="index.php?logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>
+            <a href="search.php" class="menu-magnifier" title="Effectuer une recherche"><img src="img/magnifier.png" alt="Recherche" /></a>
+            <a href="list.php?feed" class="menu-feed" title="S&apos;abonner au flux RSS"><img src="img/feed.png" alt="Flux RSS" /></a>
+            <a href="form.php" class="menu-add" title="Ajouter un rêve"><img src="img/plus-button.png" alt="Nouveau" /></a>
+            <a href="config.php" class="menu-conf" title="Configurer DDb"><img src="img/gear.png" alt="Configuration" /></a>
+            <a href="index.php?logout" class="menu-logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>
         </span>
     {/if}

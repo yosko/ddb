@@ -9,6 +9,7 @@ include_once "inc/functions.php";
 $db = openDatabase();
 $settings = getSettings();
 $tpl = setRainTpl();
+$tpl->assign( "settings", $settings );
 $user = logUser($tpl);
 
 if(isset($_GET['feed']) || $user['isLoggedIn']) {
