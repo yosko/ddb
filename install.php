@@ -59,6 +59,7 @@ DROP TABLE IF EXISTS ddb_tag;
 DROP TABLE IF EXISTS ddb_dream;
 DROP TABLE IF EXISTS ddb_dream_tag;
 DROP TABLE IF EXISTS ddb_user;
+DROP TABLE IF EXISTS ddb_user_dreamer;
 DROP TABLE IF EXISTS ddb_settings;
 
 CREATE TABLE IF NOT EXISTS ddb_dreamer (
@@ -96,6 +97,11 @@ CREATE TABLE IF NOT EXISTS ddb_user (
     'userLogin'         VARCHAR(256) NOT NULL,
     'userPassword'      VARCHAR(256) NOT NULL,
     'userRole'          VARCHAR(50) NOT NULL DEFAULT 'user'
+);
+
+CREATE TABLE IF NOT EXISTS ddb_dream_tag (
+    'userId_FK'         INT NOT NULL,
+    'dreamerId_FK'      INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ddb_settings (
