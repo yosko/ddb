@@ -10,7 +10,7 @@
         <p><a href="list.php">Tous les rêves</a></p>
         <header>Derniers tags ajoutés</header>
         <div>
-            {loop="lastTags"}<b><a class="tag" href="list.php?tag={$value.tagId}" title="utilisé {$value.nbUse} fois"><img src="{$settings.tplDir}img/{if="isset($value.tagIcon)"}{$value.tagIcon}{else}tag-label.png{/if}" /> {if condition="$value.tagName == ''"}# Sans nom #{else}{$value.tagName}{/if}</a></b>{/loop}
+            {loop="lastTags"}<b><a class="tag" href="list.php?tag={$value.tagId}" title="utilisé {$value.nbUse} fois"><img src="{$settings.tplDir}img/{if="$settings.useTagIcon && isset($value.tagIcon)"}{$value.tagIcon}{else}tag-label.png{/if}" /> {if condition="$value.tagName == ''"}# Sans nom #{else}{$value.tagName}{/if}</a></b>{/loop}
         </div>
         <p><a href="taglist.php">Tous les tags</a></p>
         <header>Statistiques</header>
