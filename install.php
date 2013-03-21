@@ -68,7 +68,8 @@ CREATE TABLE IF NOT EXISTS ddb_dreamer (
 
 CREATE TABLE IF NOT EXISTS ddb_tag (
 	'tagId'				INTEGER PRIMARY KEY AUTOINCREMENT,
-	'tagName'			VARCHAR(256) NOT NULL
+    'tagName'           VARCHAR(256) NOT NULL,
+    'tagIcon'           VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS ddb_dream (
@@ -106,8 +107,13 @@ CREATE TABLE IF NOT EXISTS ddb_settings (
     'timezone'          VARCHAR(256) NOT NULL,
     'dusk'              INT NOT NULL DEFAULT 20,
     'dawn'              INT NOT NULL DEFAULT 7,
-    'useNightSkin'      INT NOT NULL DEFAULT 0
+    'useNightSkin'      INT NOT NULL DEFAULT 0,
+    'useTagIcon'        INT NOT NULL DEFAULT 1
 );
+
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('adulte', 'notification-counter-18.png');
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('cauchemar', 'skull.png');
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('lucide', 'brain.png');
 
 QUERY;
 

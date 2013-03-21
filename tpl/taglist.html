@@ -3,7 +3,7 @@
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Tags</p>
         <h2>Tous les tags</h2>
         <div>
-            {loop="tags"}<b><a class="tag" href="list.php?tag={$value.tagId}" title="utilisé {$value.nbUse} fois"><img src="img/tag-label.png" /> {if condition="$value.tagName == ''"}# Sans nom #{else}{$value.tagName}{/if}</a></b>{/loop}
+            {loop="tags"}<b><a class="tag" href="list.php?tag={$value.tagId}" title="utilisé {$value.nbUse} fois"><img src="{$settings.tplDir}img/{if="isset($value.tagIcon)"}{$value.tagIcon}{else}tag-label.png{/if}" /> {if condition="$value.tagName == ''"}# Sans nom #{else}{$value.tagName}{/if}</a></b>{/loop}
         </div>
         </ul>
 {include="footer"}

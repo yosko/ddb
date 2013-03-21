@@ -108,6 +108,7 @@
         <h2>Paramètre de DDb</h2>
         <form id="settings" method="post" action="">
             <fieldset>
+                <hr>
                 <div>
                     <input type="checkbox" name="useNightSkin" id="useNightSkin" value="useNightSkin" autofocus="autofocus"{if="$settings.useNightSkin==true"} checked{/if}>
                     <label for="useNightSkin">Utiliser un thème sombre pendant la nuit</label>
@@ -137,6 +138,11 @@
             
                 <label for="date">Heure de l'aube</label>
                 <input type="text" name="dawn" id="dawn" value="{$settings.dawn}">
+                <hr>
+                <div>
+                    <input type="checkbox" name="useTagIcon" id="useTagIcon" value="useTagIcon"{if="$settings.useTagIcon==true"} checked{/if}>
+                    <label for="useTagIcon">Afficher les icones des tags (pour ceux qui en comportent)</label>
+                </div>
                 
                 <input type="submit" name="submitSettings" id="submitSettings" value="Enregistrer" />
             </fieldset>

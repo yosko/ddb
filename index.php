@@ -20,7 +20,7 @@ if($user['isLoggedIn']) {
     //$lastDreams = array_reverse($qryLastDreams->fetchAll());
     
     $qryLastTags = $db->prepare(
-        "SELECT t.tagId, t.tagName, count(dt.dreamId_FK) as nbUse FROM ddb_tag t LEFT JOIN ddb_dream_tag dt on dt.tagId_FK = t.tagId GROUP BY t.tagId, t.tagName ORDER BY tagId DESC LIMIT 10");
+        "SELECT t.tagId, t.tagName, t.tagIcon, count(dt.dreamId_FK) as nbUse FROM ddb_tag t LEFT JOIN ddb_dream_tag dt on dt.tagId_FK = t.tagId GROUP BY t.tagId, t.tagName ORDER BY tagId DESC LIMIT 10");
     $qryLastTags->execute();
     $lastTags = $qryLastTags->fetchAll();
     //$lastTags = array_reverse($qryLastTags->fetchAll());

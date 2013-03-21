@@ -101,7 +101,6 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
         .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation"
-        .", Group_Concat(t.tagName,'|') as tags"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
@@ -110,6 +109,14 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
         ." GROUP BY dr.dreamerName, d.dreamId"
         .$orderBy
         .$limit;
+
+    //add tags with icons
+    $sql = "SELECT qry.*, Group_Concat(ti.tagIcon || '§' || ti.tagName,'|') as tags FROM ("
+        .$sql
+        .") qry"
+        ." LEFT JOIN ddb_dream_tag dti on qry.dreamId = dti.dreamId_FK"
+        ." LEFT JOIN ddb_tag ti on dti.tagId_FK = ti.tagId"
+        ." GROUP BY qry.dreamerName, qry.dreamId";
     
     $qryDreams = $db->prepare($sql);
     
@@ -172,8 +179,21 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
         }
         
     } else {
-        $dreams = $qryDreams->fetchAll();
-        
+        $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
+
+        //turn tags list to array
+        foreach($dreams as $key => $value) {
+            $dreams[$key]['tags'] = explode('|', $dreams[$key]['tags']);
+            foreach($dreams[$key]['tags'] as $subKey => $subValue) {
+                if(!empty($subValue)) {
+                    $tag = explode('§', $subValue, 2);
+                    $dreams[$key]['tags'][$subKey] = array('tagIcon' => $tag[0], 'tagName' => $tag[1]);
+                } else {
+                    unset($dreams[$key]['tags'][$subKey]);
+                }
+            }
+        }
+
         $params = array_merge($_GET, array("csv" => "true"));
         $csvLink = $_SERVER["PHP_SELF"] . "?" . http_build_query($params);
         

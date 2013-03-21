@@ -19,7 +19,7 @@
         {if condition="isset($criteria.tag)"} tagués "{$criteria.tag}"{/if}
         {if condition="isset($criteria.text)"} contenant "{$criteria.text}"{/if}</h2>
         <ul>
-            {loop="dreams"}<li><a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>,
+            {loop="dreams"}<li>{loop="value.tags"}<img class="inline" src="img/{$value.tagIcon}" title="{$value.tagName}">{/loop} <a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>,
             par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}</li>{else}Aucun rêve trouvé{/loop}
         </ul>
 {include="footer"}

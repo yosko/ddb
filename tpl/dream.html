@@ -4,9 +4,9 @@
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêve n°{$dream.id}</p>
         <h2>{if condition="$dream.title == ''"}{if condition="$dream.text == ''"}# Sans titre #{else}{$dream.text|substr:0,40}...{/if}{else}{$dream.title}{/if}</h2>
         <p>
-            <span class="right">{loop="tagArray"}<a class="tag" href="list.php?tag={$value}"><img class="inline" src="img/tag-label.png" /> {$key}</a>{/loop}</span>
+            <span class="right">{loop="tagArray"}<a class="tag" href="list.php?tag={$value.id}"><img class="inline" src="{$settings.tplDir}img/{if="isset($value.icon)"}{$value.icon}{else}tag-label.png{/if}" /> {$key}</a>{/loop}</span>
         </p>
-        <ul class="no-bullet">
+        <ul class="no-bullet clear">
             <li>Rêvé par <b><a class="tag" href="list.php?dreamer={$dream.dreamerId}"><img class="inline" src="img/user.png">{$dream.dreamerName}</a></b>{if="$dream.date != ''"} le <img class="inline" src="img/calendar-day.png"> {$dream.date}{/if}</li>
             <li><b><img class="inline" src="img/users.png" /> Personnages :</b> {$dream.characters}</li>
             <li><b><img class="inline" src="img/map-pin.png" /> Lieux :</b> {$dream.place}</li>

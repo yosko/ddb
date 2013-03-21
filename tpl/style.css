@@ -172,6 +172,7 @@ label.error {
 
 .left { float: left; }
 .right { float: right; }
+.clear { clear: both; }
 
 .required { color: red; font-weight: bold; }
 .recommanded { color: yellow; font-weight: bold; }

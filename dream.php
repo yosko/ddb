@@ -44,16 +44,15 @@ if($user['isLoggedIn']) {
         //get dream tags
         $dreamId = intval($dream['id']);
         $qry = $db->prepare(
-            "SELECT t.tagId, t.tagName FROM ddb_dream_tag dt INNER JOIN ddb_tag t on dt.tagId_FK = t.tagId"
+            "SELECT t.tagId, t.tagName, t.tagIcon FROM ddb_dream_tag dt INNER JOIN ddb_tag t on dt.tagId_FK = t.tagId"
             ." WHERE dt.dreamId_FK = :dreamId ORDER BY t.tagName");
         $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
         $qry->execute();
         
         $tagArray = array();
         while ( $row = $qry->fetch(PDO::FETCH_ASSOC) ) {
-            $tagArray[$row['tagName']] = $row['tagId'];
+            $tagArray[$row['tagName']] = array('id' => $row['tagId'], 'icon' => $row['tagIcon']);
         }
-        //$dream['tagList'] = implode(", ", $tagArray);
         
         $tpl->assign( "dream", $dream );
         $tpl->assign( "tagArray", $tagArray );

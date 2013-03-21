@@ -57,6 +57,7 @@ if($user['isLoggedIn']) {
         $values['timezone'] = trim($_POST['timezone']);
         $values['dusk'] = trim($_POST['dusk']);
         $values['dawn'] = trim($_POST['dawn']);
+        $values['useTagIcon'] = isset($_POST['useTagIcon']);
 
         $set['timezone'] = (in_array($values['timezone'], DateTimeZone::listIdentifiers()));
         $set['dusk+dawn'] = (is_numeric($values['dusk']) && is_numeric($values['dawn'])
@@ -67,12 +68,14 @@ if($user['isLoggedIn']) {
         if($set['timezone'])   $sql .= ', timezone=:timezone';
         if($set['dusk+dawn'])  $sql .= ', dusk=:dusk';
         if($set['dusk+dawn'])  $sql .= ', dawn=:dawn';
+        $sql .= ', useTagIcon=:useTagIcon';
 
         $updateSettings = $db->prepare( $sql );
         $updateSettings->bindParam(':useNightSkin', $values['useNightSkin'], PDO::PARAM_INT);
         if($set['timezone'])   $updateSettings->bindParam(':timezone', $values['timezone'], PDO::PARAM_STR);
         if($set['dusk+dawn'])  $updateSettings->bindParam(':dusk', $values['dusk'], PDO::PARAM_INT);
         if($set['dusk+dawn'])  $updateSettings->bindParam(':dawn', $values['dawn'], PDO::PARAM_INT);
+        $updateSettings->bindParam(':useTagIcon', $values['useTagIcon'], PDO::PARAM_INT);
         $updateSettings->execute();
 
         //to make sure the settings are taken into account
