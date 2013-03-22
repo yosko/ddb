@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS ddb_user (
     'userRole'          VARCHAR(50) NOT NULL DEFAULT 'user'
 );
 
-CREATE TABLE IF NOT EXISTS ddb_dream_tag (
+CREATE TABLE IF NOT EXISTS ddb_user_dreamer (
     'userId_FK'         INT NOT NULL,
     'dreamerId_FK'      INT NOT NULL
 );

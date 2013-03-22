@@ -166,7 +166,12 @@
                     <input type="checkbox" name="isAdmin" id="isAdmin" value="isAdmin"{if="$editUser.userRole=='admin'"} checked{/if}{if="$user.id==$editUser.userId"} disabled{/if}>
                     <label for="isAdmin">Administrateur</label>
                 </div>
-                <div>Ici, bientôt, la sélection des rêveurs attribués.</div>
+                <br>
+                <h3>Rêveurs accessibles pour {$editUser.userLogin}</h3>
+                <ul class="no-bullet">{loop="dreamers"}
+                    <li><input type="checkbox" name="dreamer-{$value.dreamerId}" id="dreamer-{$value.dreamerId}" value="dreamer-{$value.dreamerId}"{if="$value.linked || $editUser.userRole=='admin'"} checked{/if}{if="$editUser.userRole=='admin'"} disabled{/if}>
+                    <label for="dreamer-{$value.dreamerId}">{$value.dreamerName}</label></li>{/loop}
+                </ul>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
                 <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
                 {if="$user.id==$editUser.userId"}<img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.

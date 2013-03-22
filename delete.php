@@ -29,7 +29,7 @@ if($user['isLoggedIn']) {
         //get dream informations
         $qryDream = $db->prepare(
             "SELECT a.dreamerName, strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle"
-            ." FROM ddb_dream d INNER JOIN ddb_dreamer a on d.dreamerId_FK = a.dreamerId"
+            ." FROM ddb_dream d LEFT JOIN ddb_dreamer a on d.dreamerId_FK = a.dreamerId"
             ." WHERE dreamId = :dreamId");
         $qryDream->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
         $qryDream->execute();

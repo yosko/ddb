@@ -408,6 +408,12 @@ if($user['isLoggedIn']) {
                     //current user must remain admin
                     $values['role'] = (isset($_POST['isAdmin']) || ($user['id'] == (int)$_GET['id'])) ? 'admin' : 'user';
                     $values['id'] = $_GET['id'];
+                    $values['dreamers'] = array();
+                    foreach($_POST as $key => $value) {
+                        if(substr($key, 0, 8) == 'dreamer-' && is_numeric(substr($key, 8))) {
+                            $values['dreamers'][] = (int)substr($key, 8);
+                        }
+                    }
 
                     $errors['login'] = (!isset($_POST['login']) || trim($_POST['login']) == '');
                     
@@ -430,10 +436,27 @@ if($user['isLoggedIn']) {
                             $qry->bindParam(':id', $values['id'], PDO::PARAM_INT);
                             $qry->execute();
 
+                            //remove old links between the user and existing dreamers
+                            $qry = $db->prepare( 'DELETE FROM ddb_user_dreamer WHERE userId_FK=:userId' );
+                            $qry->bindParam(':userId', $values['id'], PDO::PARAM_INT);
+                            $qry->execute();
+                            
+                            //recreate thoses links (admins don't need it)
+                            if($values['role'] != 'admin') {
+                                foreach($values['dreamers'] as $dreamerId) {
+                                    $qry = $db->prepare( 'INSERT INTO ddb_user_dreamer (userId_FK, dreamerId_FK) VALUES (:userId, :dreamerId)' );
+                                    $qry->bindParam(':userId', $values['id'], PDO::PARAM_INT);
+                                    $qry->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
+                                    $qry->execute();
+                                }
+                            }
+
                             //if the current user updated his/her own profile
                             if($user['id'] == $_GET['id']) {
                                 //logout to update session context
                                 header("Location: index.php?logout");
+                            } else {
+                                // header("Location: config.php?p=users");
                             }
                         } else {
                             $errors['app'] = true;
@@ -445,7 +468,7 @@ if($user['isLoggedIn']) {
                     $tpl->assign( "values", $values );
                 }
 
-                //update user
+                //delete user
                 if(isset($_POST['submitDeleteUser'])) {
                     //TODO
                 }
@@ -462,9 +485,20 @@ if($user['isLoggedIn']) {
                 $row = $qryUser->fetch(PDO::FETCH_BOUND);
             }
 
+            //show and edit a specific user
             if(isset($editUser) && !empty($editUser)) {
-                //show and edit a specific user
+                //list all dreamers and check those linked to the selected user
+                $qryDreamers = $db->prepare(
+                    'SELECT dr.dreamerId, dr.dreamerName, IFNULL(ud.userId_FK, 0) as linked'
+                    .' FROM ddb_dreamer dr'
+                    .' LEFT JOIN ddb_user_dreamer ud ON ud.dreamerId_FK = dr.dreamerId'
+                    .' ORDER BY dr.dreamerName ASC'
+                );
+                $qryDreamers->execute();
+                $dreamers = $qryDreamers->fetchAll(PDO::FETCH_ASSOC);
+
                 $tpl->assign( "editUser", $editUser );
+                $tpl->assign( "dreamers", $dreamers );
             } else {
                 //list all users
                 $qryUsers = $db->prepare(

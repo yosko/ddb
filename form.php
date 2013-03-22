@@ -21,13 +21,15 @@ if($user['isLoggedIn']) {
             $qry->execute();
             
             $dreamerId = $db->lastInsertId();
-            /*
-            $qry = $db->prepare(
-                "SELECT dreamerId FROM ddb_dreamer WHERE dreamerName = :name");
-            $qry->bindParam(':name', $_POST["newdreamer"], PDO::PARAM_STR);
-            $qry->execute();
-            $dreamerId = $qry->fetchColumn();
-            */
+
+            //link the newly created to the current user if he/she is not admin
+            if($user['role'] != 'admin') {
+                $qry = $db->prepare(
+                    'INSERT INTO ddb_user_dreamer (dreamerId_FK, userId_FK) VALUES (:dreamerId, :userId)');
+                $qry->bindParam(':dreamerId', $dreamerId, PDO::PARAM_STR);
+                $qry->bindParam(':userId', $user['id'], PDO::PARAM_STR);
+                $qry->execute();
+            }
         } else {
             $dreamerId = intval($_POST["dreamer"]);
         }
@@ -173,14 +175,21 @@ if($user['isLoggedIn']) {
     } else {
     }
     
-    //feed the dreamer list with existing dreamers
-    $qry = $db->prepare(
-        "SELECT * FROM ddb_dreamer ORDER BY dreamerName ASC");
-    $qry->execute();
-    
-    while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
-        $dreamers[] = $row;
+    //feed the dreamer accessible dreamers for the current user
+    if($user['role'] == 'admin') {
+        $qry = $db->prepare('SELECT dr.dreamerId, dr.dreamerName'
+            .' FROM ddb_dreamer dr'
+            .' ORDER BY dr.dreamerName ASC');
+    } else {
+        $qry = $db->prepare('SELECT dr.dreamerId, dr.dreamerName'
+            .' FROM ddb_dreamer dr'
+            .' INNER JOIN ddb_user_dreamer ud ON ud.dreamerId_FK = dr.dreamerId'
+            .' WHERE ud.userId_FK = :userId'
+            .' ORDER BY dr.dreamerName ASC');
+        $qry->bindParam(':userId', $user['id'], PDO::PARAM_INT);
     }
+    $qry->execute();
+    $dreamers = $qry->fetchAll(PDO::FETCH_ASSOC);
     
     //feed the tag list with existing tags
     $qry = $db->prepare(
