@@ -16,12 +16,14 @@
         <h2>Configuration</h2>
         <ul>
             <li><a href="?p=password"><img class="inline" src="img/key.png" /> Changer mon mot de passe</a></li>
+            {if="$user.role == 'admin'"}
             <li><a href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
             <li><a href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
             <li><a href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
             <li><a href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
             <li><a href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
             <li><a href="?p=users"><img class="inline" src="img/users.png"> Gérer les utilisateurs</a></li>
+            {/if}
         </ul>
 {if="$page=='password'"}
         <h2>Changer mon mot de passe</h2>
@@ -167,7 +169,7 @@
                 <div>Ici, bientôt, la sélection des rêveurs attribués.</div>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
                 <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
-                {if="$user.id==$editUser.userId"}<div class="warning">Vous serez déconnecté.</div>
+                {if="$user.id==$editUser.userId"}<img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
                 {/if}{if="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
             </fieldset>

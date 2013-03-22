@@ -23,7 +23,10 @@ if($user['isLoggedIn']) {
     if($user['secure'] === true) {
         $page = 'homeConfig';
         if(isset($_GET['p'])) {
-            if(in_array($_GET['p'], array('password', 'import', 'purge', 'renameDreamer', 'renameTag', 'settings', 'users'))) {
+            if(
+                $user['role'] == 'admin' && in_array($_GET['p'], array('import', 'purge', 'renameDreamer', 'renameTag', 'settings', 'users'))
+                || in_array($_GET['p'], array('password'))
+            ) {
                 $page = $_GET['p'];
             }
         }
