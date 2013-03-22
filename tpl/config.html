@@ -30,7 +30,7 @@
                 <label for="password">Nouveau mot de passe</label>
                 <input type="password" name="password" id="password" autofocus="autofocus">
                 {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
-                {elseif="!empty($errors)"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
+                {elseif="isset($errors.app) && $errors.app"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
                 <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
                 <img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
@@ -155,18 +155,21 @@
             <fieldset>
                 <label for="login">Nouvel identifiant</label>
                 <input type="text" name="login" id="login" value="{$editUser.userLogin}" autofocus="autofocus">
-
+                {if="isset($errors.login) && $errors.login"}<div class="error">Identifiant obligatoire</div>
+                {/if}
                 <label for="password">Nouveau mot de passe</label>
                 <input type="password" name="password" id="password" placeholder="Laisser vide pour conserver l'actuel">
-                {if="isset($errors.wrongPassword) && $errors.wrongPassword"}<div class="error">Mot de passe incorrect</div>
-                {/if}
+
                 <div>
-                    <input type="checkbox" name="isAdmin" id="isAdmin" value="isAdmin"{if="$editUser.userRole='admin'"} checked{/if}>
+                    <input type="checkbox" name="isAdmin" id="isAdmin" value="isAdmin"{if="$editUser.userRole=='admin'"} checked{/if}{if="$user.id==$editUser.userId"} disabled{/if}>
                     <label for="isAdmin">Administrateur</label>
                 </div>
                 <div>Ici, bientôt, la sélection des rêveurs attribués.</div>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
-                <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer" />
+                <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
+                {if="$user.id==$editUser.userId"}<div class="warning">Vous serez déconnecté.</div>
+                {/if}{if="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
+                {/if}
             </fieldset>
         </form>
 {else}
@@ -180,16 +183,19 @@
             <fieldset>
                 <label for="login">Identifiant</label>
                 <input type="text" name="login" id="login" autofocus="autofocus">
-
+                {if="isset($errors.login) && $errors.login"}<div class="error">Identifiant obligatoire</div>
+                {/if}
                 <label for="password">Mot de passe</label>
                 <input type="password" name="password" id="password">
-                {if="isset($errors.wrongPassword) && $errors.wrongPassword"}<div class="error">Mot de passe incorrect</div>
+                {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
                 {/if}
                 <div>
                     <input type="checkbox" name="isAdmin" id="isAdmin" value="isAdmin">
                     <label for="isAdmin">Administrateur</label>
                 </div>
                 <input type="submit" name="submitNewUser" id="submitNewUser" value="Créer" />
+                {if="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
+                {/if}
             </fieldset>
         </form>
 {/if}

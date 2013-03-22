@@ -172,7 +172,7 @@ function getUser($login) {
     global $db;
 
     $qry = $db->prepare(
-        "SELECT userLogin as login, userPassword as password FROM ddb_user where userLogin = :login LIMIT 1");
+        "SELECT userId as id, userLogin as login, userPassword as password FROM ddb_user where userLogin = :login LIMIT 1");
     $qry->bindParam(':login', $login, PDO::PARAM_STR);
     $qry->execute();
     $user = $qry->fetch(PDO::FETCH_ASSOC);

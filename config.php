@@ -59,11 +59,9 @@ if($user['isLoggedIn']) {
                     }
                 }
 
-                if(!empty($errors)) {
-                    //keep values and show errors
-                    $tpl->assign( "errors", $errors );
-                    $tpl->assign( "values", $values );
-                }
+                //keep values and show errors
+                $tpl->assign( "errors", $errors );
+                $tpl->assign( "values", $values );
             }
 
         } elseif($page == 'import') {
@@ -352,32 +350,6 @@ if($user['isLoggedIn']) {
 
         //display user settings
         } elseif($page == 'users') {
-            if(isset($_GET['id']) && is_numeric($_GET['id'])) {
-                $dream = array();
-                $id = trim($_GET['id']);
-
-                $qryUser = $db->prepare("SELECT userId, userLogin, userRole FROM ddb_user WHERE userId=:userId LIMIT 1");
-                $qryUser->bindParam(':userId', $id, PDO::PARAM_INT);
-                $qryUser->execute();
-                $qryUser->bindColumn('userId', $editUser['userId']);
-                $qryUser->bindColumn('userLogin', $editUser['userLogin']);
-                $qryUser->bindColumn('userRole', $editUser['userRole']);
-                $row = $qryUser->fetch(PDO::FETCH_BOUND);
-
-            }
-
-            if(isset($editUser) && !empty($editUser)) {
-                //show and edit a specific user
-                $tpl->assign( "editUser", $editUser );
-            } else {
-                //list all users
-                $qryUsers = $db->prepare(
-                    "SELECT u.userId, u.userLogin, u.userRole FROM ddb_user u"
-                );
-                $qryUsers->execute();
-                $users = $qryUsers->fetchAll(PDO::FETCH_ASSOC);
-                $tpl->assign( "users", $users );
-            }
 
             //create new user
             if(isset($_POST['submitNewUser'])) {
@@ -391,7 +363,7 @@ if($user['isLoggedIn']) {
                 $errors['login'] = (!isset($_POST['login']) || trim($_POST['login']) == '');
                 $errors['password'] = (!isset($_POST['password']) || trim($_POST['password']) == '');
 
-                if(empty($errors)) {
+                if(!$errors['login'] && !$errors['password']) {
                     $hash = YosLoginTools::hashPassword($values['password']);
 
                     if($hash !== false) {
@@ -414,11 +386,90 @@ if($user['isLoggedIn']) {
                     }
                 }
 
-                if(!empty($errors)) {
+                //keep values and show errors
+                $tpl->assign( "errors", $errors );
+                $tpl->assign( "values", $values );
+            }
+
+            //display or process 'edit user' form
+            if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+
+                //update user
+                if(isset($_POST['submitEditUser'])) {
+                    $values = array();
+                    $errors = array();
+
+                    $values['login'] = trim($_POST['login']);
+                    $values['password'] = trim($_POST['password']);
+                    $values['hash'] = false;
+                    //current user must remain admin
+                    $values['role'] = (isset($_POST['isAdmin']) || ($user['id'] == (int)$_GET['id'])) ? 'admin' : 'user';
+                    $values['id'] = $_GET['id'];
+
+                    $errors['login'] = (!isset($_POST['login']) || trim($_POST['login']) == '');
+                    
+                    if(!$errors['login']) {
+                        $sql = 'UPDATE ddb_user SET userLogin=:login, userRole=:role';
+                        //only update password if needed
+                        if(!empty($values['password'])) {
+                            $values['hash'] = YosLoginTools::hashPassword($values['password']);
+                            $sql .= ', userPassword=:hash';
+                        }
+                        $sql .= ' WHERE userId = :id';
+
+                        //if there is no need to update the password or if it is ready to be updated
+                        if(empty($values['password']) || $values['hash'] !== false) {
+                            $qry = $db->prepare( $sql );
+                            $qry->bindParam(':login', $values['login'], PDO::PARAM_STR);
+                            $qry->bindParam(':role', $values['role'], PDO::PARAM_STR);
+                            if(!empty($values['hash']))
+                                $qry->bindParam(':hash', $values['hash'], PDO::PARAM_STR);
+                            $qry->bindParam(':id', $values['id'], PDO::PARAM_INT);
+                            $qry->execute();
+
+                            //if the current user updated his/her own profile
+                            if($user['id'] == $_GET['id']) {
+                                //logout to update session context
+                                header("Location: index.php?logout");
+                            }
+                        } else {
+                            $errors['app'] = true;
+                        }
+                    }
+
                     //keep values and show errors
                     $tpl->assign( "errors", $errors );
                     $tpl->assign( "values", $values );
                 }
+
+                //update user
+                if(isset($_POST['submitDeleteUser'])) {
+                    //TODO
+                }
+
+                $dream = array();
+                $id = trim($_GET['id']);
+
+                $qryUser = $db->prepare("SELECT userId, userLogin, userRole FROM ddb_user WHERE userId=:userId LIMIT 1");
+                $qryUser->bindParam(':userId', $id, PDO::PARAM_INT);
+                $qryUser->execute();
+                $qryUser->bindColumn('userId', $editUser['userId']);
+                $qryUser->bindColumn('userLogin', $editUser['userLogin']);
+                $qryUser->bindColumn('userRole', $editUser['userRole']);
+                $row = $qryUser->fetch(PDO::FETCH_BOUND);
+            }
+
+            if(isset($editUser) && !empty($editUser)) {
+                //show and edit a specific user
+                $tpl->assign( "editUser", $editUser );
+            } else {
+                //list all users
+                $qryUsers = $db->prepare(
+                    "SELECT u.userId, u.userLogin, u.userRole FROM ddb_user u ORDER BY u.userRole, u.userLogin"
+                );
+                $qryUsers->execute();
+                $users = $qryUsers->fetchAll(PDO::FETCH_ASSOC);
+                $tpl->assign( "users", $users );
             }
         }
     }
