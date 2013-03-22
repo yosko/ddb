@@ -149,9 +149,15 @@ function logUser($tpl) {
     if(isset($_GET['logout'])) {
         $logger->logOut();
     } elseif(isset($_POST['submitLogin']) && isset($_POST['login']) && isset($_POST['password'])) {
-        $user = $logger->logIn($_POST['login'], $_POST['password'], isset($_POST['remember']));
+        $user = $logger->logIn(
+            htmlspecialchars(trim($_POST['login'])),
+            htmlspecialchars(trim($_POST['password'])),
+            isset($_POST['remember'])
+        );
     } elseif(isset($_POST['submitSecureAccess']) && isset($_POST['password'])) {
-        $user = $logger->authUser($_POST['password']);
+        $user = $logger->authUser(
+            htmlspecialchars(trim($_POST['password']))
+        );
     } else {
         $user = $logger->authUser();
     }

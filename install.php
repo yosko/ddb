@@ -31,15 +31,15 @@ if(file_exists("database.sqlite")) {
     $values = array();
     $errors = array();
     
-    $values["login"] = trim($_POST['login']);
-    $values["password"] = trim($_POST['password']);
-    $values["firstDreamer"] = trim($_POST['firstDreamer']);
-    $values["hash"] = YosLoginTools::hashPassword($values["password"]);
+    $values['login'] = htmlspecialchars(trim($_POST['login']));
+    $values['password'] = htmlspecialchars(trim($_POST['password']));
+    $values['firstDreamer'] = htmlspecialchars(trim($_POST['firstDreamer']));
+    $values['hash'] = YosLoginTools::hashPassword($values['password']);
     
-    $errors["login"] = (!isset($_POST['login']) || trim($_POST['login']) == "");
-    $errors["password"] = (!isset($_POST['password']) || trim($_POST['password']) == "");
-    $errors["firstDreamer"] = (!isset($_POST['firstDreamer']) || trim($_POST['firstDreamer']) == "");
-    $errors["hash"] = (strlen($values["hash"]) < 60);
+    $errors['login'] = (!isset($_POST['login']) || trim($_POST['login']) == "");
+    $errors['password'] = (!isset($_POST['password']) || trim($_POST['password']) == "");
+    $errors['firstDreamer'] = (!isset($_POST['firstDreamer']) || trim($_POST['firstDreamer']) == "");
+    $errors['hash'] = (strlen($values["hash"]) < 60);
 
     
     if(!$errors["login"] && !$errors["password"] && !$errors["firstDreamer"] && !$errors["hash"]) {

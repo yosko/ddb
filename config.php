@@ -37,7 +37,7 @@ if($user['isLoggedIn']) {
                 $values = array();
                 $errors = array();
 
-                $values['password'] = trim($_POST['password']);
+                $values['password'] = htmlspecialchars(trim($_POST['password']));
 
                 $errors['password'] = (!isset($_POST['password']) || trim($_POST['password']) == "");
 
@@ -68,6 +68,8 @@ if($user['isLoggedIn']) {
             }
 
         } elseif($page == 'import') {
+            $dreamers = array();
+            $tags = array();
 
             //import dreams from csv file
             if(isset($_POST['import'])) {
@@ -123,8 +125,6 @@ if($user['isLoggedIn']) {
                 }
                 
                 $fhandle = fopen($_FILES['csvFile']['tmp_name'],'r');
-                //while($raw_row = fgets($fhandle)) {
-                    //$row = csvstring_to_array($raw_row, ',', '"', "\n");
                 while(($row = fgetcsv($fhandle)) !== FALSE) {
                     if(empty($header)) {
                         //headers
@@ -136,7 +136,7 @@ if($user['isLoggedIn']) {
                     } else {
                         //remove escape character
                         foreach ($row as $key => $value) {
-                            $row[$key] = str_replace( '\"', '"', $row[$key] );
+                            $row[$key] = htmlspecialchars(trim(str_replace( '\"', '"', $row[$key] )));
                         }
                         
                         //dreamer
@@ -266,11 +266,14 @@ if($user['isLoggedIn']) {
                 if(isset($_POST['dreamer']) && !empty($_POST['dreamer'])
                         && isset($_POST['newDreamerName']) && trim($_POST['newDreamerName']) != "") {
                     
+                    $values['dreamer'] = $_POST['dreamer'];
+                    $values['newDreamerName'] = htmlspecialchars(trim($_POST['newDreamerName']));
+
                     $qry = $db->prepare(
                         'UPDATE ddb_dreamer SET dreamerName = :dreamerName'
                         . ' WHERE dreamerId = :dreamerId');
-                    $qry->bindParam(':dreamerId', $_POST['dreamer'], PDO::PARAM_INT);
-                    $qry->bindParam(':dreamerName', $_POST['newDreamerName'], PDO::PARAM_STR);
+                    $qry->bindParam(':dreamerId', $values['dreamer'], PDO::PARAM_INT);
+                    $qry->bindParam(':dreamerName', $values['newDreamerName'], PDO::PARAM_STR);
                     $qry->execute();
                 }
             }
@@ -292,11 +295,14 @@ if($user['isLoggedIn']) {
                 if(isset($_POST['tag']) && !empty($_POST['tag'])
                         && isset($_POST['newTagName']) && trim($_POST['newTagName']) != "") {
                     
+                    $values['tag'] = $_POST['tag'];
+                    $values['newTagName'] = htmlspecialchars(trim($_POST['newTagName']));
+                    
                     $qry = $db->prepare(
                         'UPDATE ddb_tag SET tagName = :tagName'
                         . ' WHERE tagId = :tagId');
-                    $qry->bindParam(':tagId', $_POST['tag'], PDO::PARAM_INT);
-                    $qry->bindParam(':tagName', $_POST['newTagName'], PDO::PARAM_STR);
+                    $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
+                    $qry->bindParam(':tagName', $values['newTagName'], PDO::PARAM_STR);
                     $qry->execute();
                 }
             }
@@ -323,7 +329,7 @@ if($user['isLoggedIn']) {
                 $sql = 'UPDATE ddb_settings';
 
                 $values['useNightSkin'] = isset($_POST['useNightSkin']);
-                $values['timezone'] = trim($_POST['timezone']);
+                $values['timezone'] = htmlspecialchars(trim($_POST['timezone']));
                 $values['dusk'] = trim($_POST['dusk']);
                 $values['dawn'] = trim($_POST['dawn']);
                 $values['useTagIcon'] = isset($_POST['useTagIcon']);
@@ -359,8 +365,8 @@ if($user['isLoggedIn']) {
                 $values = array();
                 $errors = array();
 
-                $values['login'] = trim($_POST['login']);
-                $values['password'] = trim($_POST['password']);
+                $values['login'] = htmlspecialchars(trim($_POST['login']));
+                $values['password'] = htmlspecialchars(trim($_POST['password']));
                 $values['role'] = isset($_POST['isAdmin']) ? 'admin' : 'user';
 
                 $errors['login'] = (!isset($_POST['login']) || trim($_POST['login']) == '');
@@ -402,8 +408,8 @@ if($user['isLoggedIn']) {
                     $values = array();
                     $errors = array();
 
-                    $values['login'] = trim($_POST['login']);
-                    $values['password'] = trim($_POST['password']);
+                    $values['login'] = htmlspecialchars(trim($_POST['login']));
+                    $values['password'] = htmlspecialchars(trim($_POST['password']));
                     $values['hash'] = false;
                     //current user must remain admin
                     $values['role'] = (isset($_POST['isAdmin']) || ($user['id'] == (int)$_GET['id'])) ? 'admin' : 'user';

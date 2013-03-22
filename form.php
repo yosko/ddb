@@ -4,25 +4,38 @@
 	Licence: LGPL
 */
 
-include_once "inc/functions.php";
+include_once 'inc/functions.php';
 
 initDDb($db, $settings, $tpl, $user);
 
 if($user['isLoggedIn']) {
 
     //if the form was posted, save (new?) dream to ddb
-    if( isset($_POST["text"]) ) {
+    if( isset($_POST['text']) ) {
+
+        //sanitize entries
+        $values['newDreamer'] = htmlspecialchars(trim($_POST['newdreamer']));
+        $values['dreamer'] = intval($_POST['dreamer']);
+        //user input is dd/mm/yyyy, but we need to use yyyy-mm-dd in the database
+        $dateArray = explode('/',$_POST['date']);
+        $values['date'] = "$dateArray[2]-$dateArray[1]-$dateArray[0]";
+        $values['title'] = htmlspecialchars(trim($_POST['title']));
+        $values['characters'] = htmlspecialchars(trim($_POST['characters']));
+        $values['place'] = htmlspecialchars(trim($_POST['place']));
+        $values['text'] = htmlspecialchars(trim($_POST['text']));
+        $values['pointofvue'] = htmlspecialchars(trim($_POST['pointofvue']));
+        $values['funfacts'] = htmlspecialchars(trim($_POST['funfacts']));
+        $values['feelings'] = htmlspecialchars(trim($_POST['feelings']));
+        $values['tags'] = htmlspecialchars(trim($_POST['tags']));
         
         //1- save the new dreamer if exists
-        if( !empty($_POST["newdreamer"]) ) {
-            $newDreamer = trim($_POST["newdreamer"]);
-
+        if( !empty($values['newDreamer']) ) {
             $qry = $db->prepare(
                 'INSERT INTO ddb_dreamer (dreamerName) VALUES (:name)');
-            $qry->bindParam(':name', $newDreamer, PDO::PARAM_STR);
+            $qry->bindParam(':name', $values['newDreamer'], PDO::PARAM_STR);
             $qry->execute();
             
-            $dreamerId = $db->lastInsertId();
+            $values['dreamer'] = $db->lastInsertId();
 
             //link the newly created to the current user if he/she is not admin
             if($user['role'] != 'admin') {
@@ -32,32 +45,26 @@ if($user['isLoggedIn']) {
                 $qry->bindParam(':userId', $user['id'], PDO::PARAM_STR);
                 $qry->execute();
             }
-        } else {
-            $dreamerId = intval($_POST["dreamer"]);
         }
-            
-        //user input is dd/mm/yyyy, but we need to use yyyy-mm-dd in the database
-        $dateArray = explode("/",$_POST["date"]);
-        $date = "$dateArray[2]-$dateArray[1]-$dateArray[0]";
         
         //2- save the dream with the right dreamer id
-        if( isset($_GET["id"]) ) {
-            $dreamId = intval($_GET["id"]);
+        if( isset($_GET['id']) ) {
+            $dreamId = intval($_GET['id']);
             
             $qry = $db->prepare(
                 'UPDATE ddb_dream SET dreamerId_FK = :dreamerId, dreamDate = :dreamDate, dreamTitle = :dreamTitle'
                 . ', dreamCharacters = :dreamCharacters, dreamPlace = :dreamPlace, dreamText = :dreamText'
                 . ', dreamPointOfVue = :dreamPointOfVue, dreamFunFacts = :dreamFunFacts, dreamFeelings = :dreamFeelings'
                 . ' WHERE dreamId = :dreamId');
-            $qry->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
-            $qry->bindParam(':dreamDate', $date, PDO::PARAM_STR);
-            $qry->bindParam(':dreamTitle', $_POST["title"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamCharacters', $_POST["characters"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamPlace', $_POST["place"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamText', $_POST["text"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamPointOfVue', $_POST["pointofvue"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamFunFacts', $_POST["funfacts"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamFeelings', $_POST["feelings"], PDO::PARAM_STR);
+            $qry->bindParam(':dreamerId', $values['dreamer'], PDO::PARAM_INT);
+            $qry->bindParam(':dreamDate', $values['date'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamTitle', $values['title'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamCharacters', $values['characters'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamPlace', $values['place'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamText', $values['text'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamPointOfVue', $values['pointofvue'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamFunFacts', $values['funfacts'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamFeelings', $values['feelings'], PDO::PARAM_STR);
             $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
             $qry->execute();
             
@@ -70,21 +77,21 @@ if($user['isLoggedIn']) {
             $qry = $db->prepare(
                 'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings)'
                 . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings)');
-            $qry->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
-            $qry->bindParam(':dreamDate', $date, PDO::PARAM_STR);
-            $qry->bindParam(':dreamTitle', $_POST["title"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamCharacters', $_POST["characters"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamPlace', $_POST["place"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamText', $_POST["text"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamPointOfVue', $_POST["pointofvue"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamFunFacts', $_POST["funfacts"], PDO::PARAM_STR);
-            $qry->bindParam(':dreamFeelings', $_POST["feelings"], PDO::PARAM_STR);
+            $qry->bindParam(':dreamerId', $values['dreamer'], PDO::PARAM_INT);
+            $qry->bindParam(':dreamDate', $values['date'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamTitle', $values['title'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamCharacters', $values['characters'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamPlace', $values['place'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamText', $values['text'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamPointOfVue', $values['pointofvue'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamFunFacts', $values['funfacts'], PDO::PARAM_STR);
+            $qry->bindParam(':dreamFeelings', $values['feelings'], PDO::PARAM_STR);
             $qry->execute();
             
             $dreamId = $db->lastInsertId();
         }
         
-        $tags = explode(",", $_POST["tags"]);
+        $tags = explode(',', $values['tags']);
         if( count($tags)>0 ) {
             
             //3- save new tags to the tag table
@@ -94,7 +101,7 @@ if($user['isLoggedIn']) {
                 
                 if( strlen($tag) > 0 ) {
                     $qry = $db->prepare(
-                        "SELECT tagId FROM ddb_tag WHERE tagName = :name");
+                        'SELECT tagId FROM ddb_tag WHERE tagName = :name');
                     $qry->bindParam(':name', $tag, PDO::PARAM_STR);
                     $qry->execute();
                     
@@ -121,14 +128,14 @@ if($user['isLoggedIn']) {
         }
         
         //go to the dream page
-        header("Location: dream.php?id=".$dreamId);
+        header('Location: dream.php?id='.$dreamId);
     }
     
     
     //if this is a modification of an existing dream
-    if( isset($_GET["id"]) ) {
+    if( isset($_GET['id']) ) {
         $dream = array();
-        $dream['id'] = $_GET["id"];
+        $dream['id'] = $_GET['id'];
         
         //get dream informations
         $qryDream = $db->prepare(
@@ -167,13 +174,13 @@ if($user['isLoggedIn']) {
         $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
         $qry->execute();
         
-        $tagList = "";
+        $tagList = '';
         while ( $row = $qry->fetch(PDO::FETCH_ASSOC) ) {
-            $tagList .= $row['tagName'].", ";
+            $tagList .= $row['tagName'].', ';
         }
         $dream['tagList'] = htmlspecialchars($tagList);
         
-        $tpl->assign( "dream", $dream );
+        $tpl->assign( 'dream', $dream );
     } else {
     }
     
@@ -213,15 +220,15 @@ if($user['isLoggedIn']) {
         $tags[] = $row['tagName'];
     }
     
-    $tpl->assign( "dreamers", $dreamers );
-    $tpl->assign( "js", true );
+    $tpl->assign( 'dreamers', $dreamers );
+    $tpl->assign( 'js', true );
     if(empty($tags)) {
         $tagList = '';
         $tags = array();
     }
-    $tpl->assign( "tagList", json_encode($tags) );
-    $tpl->assign( "today", date("d/m/Y") );
-    $tpl->draw( "form" );
+    $tpl->assign( 'tagList', json_encode($tags) );
+    $tpl->assign( 'today', date('d/m/Y') );
+    $tpl->draw( 'form' );
 }
 
 ?>

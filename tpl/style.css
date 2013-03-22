@@ -201,6 +201,7 @@ footer {
 @media (max-width: 640px) {
     body     { width: 100%; padding: 0; margin-top: 5px; }
     input    { height: 30px; }
+    li       { margin: 0.6em 0; }
     textarea { height: 300px; }
     .content { padding: 2%; }
     .logo    { margin-left: 5px; }

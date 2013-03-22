@@ -14,15 +14,15 @@
         </form>
 {else}
         <h2>Configuration</h2>
-        <ul>
-            <li><a href="?p=password"><img class="inline" src="img/key.png" /> Changer mon mot de passe</a></li>
+        <ul class="no-bullet">
+            <li><a class="tag" href="?p=password"><img class="inline" src="img/key.png" /> Changer mon mot de passe</a></li>
             {if="$user.role == 'admin'"}
-            <li><a href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
-            <li><a href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
-            <li><a href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
-            <li><a href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
-            <li><a href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
-            <li><a href="?p=users"><img class="inline" src="img/users.png"> Gérer les utilisateurs</a></li>
+            <li><a class="tag" href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
+            <li><a class="tag" href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
+            <li><a class="tag" href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
+            <li><a class="tag" href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
+            <li><a class="tag" href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
+            <li><a class="tag" href="?p=users"><img class="inline" src="img/users.png"> Gérer les utilisateurs</a></li>
             {/if}
         </ul>
 {if="$page=='password'"}
@@ -181,8 +181,8 @@
         </form>
 {else}
         <h2>Utilisateurs</h2>
-        <ul>
-            {loop="users"}<li><a href="?p=users&id={$value.userId}"><img class="inline" src="{$settings.tplDir}img/{if="$value.userRole=='admin'"}user-business-boss.png{else}user.png{/if}">{$value.userLogin}</a></li>{/loop}
+        <ul class="no-bullet">
+            {loop="users"}<li><a class="tag" href="?p=users&id={$value.userId}"><img class="inline" src="{$settings.tplDir}img/{if="$value.userRole=='admin'"}user-business-boss.png{else}user.png{/if}"> {$value.userLogin}</a></li>{/loop}
         </ul>
         <hr>
         <h2>Nouvel utilisateur</h2>
