@@ -15,7 +15,7 @@
             <label for="dreamer">Rêveur <span class="required">*</span></label>
             <select name="dreamer">
 {loop="dreamers"}
-                <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId"}selected="true"{/if}>{$value.dreamerName}</option>
+                <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId || (!isset($dream) || is_null($dream.dreamerId)) && $value.selected"}selected="true"{/if}>{$value.dreamerName}</option>
 {/loop}
             </select>
             <a href="#" title="Ajouter un rêveur" class="inline" id="addDreamer"><img src="img/plus-button.png" alt="Nouveau" /></a>

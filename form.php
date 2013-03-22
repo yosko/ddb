@@ -14,10 +14,12 @@ if($user['isLoggedIn']) {
     if( isset($_POST["text"]) ) {
         
         //1- save the new dreamer if exists
-        if( strlen($_POST["newdreamer"]) > 0 ) {
+        if( !empty($_POST["newdreamer"]) ) {
+            $newDreamer = trim($_POST["newdreamer"]);
+
             $qry = $db->prepare(
                 'INSERT INTO ddb_dreamer (dreamerName) VALUES (:name)');
-            $qry->bindParam(':name', $_POST["newdreamer"], PDO::PARAM_STR);
+            $qry->bindParam(':name', $newDreamer, PDO::PARAM_STR);
             $qry->execute();
             
             $dreamerId = $db->lastInsertId();
@@ -190,12 +192,23 @@ if($user['isLoggedIn']) {
     }
     $qry->execute();
     $dreamers = $qry->fetchAll(PDO::FETCH_ASSOC);
+
+    //try to guess which dreamer to select by default
+    if(!empty($dreamers)) {
+        $levenshtein = array();
+        for($i = 0; $i < count($dreamers); $i++) {
+            $dreamers[$i]['selected'] = false;
+            $levenshtein[$i] = levenshtein(strtolower($dreamers[$i]['dreamerName']), strtolower($user['login']));
+        }
+        //select the one with the lowest Levenshtein distance
+        $dreamers[array_keys($levenshtein, min($levenshtein))[0]]['selected'] = true;
+        
+    }
     
     //feed the tag list with existing tags
     $qry = $db->prepare(
         "SELECT tagName FROM ddb_tag ORDER BY tagName ASC");
     $qry->execute();
-    
     while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
         $tags[] = $row['tagName'];
     }
