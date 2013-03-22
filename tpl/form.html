@@ -60,5 +60,25 @@
             <input type="submit" name="submit" id="submit" value="Enregistrer" />
         </fieldset>
         </form>
+        <script type="text/javascript">   
+            $(document).ready(function() {
+                var isEdit  = false;
+
+                $('input').change(function() {
+                    isEdit = true;
+                });
+
+                $('form').submit(function() {
+                    isEdit = false;
+                });
+
+                function checkIsEdit() {
+                    if(isEdit)
+                        return "Voulez-vous vraiment quitter le formulaire ? Toutes les données saisies seront perdues.";  
+                }  
+
+                window.onbeforeunload = checkIsEdit;  
+            });  
+        </script>
         
 {include="footer"}
