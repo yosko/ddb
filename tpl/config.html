@@ -35,7 +35,8 @@
                 {elseif="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
                 <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
-                <img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
+                <span class="warning">Vous devrez vous reconnecter.</span>
+
             </fieldset>
         </form>
 {elseif="$page=='import'"}
@@ -47,8 +48,9 @@
                 
                 <div>
                     <input type="checkbox" name="replace" id="replace" value="replace">
-                    <label for="replace">Remplacer la base (<img class="inline" src="img/exclamation-button.png" /> Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a>)</label>
+                    <label for="replace">Remplacer la base</label>
                 </div>
+                <div class="warning">Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a></div>
                 
                 <input type="submit" name="import" id="submitImport" value="Importer" />
             </fieldset>
@@ -179,7 +181,7 @@
                 <div class="warning">A utiliser avec précaution. Peut servir pour réattribuer les rêves à leurs auteurs respectifs suite à un import CSV.</div>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
                 <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
-                {if="$user.id==$editUser.userId"}<img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
+                {if="$user.id==$editUser.userId"}<div class="warning">Vous devrez vous reconnecter.</div>
                 {/if}{if="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
             </fieldset>
