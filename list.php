@@ -171,7 +171,7 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
             }
             
             foreach($row as $key => $value) {
-                $row[$key] = str_replace( '"', '\"', $row[$key] );
+                $row[$key] = str_replace( '"', '\"', htmlspecialchars_decode($row[$key]) );
             }
             
             //dreams
