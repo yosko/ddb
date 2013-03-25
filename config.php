@@ -84,6 +84,7 @@ if($user['isLoggedIn']) {
                 $deleteDreamTag = $db->prepare("DELETE FROM ddb_dream_tag");
                 $deleteTag = $db->prepare("DELETE FROM ddb_tag");
                 $deleteDream = $db->prepare("DELETE FROM ddb_dream");
+                $deleteUserDreamer = $db->prepare("DELETE FROM ddb_user_dreamer");
                 $deleteDreamer = $db->prepare("DELETE FROM ddb_dreamer");
                 
                 $qryDreamer = $db->prepare("SELECT dreamerId FROM ddb_dreamer WHERE dreamerName = :dreamerName LIMIT 1");
@@ -122,6 +123,7 @@ if($user['isLoggedIn']) {
                     $deleteDreamTag->execute();
                     $deleteTag->execute();
                     $deleteDream->execute();
+                    $deleteUserDreamer->execute();
                     $deleteDreamer->execute();
                 }
                 
@@ -161,7 +163,6 @@ if($user['isLoggedIn']) {
                         $dreamTagsId = array();
                         foreach ($dreamTags as $tagName) {
                             if($tagName != "") {
-                                $tagName = strtolower ( $tagName );
                                 if (array_key_exists($tagName, $tags)) {
                                     $tagId = $tags[$tagName];
                                 } else {
