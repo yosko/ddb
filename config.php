@@ -99,8 +99,8 @@ if($user['isLoggedIn']) {
                 $insertTag->bindParam(':tagName', $tagName, PDO::PARAM_STR);
                 
                 $insertDream = $db->prepare(
-                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings)'
-                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings)');
+                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK)'
+                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings, :userId)');
                 $insertDream->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
                 $insertDream->bindParam(':dreamDate', $dreamDate, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamTitle', $dreamTitle, PDO::PARAM_STR);
@@ -110,6 +110,7 @@ if($user['isLoggedIn']) {
                 $insertDream->bindParam(':dreamPointOfVue', $dreamPointOfVue, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamFunFacts', $dreamFunFacts, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamFeelings', $dreamFeelings, PDO::PARAM_STR);
+                $insertDream->bindParam(':userId', $user['id'], PDO::PARAM_INT);
                 
                 $insertDreamTag = $db->prepare(
                     'INSERT INTO ddb_dream_tag (dreamId_FK, tagId_FK) VALUES (:dreamId, :tagId)');

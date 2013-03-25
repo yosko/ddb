@@ -63,27 +63,28 @@ DROP TABLE IF EXISTS ddb_user_dreamer;
 DROP TABLE IF EXISTS ddb_settings;
 
 CREATE TABLE IF NOT EXISTS ddb_dreamer (
-    'dreamerId'			INTEGER NULL PRIMARY KEY AUTOINCREMENT,
-	'dreamerName'		VARCHAR(256) NOT NULL
+    'dreamerId'         INTEGER NULL PRIMARY KEY AUTOINCREMENT,
+    'dreamerName'       VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ddb_tag (
-	'tagId'				INTEGER PRIMARY KEY AUTOINCREMENT,
+    'tagId'             INTEGER PRIMARY KEY AUTOINCREMENT,
     'tagName'           VARCHAR(256) NOT NULL,
     'tagIcon'           VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS ddb_dream (
-	'dreamId'			INTEGER NULL PRIMARY KEY AUTOINCREMENT,
-	'dreamerId_FK'		INT NOT NULL,
-	'dreamDate'			DATETIME,
-	'dreamTitle'    	VARCHAR(256),
-	'dreamCharacters'	TEXT,
-	'dreamPlace'    	TEXT,
-	'dreamText'			TEXT,
-	'dreamPointOfVue'	TEXT,
-    'dreamFunFacts'		TEXT,
-    'dreamFeelings'		TEXT,
+    'dreamId'           INTEGER NULL PRIMARY KEY AUTOINCREMENT,
+    'dreamerId_FK'      INT NOT NULL,
+    'dreamDate'         DATETIME,
+    'dreamTitle'        VARCHAR(256),
+    'dreamCharacters'   TEXT,
+    'dreamPlace'        TEXT,
+    'dreamText'         TEXT,
+    'dreamPointOfVue'   TEXT,
+    'dreamFunFacts'     TEXT,
+    'dreamFeelings'     TEXT,
+    'userId_FK'         INT NOT NULL,
     'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp
 );
 
