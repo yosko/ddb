@@ -32,7 +32,7 @@
                 <label for="password">Nouveau mot de passe</label>
                 <input type="password" name="password" id="password" autofocus="autofocus">
                 {if="isset($errors.password) && $errors.password"}<div class="error">Mot de passe obligatoire</div>
-                {elseif="isset($errors.app) && $errors.app"}<div class="warning">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
+                {elseif="isset($errors.app) && $errors.app"}<div class="error">Une erreur est survenue. Merci de bien vouloir recommencer.</div>
                 {/if}
                 <input type="submit" name="submitNewPassword" id="submitNewPassword" value="Enregistrer" />
                 <img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.
@@ -172,6 +172,11 @@
                     <li><input type="checkbox" name="dreamer-{$value.dreamerId}" id="dreamer-{$value.dreamerId}" value="dreamer-{$value.dreamerId}"{if="$value.linked || $editUser.userRole=='admin'"} checked{/if}{if="$editUser.userRole=='admin'"} disabled{/if}>
                     <label for="dreamer-{$value.dreamerId}">{$value.dreamerName}</label></li>{/loop}
                 </ul>
+                <div>
+                    <input type="checkbox" name="isAuthor" id="isAuthor" value="isAuthor">
+                    <label for="isAuthor">Auteur des rêves existants pour ces rêveurs ?</label>
+                </div>
+                <div class="warning">A utiliser avec précaution. Peut servir pour réattribuer les rêves à leurs auteurs respectifs suite à un import CSV.</div>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
                 <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
                 {if="$user.id==$editUser.userId"}<img class="inline" src="img/exclamation-button.png" /> Vous devrez vous reconnecter.

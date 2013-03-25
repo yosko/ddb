@@ -416,6 +416,8 @@ if($user['isLoggedIn']) {
                     $values['role'] = (isset($_POST['isAdmin']) || ($user['id'] == (int)$_GET['id'])) ? 'admin' : 'user';
                     $values['id'] = $_GET['id'];
                     $values['dreamers'] = array();
+                    $values['isAuthor'] = (isset($_POST['isAuthor']) && $_POST['isAuthor'] = 'isAuthor');
+
                     foreach($_POST as $key => $value) {
                         if(substr($key, 0, 8) == 'dreamer-' && is_numeric(substr($key, 8))) {
                             $values['dreamers'][] = (int)substr($key, 8);
@@ -458,12 +460,22 @@ if($user['isLoggedIn']) {
                                 }
                             }
 
+                            //set user as author for every dream of each selected dreamer
+                            if($values['isAuthor'] === true) {
+                                foreach($values['dreamers'] as $dreamerId) {
+                                    $qry = $db->prepare( 'UPDATE ddb_dream SET userId_FK=:userId WHERE dreamerId_FK=:dreamerId' );
+                                    $qry->bindParam(':userId', $values['id'], PDO::PARAM_INT);
+                                    $qry->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
+                                    $qry->execute();
+                                }
+                            }
+
                             //if the current user updated his/her own profile
                             if($user['id'] == $_GET['id']) {
                                 //logout to update session context
                                 header("Location: index.php?logout");
                             } else {
-                                // header("Location: config.php?p=users");
+                                header("Location: config.php?p=users");
                             }
                         } else {
                             $errors['app'] = true;
