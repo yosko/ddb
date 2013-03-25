@@ -14,6 +14,12 @@ if($user['isLoggedIn']) {
     if( isset($_GET["id"]) ) {
         $dream = array();
         $dream['id'] = $_GET["id"];
+
+        $editButtons = false;
+        if(isAuthor($user['id'], $dream['id']) || $user['role'] == 'admin') {
+            //the user is allowed to edit/delete this dream
+            $editButtons = true;
+        }
         
         //get dream informations
         $qryDream = $db->prepare(
@@ -54,6 +60,7 @@ if($user['isLoggedIn']) {
             $tagArray[$row['tagName']] = array('id' => $row['tagId'], 'icon' => $row['tagIcon']);
         }
         
+        $tpl->assign( "editButtons", $editButtons );
         $tpl->assign( "dream", $dream );
         $tpl->assign( "tagArray", $tagArray );
         $tpl->draw( "dream" );

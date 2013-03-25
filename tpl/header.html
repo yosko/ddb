@@ -74,7 +74,7 @@
         {if condition="isset($csvLink)"}
             <a href="{$csvLink}" class="menu-download" title="Télécharger au format CSV les rêves sélectionnés"><img src="img/navigation-270-button.png" alt="Télécharger" /></a>
         {/if}
-        {if condition="isset($dream)"}
+        {if condition="isset($dream) && $editButtons==true"}
             <a href="form.php?id={$dream.id}" class="menu-edit" title="Modifier le rêve"><img src="img/pencil-button.png" alt="Modification" /></a>
             <a href="delete.php?id={$dream.id}" class="menu-delete" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
         {/if}

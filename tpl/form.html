@@ -1,6 +1,6 @@
-{if condition="isset($dream)"}{$pageTitle="DDb - Modifier le rêve n°".$dream.id}{else}{$pageTitle="DDb - Ajouter un rêve"}{/if}
+{if condition="isset($dream) && isset($dream.id)"}{$pageTitle="DDb - Modifier le rêve n°".$dream.id}{else}{$pageTitle="DDb - Ajouter un rêve"}{/if}
 {include="header"}
-{if condition="isset($dream)"}
+{if condition="isset($dream) && isset($dream.id)"}
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > <a href="dream.php?id={$dream.id}">Rêve n°{$dream.id}</a> > Modifier</p>
         <h2>Modifier le rêve n°{$dream.id}</h2>
 {else}
@@ -15,7 +15,7 @@
             <label for="dreamer">Rêveur <span class="required">*</span></label>
             <select name="dreamer">
 {loop="dreamers"}
-                <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId || (!isset($dream) || is_null($dream.dreamerId)) && $value.selected"}selected="true"{/if}>{$value.dreamerName}</option>
+                <option value="{$value.dreamerId}" {if condition="isset($dream) && $dream.dreamerId==$value.dreamerId || (!isset($dream) || is_null($dream.dreamerId) || $dream.dreamerId < 0) && $value.selected"}selected="true"{/if}>{$value.dreamerName}</option>
 {/loop}
             </select>
             <a href="#" title="Ajouter un rêveur" class="inline" id="addDreamer"><img src="img/plus-button.png" alt="Nouveau" /></a>
@@ -30,6 +30,13 @@
             
             <label class="hidden" for="newdreamer">Nouveau rêveur</label>
             <input class="hidden" type="text" name="newdreamer" placeholder="Sélectionnez un rêveur existant ci-dessus ou saisissez en un nouveau ici">
+            {if="isset($errors.noDreamer) && $errors.noDreamer"}<div class="error">Un rêveur est requis. Si la liste est vide, choisissez l'une de ces solutions :
+                <ul>
+                    <li>demandez les droits sur un rêveur existant à votre administrateur</li>
+                    <li>créez un nouveau rêveur en cliquant sur le bouton <img class="inline" src="img/plus-button.png" alt="Nouveau" /></li>
+                </ul>
+            </div>
+            {/if}
             
             <label for="date">Date du rêve</label>
             <input type="text" name="date" id="date" value="{if condition="isset($dream)"}{$dream.date}{else}{$today}{/if}" placeholder="jj/mm/aaaa">

@@ -10,11 +10,6 @@ initDDb($db, $settings, $tpl, $user);
 
 if($user['isLoggedIn']) {
     
-    //if cancel was clicked
-    if( isset($_POST["cancel"]) ) {
-        header("Location: dream.php?id=".$_GET["id"]);
-    }
-    
     //if delete button was clicked
     if( isset($_POST["delete"]) ) {
         $deleteAction = true;
@@ -25,6 +20,15 @@ if($user['isLoggedIn']) {
     if( isset($_GET["id"]) ) {
         $dream = array();
         $dream['id'] = $_GET["id"];
+
+        //if cancel was clicked or if user isn't allowed to delete the dream
+        if( isset($_POST["cancel"]) || (!isAuthor($user['id'], $dream['id']) && $user['role'] != 'admin') ) {
+            header("Location: dream.php?id=".$_GET["id"]);
+            exit;
+        } else {
+            $editButtons = true;
+            $tpl->assign( "editButtons", $editButtons );
+        }
         
         //get dream informations
         $qryDream = $db->prepare(

@@ -254,4 +254,26 @@ function updateParams($login, $password) {
     fclose($fp);
 }
 
+/**
+ * Check if given user is the author of a given dream
+ * @param  int     $userId  user id
+ * @param  int     $dreamId dream id
+ * @return boolean          true if user is the author
+ */
+function isAuthor($userId, $dreamId) {
+    global $db;
+
+    //check wether the user is allowed to access this dream
+    $qryAccess = $db->prepare(
+        'SELECT CASE WHEN (d.userId_FK=:userId) THEN 1 ELSE 0 END AS isAuthor'
+        .' FROM ddb_dream d WHERE d.dreamId=:dreamId'
+    );
+    $qryAccess->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $qryAccess->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
+    $qryAccess->execute();
+    $isAuthor = $qryAccess->fetchColumn();
+
+    return ($isAuthor > 0);
+}
+
 ?>
