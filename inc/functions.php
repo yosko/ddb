@@ -14,12 +14,17 @@ if(DEBUG_MODE === true) {
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 
-function initDDb(&$db, &$settings, &$tpl, &$user) {
+function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
     $settings = getSettings();
     $tpl = setRainTpl();
     $tpl->assign( "settings", $settings );
-    $user = logUser($tpl);
+
+    $publicFeed = false;
+    if($rss && isset($_GET['feed']) && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
+        $publicFeed = true;
+    }
+    $user = logUser($tpl, $publicFeed);
 }
 
 function setRainTpl($tplDir = '', $tplCache = '') {
@@ -136,7 +141,7 @@ class DDbLogin extends YosLogin {
     }
 }
 
-function logUser($tpl) {
+function logUser($tpl, $public=false) {
     global $settings;
 
     $logger = new DDbLogin(
@@ -166,7 +171,7 @@ function logUser($tpl) {
         $tpl->assign( "user", $user );
     }
     
-    if($user['isLoggedIn'] === false) {
+    if($user['isLoggedIn'] === false && $public === false) {
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
     }

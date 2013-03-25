@@ -6,9 +6,9 @@
 
 include_once "inc/functions.php";
 
-initDDb($db, $settings, $tpl, $user);
+initDDb($db, $settings, $tpl, $user, $publicFeed, true);
 
-if(isset($_GET['feed']) || $user['isLoggedIn']) {
+if($publicFeed || $user['isLoggedIn']) {
     
     //filters
     $where = "";
@@ -92,7 +92,7 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
     
     //pagination and limit for RSS
     $limit = "";
-    if(isset($_GET['feed'])) {
+    if($publicFeed) {
         $orderBy = " ORDER BY d.dreamCreation DESC, d.dreamId DESC";
         $limit = " LIMIT 10";
     }
@@ -100,18 +100,19 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
         ." LEFT JOIN ddb_tag t on dt.tagId_FK = t.tagId"
+        ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
         .$where
         ." GROUP BY dr.dreamerName, d.dreamId"
         .$orderBy
         .$limit;
 
     //add tags with icons
-    $sql = "SELECT qry.*, Group_Concat(ti.tagIcon || '§' || ti.tagName,'|') as tags FROM ("
+    $sql = "SELECT qry.*, Group_Concat(CASE WHEN ti.tagIcon IS NULL THEN '' ELSE ti.tagIcon END || '§' || ti.tagName,'|') as tags FROM ("
         .$sql
         .") qry"
         ." LEFT JOIN ddb_dream_tag dti on qry.dreamId = dti.dreamId_FK"
@@ -141,8 +142,8 @@ if(isset($_GET['feed']) || $user['isLoggedIn']) {
     }
     
     $qryDreams->execute();
-    
-    if(isset($_GET['feed'])) {
+
+    if($publicFeed) {
         header("Content-Type: application/rss+xml; charset=UTF-8");
         $dreams = $qryDreams->fetchAll();
         //format creation date to RFC822

@@ -86,6 +86,7 @@ if($user['isLoggedIn']) {
                 $deleteDream = $db->prepare("DELETE FROM ddb_dream");
                 $deleteUserDreamer = $db->prepare("DELETE FROM ddb_user_dreamer");
                 $deleteDreamer = $db->prepare("DELETE FROM ddb_dreamer");
+                $deleteSequence = $db->prepare("DELETE FROM sqlite_sequence WHERE name='ddb_dream_tag' OR name='ddb_tag' OR name='ddb_dream' OR name='ddb_user_dreamer' OR name='ddb_dreamer'");
                 
                 $qryDreamer = $db->prepare("SELECT dreamerId FROM ddb_dreamer WHERE dreamerName = :dreamerName LIMIT 1");
                 $qryDreamer->bindParam(':dreamerName', $dreamerName, PDO::PARAM_STR);
@@ -96,8 +97,9 @@ if($user['isLoggedIn']) {
                 $qryTag = $db->prepare("SELECT tagId FROM ddb_tag WHERE tagName = :tagName LIMIT 1");
                 $qryTag->bindParam(':tagName', $tagName, PDO::PARAM_STR);
                 
-                $insertTag = $db->prepare("INSERT INTO ddb_tag (tagName) VALUES (:tagName)");
+                $insertTag = $db->prepare("INSERT INTO ddb_tag (tagName, tagIcon) VALUES (:tagName, :tagIcon)");
                 $insertTag->bindParam(':tagName', $tagName, PDO::PARAM_STR);
+                $insertTag->bindParam(':tagIcon', $tagIcon, PDO::PARAM_STR);
                 
                 $insertDream = $db->prepare(
                     'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK)'
@@ -111,7 +113,7 @@ if($user['isLoggedIn']) {
                 $insertDream->bindParam(':dreamPointOfVue', $dreamPointOfVue, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamFunFacts', $dreamFunFacts, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamFeelings', $dreamFeelings, PDO::PARAM_STR);
-                $insertDream->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+                $insertDream->bindParam(':userId', $userId, PDO::PARAM_INT);
                 
                 $insertDreamTag = $db->prepare(
                     'INSERT INTO ddb_dream_tag (dreamId_FK, tagId_FK) VALUES (:dreamId, :tagId)');
@@ -125,6 +127,7 @@ if($user['isLoggedIn']) {
                     $deleteDream->execute();
                     $deleteUserDreamer->execute();
                     $deleteDreamer->execute();
+                    $deleteSequence->execute();
                 }
                 
                 $fhandle = fopen($_FILES['csvFile']['tmp_name'],'r');
@@ -163,6 +166,10 @@ if($user['isLoggedIn']) {
                         $dreamTagsId = array();
                         foreach ($dreamTags as $tagName) {
                             if($tagName != "") {
+                                list($tagIcon, $tagName) = explode('§', $tagName, 2);
+                                if(empty($tagIcon)) {
+                                    $tagIcon = NULL;
+                                }
                                 if (array_key_exists($tagName, $tags)) {
                                     $tagId = $tags[$tagName];
                                 } else {
@@ -200,6 +207,7 @@ if($user['isLoggedIn']) {
                         $dreamPointOfVue = isset($row[$header['dreamPointOfVue']])?$row[$header['dreamPointOfVue']]:"";
                         $dreamFunFacts = isset($row[$header['dreamFunFacts']])?$row[$header['dreamFunFacts']]:"";
                         $dreamFeelings = isset($row[$header['dreamFeelings']])?$row[$header['dreamFeelings']]:"";
+                        $userId = $user['id'];
                         
                         $insertDream->execute();
                         $dreamId = $db->lastInsertId();

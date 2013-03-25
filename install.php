@@ -115,7 +115,8 @@ CREATE TABLE IF NOT EXISTS ddb_settings (
     'dusk'              INT NOT NULL DEFAULT 20,
     'dawn'              INT NOT NULL DEFAULT 7,
     'useNightSkin'      INT NOT NULL DEFAULT 0,
-    'useTagIcon'        INT NOT NULL DEFAULT 1
+    'useTagIcon'        INT NOT NULL DEFAULT 1,
+    'appKey'            VARCHAR(42) NOT NULL
 );
 
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('adulte', 'notification-counter-18.png');
@@ -133,7 +134,7 @@ QUERY;
         //insert first dreamer
         $qry = $db->prepare(
             'INSERT INTO ddb_dreamer (dreamerName) VALUES (:name)');
-        $qry->bindParam(':name', trim($values["firstDreamer"]), PDO::PARAM_STR);
+        $qry->bindParam(':name', $values["firstDreamer"], PDO::PARAM_STR);
         $qry->execute();
         
         //insert user
@@ -145,9 +146,11 @@ QUERY;
 
         //insert settings
         $values['timezone'] = date_default_timezone_get();
+        $values['appKey'] = YosLoginTools::generateRandomString(42);
         $qry = $db->prepare(
-            'INSERT INTO ddb_settings (timezone) VALUES (:timezone)');
+            'INSERT INTO ddb_settings (timezone, appKey) VALUES (:timezone, :appKey)');
         $qry->bindParam(':timezone', $values['timezone'], PDO::PARAM_STR);
+        $qry->bindParam(':appKey', $values['appKey'], PDO::PARAM_STR);
         $qry->execute();
         
         //install done: redirect to avoid second execution
