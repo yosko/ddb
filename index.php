@@ -14,7 +14,7 @@ if($user['isLoggedIn']) {
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
         .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings"
-        ." FROM ddb_dream d LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId ORDER BY d.dreamId DESC LIMIT 10");
+        ." FROM ddb_dream d LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId ORDER BY d.dreamDate DESC LIMIT 10");
     $qryLastDreams->execute();
     $lastDreams = $qryLastDreams->fetchAll();
     //$lastDreams = array_reverse($qryLastDreams->fetchAll());
