@@ -4,17 +4,13 @@
 	Licence: LGPL
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
-
 include_once "inc/functions.php";
 
+$tpl_cache = 'cache/tpl/';
 if ( !is_writable(dirname(__FILE__)) ) {
-	printf('<strong>Erreur</strong> : le dossier <em>%s</em> n\'est pas accessible en écriture.', dirname(__FILE__));
-	exit;
+	$tpl_cache = tempnam(sys_get_temp_dir(), 'DDb/');
 }
-
-$tpl = setRainTpl('tpl/', 'cache/tpl/');
+$tpl = setRainTpl('tpl/', $tpl_cache);
 
 $serverConfig['phpVersion'] = PHP_VERSION;
 $serverConfig['phpMinVersion'] = '5.3.0';
