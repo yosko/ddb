@@ -229,6 +229,22 @@ if($user['isLoggedIn']) {
 
         } elseif($page == 'purge') {
 
+            //purge unused items from DDb
+            if (isset($_POST["submitPurge"])) {
+                //purge unused dreamers
+                if (isset($_POST["purgeDreamers"]) && $_POST["purgeDreamers"] == "purgeDreamers") {
+                    $qry = $db->prepare(
+                        "DELETE FROM ddb_dreamer WHERE dreamerId not in (SELECT DISTINCT dreamerId_FK FROM ddb_dream)");
+                    $qry->execute();
+                }
+                //purge unused tags
+                if (isset($_POST["purgeTags"]) && $_POST["purgeTags"] == "purgeTags") {
+                    $qry = $db->prepare(
+                        "DELETE FROM ddb_tag WHERE tagId not in (SELECT DISTINCT tagId_FK FROM ddb_dream_tag)");
+                    $qry->execute();
+                }
+            }
+
             //unused dreamers
             $unusedDreamers = array();
             $qry = $db->prepare(
@@ -248,22 +264,6 @@ if($user['isLoggedIn']) {
                 $unusedTags[] = $row;
             }
             $tpl->assign( "unusedTags", $unusedTags );
-
-            //purge unused items from DDb
-            if (isset($_POST["submitPurge"])) {
-                //purge unused dreamers
-                if (isset($_POST["purgeDreamers"]) && $_POST["purgeDreamers"] == "purgeDreamers") {
-                    $qry = $db->prepare(
-                        "DELETE FROM ddb_dreamer WHERE dreamerId not in (SELECT DISTINCT dreamerId_FK FROM ddb_dream)");
-                    $qry->execute();
-                }
-                //purge unused tags
-                if (isset($_POST["purgeTags"]) && $_POST["purgeTags"] == "purgeTags") {
-                    $qry = $db->prepare(
-                        "DELETE FROM ddb_tag WHERE tagId not in (SELECT DISTINCT tagId_FK FROM ddb_dream_tag)");
-                    $qry->execute();
-                }
-            }
 
         } elseif($page == 'renameDreamer') {
 
