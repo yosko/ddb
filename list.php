@@ -74,9 +74,9 @@ if($publicFeed || $user['isLoggedIn']) {
         list($sort, $order) = explode("|", $_GET['sortOrder']);
         $orderBy = "";
         if($sort == "date") {
-            $orderBy = " ORDER BY d.dreamDate";
+            $orderBy = " ORDER BY qry.dreamDate";
         } elseif($sort == "dreamer") {
-            $orderBy = " ORDER BY dr.dreamerName";
+            $orderBy = " ORDER BY qry.dreamerName";
         }
         
         if($orderBy != "" && isset($order) && ($order == 'asc' || $order == 'desc')) {
@@ -84,16 +84,16 @@ if($publicFeed || $user['isLoggedIn']) {
         }
         
         if($sort != "date") {
-            $orderBy  .= ', d.dreamDate DESC';
+            $orderBy  .= ', qry.dreamDate DESC';
         }
     } else {
-        $orderBy = " ORDER BY d.dreamDate DESC";
+        $orderBy = " ORDER BY qry.dreamDate DESC";
     }
     
     //pagination and limit for RSS
     $limit = "";
     if($publicFeed) {
-        $orderBy = " ORDER BY d.dreamCreation DESC, d.dreamId DESC";
+        $orderBy = " ORDER BY qry.dreamCreation DESC, qry.dreamId DESC";
         $limit = " LIMIT 10";
     }
     
@@ -108,7 +108,6 @@ if($publicFeed || $user['isLoggedIn']) {
         ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
         .$where
         ." GROUP BY dr.dreamerName, d.dreamId"
-        .$orderBy
         .$limit;
 
     //add tags with icons
@@ -117,7 +116,8 @@ if($publicFeed || $user['isLoggedIn']) {
         .") qry"
         ." LEFT JOIN ddb_dream_tag dti on qry.dreamId = dti.dreamId_FK"
         ." LEFT JOIN ddb_tag ti on dti.tagId_FK = ti.tagId"
-        ." GROUP BY qry.dreamerName, qry.dreamId";
+        ." GROUP BY qry.dreamerName, qry.dreamId"
+        .$orderBy;
     
     $qryDreams = $db->prepare($sql);
     
@@ -145,7 +145,8 @@ if($publicFeed || $user['isLoggedIn']) {
 
     if($publicFeed) {
         header("Content-Type: application/rss+xml; charset=UTF-8");
-        $dreams = $qryDreams->fetchAll();
+        $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
+
         //format creation date to RFC822
         foreach($dreams as $key => $value) {
             $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
