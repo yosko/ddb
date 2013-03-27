@@ -16,12 +16,22 @@
         <div class="success">Le module pdo_sqlite est activé.</div>{else}
         <div class="error">Le module pdo_sqlite N&apos;est PAS activé.</div>{/if}
         
-        <header>Répertoire de la base de données</header>{if="$serverConfig.dbPermissions"}
+        <header>Répertoire de la base de données</header>{if="$serverConfig.rootPermissions"}
         <div class="success">Le répertoire où sera créé la base de données est inscriptible.</div>{else}
         <div class="error">Le répertoire où sera créé la base de données N&apos;est PAS inscriptible.</div>{/if}
-        <div class="code">{$serverConfig.dbDirectory}</div>
+        <div class="code">{$serverConfig.rootDirectory}</div>
         
-        <p>{if condition="$serverConfig.phpIsVersionValid && $serverConfig.pdoSqlite && $serverConfig.pdo && $serverConfig.dbPermissions"}
+        <header>Répertoire de cache</header>{if="$serverConfig.cacheTplPermissions"}
+        <div class="success">Le répertoire de mise en cache des pages est inscriptible.</div>{else}
+        <div class="error">Le répertoire de mise en cache des pages N&apos;est PAS inscriptible.</div>{/if}
+        <div class="code">{$serverConfig.cacheTplDirectory}</div>
+        
+        <header>Répertoire de session</header>{if="$serverConfig.cacheSessionPermissions"}
+        <div class="success">Le répertoire où seront stockées les sessions est inscriptible.</div>{else}
+        <div class="error">Le répertoire où seront stockées les sessions N&apos;est PAS inscriptible.</div>{/if}
+        <div class="code">{$serverConfig.cacheSessionDirectory}</div>
+        
+        <p>{if condition="$serverConfig.phpIsVersionValid && $serverConfig.pdoSqlite && $serverConfig.pdo && $serverConfig.rootPermissions"}
             <a href="install.php?step=2">Etape suivante &raquo;</a>{else}
             <span class="disabled">Installation impossible</span>{/if}
         </p>

@@ -16,11 +16,16 @@ $serverConfig['phpMinVersion'] = '5.3.0';
 $serverConfig['phpIsVersionValid'] = (version_compare(PHP_VERSION, $serverConfig['phpMinVersion']) >= 0);
 $serverConfig['pdo'] = extension_loaded('pdo');
 $serverConfig['pdoSqlite'] = extension_loaded('pdo_sqlite');
-$serverConfig['dbDirectory'] = dirname($_SERVER['SCRIPT_FILENAME']);
-$serverConfig['dbPermissions'] = is_writable($serverConfig['dbDirectory']);
+$serverConfig['rootDirectory'] = dirname($_SERVER['SCRIPT_FILENAME']);
+$serverConfig['rootPermissions'] = is_writable($serverConfig['rootDirectory']);
+$serverConfig['cacheTplDirectory'] = $serverConfig['rootDirectory'].'/cache/tpl/';
+$serverConfig['cacheTplPermissions'] = is_writable($serverConfig['cacheTplDirectory']);
+$serverConfig['cacheSessionDirectory'] = $serverConfig['rootDirectory'].'/cache/session/';
+$serverConfig['cacheSessionPermissions'] = is_writable($serverConfig['cacheSessionDirectory']);
 
-$serverOk = $serverConfig['phpIsVersionValid'] && $serverConfig['pdo'] &&
-    $serverConfig['pdoSqlite'] && $serverConfig['dbPermissions'];
+$serverOk = $serverConfig['phpIsVersionValid'] && $serverConfig['pdo']
+    && $serverConfig['pdoSqlite'] && $serverConfig['rootPermissions']
+    && $serverConfig['cacheTplPermissions'] && $serverConfig['cacheSessionPermissions'];
 
 //STEP 3: install done
 if(file_exists("database.sqlite")) {
