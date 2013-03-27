@@ -9,6 +9,11 @@ ini_set('display_errors', 'On');
 
 include_once "inc/functions.php";
 
+if ( !is_writable(dirname(__FILE__)) ) {
+	printf('<strong>Erreur</strong> : le dossier <em>%s</em> n\'est pas accessible en écriture.', dirname(__FILE__));
+	exit;
+}
+
 $tpl = setRainTpl('tpl/', 'cache/tpl/');
 
 $serverConfig['phpVersion'] = PHP_VERSION;
