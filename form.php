@@ -48,7 +48,7 @@ if($user['isLoggedIn']) {
         
         if($errors['noDreamer'] === false) {
             //1- save the new dreamer if set
-            if( isset($values['newDreamer']) ) {
+            if( !empty($values['newDreamer']) ) {
                 $qry = $db->prepare(
                     'INSERT INTO ddb_dreamer (dreamerName) VALUES (:name)');
                 $qry->bindParam(':name', $values['newDreamer'], PDO::PARAM_STR);
