@@ -166,10 +166,16 @@ if($user['isLoggedIn']) {
                         $dreamTagsId = array();
                         foreach ($dreamTags as $tagName) {
                             if($tagName != "") {
-                                list($tagIcon, $tagName) = explode('§', $tagName, 2);
-                                if(empty($tagIcon)) {
-                                    $tagIcon = NULL;
+                                $tagIcon = NULL;
+
+                                // if tag contains the icon/name separator: DDb v1.3 or above
+                                if(strpos($tagName, '§') !== false) {
+                                    list($tagIcon, $tagName) = explode('§', $tagName, 2);
+                                    if(empty($tagIcon)) {
+                                        $tagIcon = NULL;
+                                    }
                                 }
+                                
                                 if (array_key_exists($tagName, $tags)) {
                                     $tagId = $tags[$tagName];
                                 } else {
