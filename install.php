@@ -8,7 +8,7 @@ include_once "inc/functions.php";
 
 $tpl_cache = 'cache/tpl/';
 if ( !is_writable(dirname(__FILE__)) ) {
-	$tpl_cache = tempnam(sys_get_temp_dir(), 'DDb/');
+	$tpl_cache = sys_get_temp_dir().'/DDb/';
 }
 $tpl = setRainTpl('tpl/', $tpl_cache);
 
