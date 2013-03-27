@@ -51,7 +51,7 @@
                     <input type="checkbox" name="replace" id="replace" value="replace">
                     <label for="replace">Remplacer la base</label>
                 </div>
-                <div class="warning">Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a></div>
+                <div class="warning">Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv&sortOrder=date|asc" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a></div>
                 
                 <input type="submit" name="import" id="submitImport" value="Importer" />
             </fieldset>
@@ -179,7 +179,7 @@
                     <input type="checkbox" name="isAuthor" id="isAuthor" value="isAuthor">
                     <label for="isAuthor">Auteur des rêves existants pour ces rêveurs ?</label>
                 </div>
-                <div class="warning">A utiliser avec précaution. Peut servir pour réattribuer les rêves à leurs auteurs respectifs suite à un import CSV.</div>
+                <div class="warning">A utiliser avec précaution. Peut servir pour réattribuer les rêves à leurs auteurs respectifs suite à un import CSV d'une version antérieure de DDb.</div>
                 <input type="submit" name="submitEditUser" id="submitEditUser" value="Enregistrer" />
                 <input type="submit" name="submitDeleteUser" id="submitDeleteUser" value="Supprimer"{if="$user.id==$editUser.userId"} disabled{/if} />
                 {if="$user.id==$editUser.userId"}<div class="warning">Vous devrez vous reconnecter.</div>
