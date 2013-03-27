@@ -87,7 +87,7 @@ if($user['isLoggedIn']) {
                 $deleteUserDreamer = $db->prepare("DELETE FROM ddb_user_dreamer");
                 $deleteDreamer = $db->prepare("DELETE FROM ddb_dreamer");
                 $deleteSequence = $db->prepare("DELETE FROM sqlite_sequence WHERE name='ddb_dream_tag' OR name='ddb_tag' OR name='ddb_dream' OR name='ddb_user_dreamer' OR name='ddb_dreamer'");
-                
+
                 $qryDreamer = $db->prepare("SELECT dreamerId FROM ddb_dreamer WHERE dreamerName = :dreamerName LIMIT 1");
                 $qryDreamer->bindParam(':dreamerName', $dreamerName, PDO::PARAM_STR);
                 
@@ -96,6 +96,8 @@ if($user['isLoggedIn']) {
                 
                 $qryTag = $db->prepare("SELECT tagId FROM ddb_tag WHERE tagName = :tagName LIMIT 1");
                 $qryTag->bindParam(':tagName', $tagName, PDO::PARAM_STR);
+                
+                $qryUser = $db->prepare("SELECT userId, userLogin FROM ddb_user ORDER BY userLogin");
                 
                 $insertTag = $db->prepare("INSERT INTO ddb_tag (tagName, tagIcon) VALUES (:tagName, :tagIcon)");
                 $insertTag->bindParam(':tagName', $tagName, PDO::PARAM_STR);
@@ -129,6 +131,14 @@ if($user['isLoggedIn']) {
                     $deleteDreamer->execute();
                     $deleteSequence->execute();
                 }
+
+                $qryUser->execute();
+                $tempUsers = $qryUser->fetchAll(PDO::FETCH_ASSOC);
+                $users = array();
+                foreach($tempUsers as $tempUser) {
+                    $users[$tempUser['userLogin']] = $tempUser['userId'];
+                }
+                unset($tempUsers);
                 
                 $fhandle = fopen($_FILES['csvFile']['tmp_name'],'r');
                 while(($row = fgetcsv($fhandle)) !== FALSE) {
@@ -214,6 +224,12 @@ if($user['isLoggedIn']) {
                         $dreamFunFacts = isset($row[$header['dreamFunFacts']])?$row[$header['dreamFunFacts']]:"";
                         $dreamFeelings = isset($row[$header['dreamFeelings']])?$row[$header['dreamFeelings']]:"";
                         $userId = $user['id'];
+                        if(isset($header['userLogin']) && isset($row[$header['userLogin']])
+                            && !empty($row[$header['userLogin']])
+                            && in_array($row[$header['userLogin']], array_keys($users))
+                        ) {
+                            $userId = $users[$row[$header['userLogin']]];
+                        }
                         
                         $insertDream->execute();
                         $dreamId = $db->lastInsertId();
