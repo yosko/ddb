@@ -523,11 +523,16 @@ if($user['isLoggedIn']) {
             if(isset($editUser) && !empty($editUser)) {
                 //list all dreamers and check those linked to the selected user
                 $qryDreamers = $db->prepare(
-                    'SELECT dr.dreamerId, dr.dreamerName, IFNULL(ud.userId_FK, 0) as linked'
+                    'SELECT dr.dreamerId, dr.dreamerName, CASE WHEN ud.dreamerId_FK IS NULL THEN 0 ELSE 1 END as linked'
                     .' FROM ddb_dreamer dr'
-                    .' LEFT JOIN ddb_user_dreamer ud ON ud.dreamerId_FK = dr.dreamerId'
+                    .' LEFT JOIN ('
+                        .' SELECT ud1.dreamerId_FK'
+                        .' FROM ddb_user_dreamer ud1'
+                        .' WHERE ud1.userId_FK = :userId'
+                    .' ) ud ON ud.dreamerId_FK = dr.dreamerId'
                     .' ORDER BY dr.dreamerName ASC'
                 );
+                $qryDreamers->bindParam(':userId', $id, PDO::PARAM_INT);
                 $qryDreamers->execute();
                 $dreamers = $qryDreamers->fetchAll(PDO::FETCH_ASSOC);
 
