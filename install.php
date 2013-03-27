@@ -4,12 +4,13 @@
 	Licence: LGPL
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
-
 include_once "inc/functions.php";
 
-$tpl = setRainTpl('tpl/', 'cache/tpl/');
+$tpl_cache = 'cache/tpl/';
+if ( !is_writable(dirname(__FILE__)) ) {
+	$tpl_cache = sys_get_temp_dir().'/DDb/';
+}
+$tpl = setRainTpl('tpl/', $tpl_cache);
 
 $serverConfig['phpVersion'] = PHP_VERSION;
 $serverConfig['phpMinVersion'] = '5.3.0';
