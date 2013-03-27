@@ -8,6 +8,7 @@ include_once "inc/functions.php";
 
 $tpl_cache = 'cache/tpl/';
 if ( !is_writable(dirname(__FILE__)) ) {
+	$err = 1;
 	$tpl_cache = sys_get_temp_dir().'/DDb/';
 }
 $tpl = setRainTpl('tpl/', $tpl_cache);
@@ -28,6 +29,11 @@ $serverOk = $serverConfig['phpIsVersionValid'] && $serverConfig['pdo']
     && $serverConfig['pdoSqlite'] && $serverConfig['rootPermissions']
     && $serverConfig['cacheTplPermissions'] && $serverConfig['cacheSessionPermissions'];
 
+// Check rigths
+if ( !file_exists("database.sqlite") && isset($err) ) {
+	$step = 1;
+	$tpl->assign( "serverConfig", $serverConfig );
+} else {
 //STEP 3: install done
 if(file_exists("database.sqlite")) {
     $step = 3;
@@ -178,6 +184,7 @@ if(!file_exists("database.sqlite") && isset($_GET['step']) && intval($_GET['step
     
     $tpl->assign( "serverConfig", $serverConfig );
     
+}
 }
 
 $tpl->assign( "noLogout", true );   //no DDb command button
