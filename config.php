@@ -582,7 +582,8 @@ if($user['isLoggedIn']) {
         }
     }
 
-    $tpl->assign( "page", $page );
+    if(isset($page))
+        $tpl->assign( "page", $page );
     $tpl->draw( "config" );
 }
 
