@@ -90,7 +90,7 @@ if($publicFeed || $user['isLoggedIn']) {
         list($sort, $order) = explode("|", $_GET['sortOrder']);
         $orderBy = "";
         if($sort == "date") {
-            $orderBy = " ORDER BY qry.dreamDate";
+            $orderBy = " ORDER BY qry.dreamDateUnformated";
         } elseif($sort == "dreamer") {
             $orderBy = " ORDER BY qry.dreamerName";
         }
@@ -100,10 +100,10 @@ if($publicFeed || $user['isLoggedIn']) {
         }
         
         if($sort != "date") {
-            $orderBy  .= ', qry.dreamDate DESC';
+            $orderBy  .= ', qry.dreamDateUnformated DESC';
         }
     } else {
-        $orderBy = " ORDER BY qry.dreamDate DESC";
+        $orderBy = " ORDER BY qry.dreamDateUnformated DESC";
     }
     
     //pagination and limit for RSS
@@ -116,7 +116,7 @@ if($publicFeed || $user['isLoggedIn']) {
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
@@ -181,6 +181,7 @@ if($publicFeed || $user['isLoggedIn']) {
         while ($row = $qryDreams->fetch(PDO::FETCH_ASSOC)) {
             unset($row['dreamerId']);
             unset($row['dreamId']);
+            unset($row['dreamDateUnformated']);
             
             //headers
             if(empty($header)) {
