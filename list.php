@@ -1,8 +1,24 @@
 <?php
-/*
-	DDb by Yosko (http://www.yosko.net/ddb.php)
-	Licence: LGPL
-*/
+
+/**
+ * DDb - Copyright 2013 Yosko (www.yosko.net)
+ * 
+ * This file is part of DDb.
+ * 
+ * DDb is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DDb is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 
 include_once "inc/functions.php";
 
@@ -79,7 +95,7 @@ if($publicFeed || $user['isLoggedIn']) {
         list($sort, $order) = explode("|", $_GET['sortOrder']);
         $orderBy = "";
         if($sort == "date") {
-            $orderBy = " ORDER BY qry.dreamDate";
+            $orderBy = " ORDER BY qry.dreamDateUnformated";
         } elseif($sort == "dreamer") {
             $orderBy = " ORDER BY qry.dreamerName";
         }
@@ -89,10 +105,10 @@ if($publicFeed || $user['isLoggedIn']) {
         }
         
         if($sort != "date") {
-            $orderBy  .= ', qry.dreamDate DESC';
+            $orderBy  .= ', qry.dreamDateUnformated DESC';
         }
     } else {
-        $orderBy = " ORDER BY qry.dreamDate DESC";
+        $orderBy = " ORDER BY qry.dreamDateUnformated DESC";
     }
     
     //pagination and limit for RSS
@@ -105,7 +121,7 @@ if($publicFeed || $user['isLoggedIn']) {
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
@@ -173,6 +189,7 @@ if($publicFeed || $user['isLoggedIn']) {
         while ($row = $qryDreams->fetch(PDO::FETCH_ASSOC)) {
             unset($row['dreamerId']);
             unset($row['dreamId']);
+            unset($row['dreamDateUnformated']);
             
             //headers
             if(empty($header)) {
