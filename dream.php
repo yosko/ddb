@@ -24,8 +24,9 @@ if($user['isLoggedIn']) {
         //get dream informations
         $qryDream = $db->prepare(
             "SELECT a.dreamerName, a.dreamerId, strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings"
+            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, u.userLogin"
             ." FROM ddb_dream d INNER JOIN ddb_dreamer a on d.dreamerId_FK = a.dreamerId"
+            ." INNER JOIN ddb_user u on u.userId = d.userId_FK"
             ." WHERE dreamId = :dreamId");
         $qryDream->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
         $qryDream->execute();
@@ -40,6 +41,7 @@ if($user['isLoggedIn']) {
         $qryDream->bindColumn('dreamPointOfVue', $dream['pointOfVue']);
         $qryDream->bindColumn('dreamFunFacts', $dream['funFacts']);
         $qryDream->bindColumn('dreamFeelings', $dream['feelings']);
+        $qryDream->bindColumn('userLogin', $dream['author']);
         
         //read the first line to feed the bind variables
         $row = $qryDream->fetch(PDO::FETCH_BOUND);

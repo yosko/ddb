@@ -7,7 +7,7 @@
             <span class="right">{loop="tagArray"}<a class="tag" href="list.php?tag={$value.id}"><img class="inline" src="{$settings.tplDir}img/{if="$settings.useTagIcon && isset($value.icon)"}{$value.icon}{else}tag-label.png{/if}" /> {$key}</a>{/loop}</span>
         </p>
         <ul class="no-bullet clear">
-            <li>Rêvé par <b><a class="tag" href="list.php?dreamer={$dream.dreamerId}"><img class="inline" src="img/user.png">{$dream.dreamerName}</a></b>{if="$dream.date != ''"} le <img class="inline" src="img/calendar-day.png"> {$dream.date}{/if}</li>
+            <li>Rêve de <b><a class="tag" href="list.php?dreamer={$dream.dreamerId}"><img class="inline" src="img/user.png">{$dream.dreamerName}</a></b>{if="$dream.date != ''"} le <img class="inline" src="img/calendar-day.png"> {$dream.date}{/if} (écrit par {$dream.author})</li>
             <li><b><img class="inline" src="img/users.png" /> Personnages :</b> {$dream.characters}</li>
             <li><b><img class="inline" src="img/map-pin.png" /> Lieux :</b> {$dream.place}</li>
         </ul>
