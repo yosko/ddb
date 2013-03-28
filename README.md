@@ -28,12 +28,13 @@ DDb nécessite :
 4. Connectez-vous et saisissez votre premier rêve.
 
 ## Mise à jour
-Si vous mettez à jour depuis une version antérieure à la v1.3, procédez comme suit :
+Si vous mettez à jour depuis une autre version (particulièrement si elle est antérieure à la v1.3), procédez comme suit :
 
 1. Faites une sauvegarde et exportez tous les rêves au format CSV via l'interface d'administration *.
-2. Effectuez une nouvelle installation complète (voir chapitre précédent).
-3. Une fois l'installation, connectez-vous.
-4. Importez le fichier CSV (sans cocher la case "Remplacer la base", puisqu'elle est déjà vide)
+2. Assurez-vous de bien vous déconnecter de DDb
+3. Effectuez une nouvelle installation complète (voir chapitre précédent).
+4. Une fois l'installation, connectez-vous.
+5. Importez le fichier CSV (sans cocher la case "Remplacer la base", puisqu'elle est déjà vide)
 
 \* **Note :**  si le lien d'export ne fonctionne pas, cela peut être dû à un bug des versions antérieures de DDb. Remplacez dans l'URL la mention ```file.php``` par ```list.php```.
 
