@@ -20,13 +20,7 @@
  * 
  */
 
-define("DEBUG_MODE", false);
-
-if(DEBUG_MODE === true) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 'On');
-}
-
+require_once "inc/debug.php";
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 

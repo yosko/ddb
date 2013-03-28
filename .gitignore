@@ -1,5 +1,6 @@
 cache/session/*
 cache/tpl/*
+inc/debug.php
 tpl/img/unused/
 .ssh/
 database.sqlite
