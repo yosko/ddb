@@ -3,8 +3,12 @@
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Liste des rêves</p>
         <div class="right">
             <form class="smallForm" method="get" action="">
-                {loop="getParam"}{if condition="$key != 'sortOrder'"}<input type="hidden" value="{$value}" name="{$key}" />
+                {loop="getParam"}{if condition="$key != 'filter' && $key != 'sortOrder'"}<input type="hidden" value="{$value}" name="{$key}" />
                 {/if}{/loop}
+                <select name="filter">
+                    <option value="noFilter">Tous les rêves</option>
+                    <option value="myDreams"{if condition="isset($getParam.filter) && $getParam.filter=='myDreams'"} selected="true"{/if}>Mes rêves</option>
+                </select>
                 <select name="sortOrder">
                     <option value="date|asc" {if condition="isset($getParam.sortOrder) && $getParam.sortOrder=='date|asc'"}selected="true"{/if}>Date ▲</option>
                     <option value="date|desc" {if condition="!isset($getParam.sortOrder) || (isset($getParam.sortOrder) && $getParam.sortOrder=='date|desc')"}selected="true"{/if}>Date ▼</option>

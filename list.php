@@ -66,6 +66,11 @@ if($publicFeed || $user['isLoggedIn']) {
         $criteria["text"] = $_GET['text'];
     }
     
+    //specific filter
+    if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
+        $where .= ' AND u.userId=:userId';
+    }
+
     //replace the first "AND" by a "WHERE"
     $where = preg_replace('/AND/', 'WHERE', $where, 1);
     
@@ -139,6 +144,9 @@ if($publicFeed || $user['isLoggedIn']) {
     if(isset($_GET['text']) && $_GET['text'] != "") {
         $searchText = '%'.$_GET['text'].'%';
         $qryDreams->bindParam(':searchText', $searchText, PDO::PARAM_STR);
+    }
+    if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_STR);
     }
     
     $qryDreams->execute();
