@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
  * 
- *}
-
-{$pageTitle="DDb - Consulter le rêve n°".$dream.id}
-{include="header"}
+ *}{$pageTitle="DDb - Consulter le rêve n°".$dream.id}{include="header"}
         
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêve n°{$dream.id}</p>
         <h2>{if condition="$dream.title == ''"}{if condition="$dream.text == ''"}# Sans titre #{else}{$dream.text|substr:0,40}...{/if}{else}{$dream.title}{/if}</h2>
@@ -40,5 +37,22 @@
             <li><b><img class="inline" src="img/smiley-lol.png" /> Fun facts :</b> {$dream.funFacts}</li>
             <li><b><img class="inline" src="img/heart.png" /> Emotions, état au réveil :</b> {$dream.feelings}</li>
         </ul>
-        
+
+        <div class="comments">
+            <header>Commentaires</header>
+            {loop="comments"}
+            <div class="comment" id="{$value.commentId}">
+                <h4><a class="comAnchor" href="#{$value.commentId}"><img class="inline" src="img/balloon-box.png" /></a> {$value.userLogin} :</h4>
+                <div>{$value.commentText}</div>
+                <footer>{$value.commentCreation}{if="$value.commentLastEdit!=$value.commentCreation"} (modifié le {$value.commentLastEdit}){/if}</footer>
+            </div>{/loop}
+        </div>
+        <form id="newComment" method="post" action="">
+        <fieldset>
+            <label for="text">Ajouter un commentaire</label>
+            <textarea class="smallText" name="text" placeholder="Commentaire..."></textarea>
+            
+            <input type="submit" name="submitNewComment" id="submitNewComment" value="Poster commentaire" />
+        </fieldset>
+        </form>
 {include="footer"}

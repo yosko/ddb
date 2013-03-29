@@ -68,7 +68,7 @@
             <input type="text" name="place" id="place" value="{if condition="isset($dream)"}{$dream.place}{/if}">
             
             <label for="text">Le rêve <span class="required">*</span></label>
-            <textarea name="text" placeholder="Description détaillée ou résumée du rêve">{if condition="isset($dream)"}{$dream.text}{/if}</textarea>
+            <textarea class="bigText" name="text" placeholder="Description détaillée ou résumée du rêve">{if condition="isset($dream)"}{$dream.text}{/if}</textarea>
             
             <label for="pointofvue">Point de vue</label>
             <input type="text" name="pointofvue" id="pointofvue" value="{if condition="isset($dream)"}{$dream.pointOfVue}{/if}" placeholder="Interne, externe, omniscient, etc...">

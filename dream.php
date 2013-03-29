@@ -29,7 +29,30 @@ if($user['isLoggedIn']) {
     //if form was posted
     if( isset($_GET["id"]) ) {
         $dream = array();
+        $values = array();
+        $errors = array();
         $dream['id'] = $_GET["id"];
+
+        // post a new comment to this dream
+        if( isset($_POST['submitNewComment']) ) {
+            $values['text'] = htmlspecialchars(trim($_POST['text']));
+
+            $errors['emptyComment'] = (!isset($_POST['text']) || empty($_POST['text']));
+
+            if($errors['emptyComment'] === false) {
+                $qry = $db->prepare(
+                    'INSERT INTO ddb_comment (dreamId_FK, userId_FK, commentText)'
+                    . ' VALUES (:dreamId, :userId, :commentText)');
+                $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
+                $qry->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+                $qry->bindParam(':commentText', $values['text'], PDO::PARAM_STR);
+                $qry->execute();
+            
+                //avoid posting the comment again on "go back" in browser
+                header("Location: $_SERVER[REQUEST_URI]");
+                exit;
+            }
+        }
 
         $editButtons = false;
         if(isAuthor($user['id'], $dream['id']) || $user['role'] == 'admin') {
@@ -77,9 +100,21 @@ if($user['isLoggedIn']) {
         while ( $row = $qry->fetch(PDO::FETCH_ASSOC) ) {
             $tagArray[$row['tagName']] = array('id' => $row['tagId'], 'icon' => $row['tagIcon']);
         }
+
+        //get dream comments
+        $qry = $db->prepare(
+            "SELECT u.userLogin, c.commentId, c.commentText, strftime('%d/%m/%Y, %H:%M', c.commentCreation) AS commentCreation, strftime('%d/%m/%Y, %H:%M', c.commentLastEdit) AS commentLastEdit"
+            ." FROM ddb_comment c INNER JOIN ddb_user u on u.userId = c.userId_FK"
+            ." WHERE c.dreamId_FK = :dreamId ORDER BY c.commentCreation");
+        $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
+        $qry->execute();
+        $comments = $qry->fetchAll(PDO::FETCH_ASSOC);
         
         $tpl->assign( "editButtons", $editButtons );
         $tpl->assign( "dream", $dream );
+        $tpl->assign( "comment", $values );
+        $tpl->assign( "errors", $errors );
+        $tpl->assign( "comments", $comments );
         $tpl->assign( "tagArray", $tagArray );
         $tpl->draw( "dream" );
     }
