@@ -31,10 +31,11 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
     $tpl->assign( "settings", $settings );
 
     $publicFeed = false;
-    if($rss && isset($_GET['feed']) && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
+    if($rss && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
         $publicFeed = true;
+    } else {
+        $user = logUser($tpl);
     }
-    $user = logUser($tpl, $publicFeed);
 }
 
 function setRainTpl($tplDir = '', $tplCache = '') {
@@ -151,7 +152,7 @@ class DDbLogin extends YosLogin {
     }
 }
 
-function logUser($tpl, $public=false) {
+function logUser($tpl) {
     global $settings;
 
     $logger = new DDbLogin(
@@ -181,7 +182,7 @@ function logUser($tpl, $public=false) {
         $tpl->assign( "user", $user );
     }
     
-    if($user['isLoggedIn'] === false && $public === false) {
+    if($user['isLoggedIn'] === false) {
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
     }

@@ -22,9 +22,9 @@
 
 include_once "inc/functions.php";
 
-initDDb($db, $settings, $tpl, $user, $publicFeed, true);
+initDDb($db, $settings, $tpl, $user);
 
-if($publicFeed || $user['isLoggedIn']) {
+if($user['isLoggedIn']) {
     
     //filters
     $where = "";
@@ -113,10 +113,6 @@ if($publicFeed || $user['isLoggedIn']) {
     
     //pagination and limit for RSS
     $limit = "";
-    if($publicFeed) {
-        $orderBy = " ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC";
-        $limit = " LIMIT 10";
-    }
     
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
@@ -167,20 +163,7 @@ if($publicFeed || $user['isLoggedIn']) {
     
     $qryDreams->execute();
 
-    if($publicFeed) {
-        header("Content-Type: application/rss+xml; charset=UTF-8");
-        $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
-
-        //format creation date to RFC822
-        foreach($dreams as $key => $value) {
-            $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
-        }
-        
-        $tpl->assign( "dreams", $dreams );
-        $tpl->assign( "criteria", $criteria );
-        $tpl->draw( "rss" );
-        
-    } elseif(isset($_GET['csv'])) {
+    if(isset($_GET['csv'])) {
         header("Content-type: text/csv");
         header("Content-Disposition: attachment; filename=ddb_".date("Y-m-d_H-i").".csv");
         header("Pragma: no-cache");

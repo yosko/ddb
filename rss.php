@@ -69,8 +69,45 @@ if($publicFeed) {
         
         $tpl->assign( "comments", $comments );
         $tpl->draw( "rssComments" );
-	}
+    } elseif(isset($_GET['dreams'])) {
+        $where = '';
+        $orderBy = ' ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC';
+        $limit = ' LIMIT 10';
 
+        $sql = 
+            "SELECT dr.dreamerName, d.dreamId"
+            .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
+            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
+            ." FROM ddb_dream d"
+            ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
+            ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
+            ." LEFT JOIN ddb_tag t on dt.tagId_FK = t.tagId"
+            ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
+            .$where
+            ." GROUP BY dr.dreamerName, d.dreamId";
+
+        //add tags with icons
+        $sql = "SELECT qry.*, Group_Concat(CASE WHEN ti.tagIcon IS NULL THEN '' ELSE ti.tagIcon END || '§' || ti.tagName,'|') as tags FROM ("
+            .$sql
+            .") qry"
+            ." LEFT JOIN ddb_dream_tag dti on qry.dreamId = dti.dreamId_FK"
+            ." LEFT JOIN ddb_tag ti on dti.tagId_FK = ti.tagId"
+            ." GROUP BY qry.dreamerName, qry.dreamId"
+            .$orderBy
+            .$limit;
+        
+        $qryDreams = $db->prepare($sql);
+        $qryDreams->execute();
+        $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
+
+        //format creation date to RFC822
+        foreach($dreams as $key => $value) {
+            $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
+        }
+        
+        $tpl->assign( "dreams", $dreams );
+        $tpl->draw( "rss" );
+    }
 }
 
 ?>

@@ -31,7 +31,7 @@
 			<link>http://{$ddbUrl}/dream.php?id={$value.dreamId}</link>
     		<pubDate>{$value.dreamCreation}</pubDate>
 			<category domain="{$ddbUrl}/index.php">fun</category>
-			<description><![CDATA[Par {$value.dreamerName}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
+			<description><![CDATA[Rêve de {$value.dreamerName} écrit par {$value.userLogin}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
             <div>{$value.dreamText}</div>
             <ul>
                 <li>Personnages : {$value.dreamCharacters}</li>
@@ -40,7 +40,7 @@
                 <li>Fun facts : {$value.dreamFunFacts}</li>
                 <li>Emotions, état au réveil : {$value.dreamFeelings}</li>
             </ul>]]></description>
-            <dc:creator>{$value.dreamerName}</dc:creator>
+            <dc:creator>{$value.userLogin}</dc:creator>
 		</item>{/loop}
         
     </channel>
