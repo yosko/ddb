@@ -109,7 +109,7 @@ if($publicFeed || $user['isLoggedIn']) {
     //pagination and limit for RSS
     $limit = "";
     if($publicFeed) {
-        $orderBy = " ORDER BY qry.dreamCreation DESC, qry.dreamId DESC";
+        $orderBy = " ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC";
         $limit = " LIMIT 10";
     }
     
@@ -123,8 +123,7 @@ if($publicFeed || $user['isLoggedIn']) {
         ." LEFT JOIN ddb_tag t on dt.tagId_FK = t.tagId"
         ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
         .$where
-        ." GROUP BY dr.dreamerName, d.dreamId"
-        .$limit;
+        ." GROUP BY dr.dreamerName, d.dreamId";
 
     //add tags with icons
     $sql = "SELECT qry.*, Group_Concat(CASE WHEN ti.tagIcon IS NULL THEN '' ELSE ti.tagIcon END || '§' || ti.tagName,'|') as tags FROM ("
@@ -133,7 +132,8 @@ if($publicFeed || $user['isLoggedIn']) {
         ." LEFT JOIN ddb_dream_tag dti on qry.dreamId = dti.dreamId_FK"
         ." LEFT JOIN ddb_tag ti on dti.tagId_FK = ti.tagId"
         ." GROUP BY qry.dreamerName, qry.dreamId"
-        .$orderBy;
+        .$orderBy
+        .$limit;
     
     $qryDreams = $db->prepare($sql);
     
