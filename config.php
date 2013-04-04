@@ -120,8 +120,8 @@ if($user['isLoggedIn']) {
                 $insertTag->bindParam(':tagIcon', $tagIcon, PDO::PARAM_STR);
                 
                 $insertDream = $db->prepare(
-                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK)'
-                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings, :userId)');
+                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK, dreamStatus)'
+                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings, :userId, :status)');
                 $insertDream->bindParam(':dreamerId', $dreamerId, PDO::PARAM_INT);
                 $insertDream->bindParam(':dreamDate', $dreamDate, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamTitle', $dreamTitle, PDO::PARAM_STR);
@@ -132,6 +132,7 @@ if($user['isLoggedIn']) {
                 $insertDream->bindParam(':dreamFunFacts', $dreamFunFacts, PDO::PARAM_STR);
                 $insertDream->bindParam(':dreamFeelings', $dreamFeelings, PDO::PARAM_STR);
                 $insertDream->bindParam(':userId', $userId, PDO::PARAM_INT);
+                $insertDream->bindParam(':status', $status, PDO::PARAM_INT);
                 
                 $insertDreamTag = $db->prepare(
                     'INSERT INTO ddb_dream_tag (dreamId_FK, tagId_FK) VALUES (:dreamId, :tagId)');
@@ -246,6 +247,7 @@ if($user['isLoggedIn']) {
                         ) {
                             $userId = $users[$row[$header['userLogin']]];
                         }
+                        $status = (isset($row[$header['dreamStatus']]))?$row[$header['dreamStatus']]:DREAM_STATUS_PUBLISHED;
                         
                         $insertDream->execute();
                         $dreamId = $db->lastInsertId();

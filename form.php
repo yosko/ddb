@@ -59,6 +59,7 @@ if($user['isLoggedIn']) {
         $values['funFacts'] = htmlspecialchars(trim($_POST['funfacts']));
         $values['feelings'] = htmlspecialchars(trim($_POST['feelings']));
         $values['tagList'] = htmlspecialchars(trim($_POST['tags']));
+        $values['status'] = isset($_POST['published']);
 
         $errors['noDreamer'] = (!isset($_POST['dreamer']) && empty($_POST['newdreamer']));
         
@@ -89,6 +90,7 @@ if($user['isLoggedIn']) {
                     'UPDATE ddb_dream SET dreamerId_FK = :dreamerId, dreamDate = :dreamDate, dreamTitle = :dreamTitle'
                     . ', dreamCharacters = :dreamCharacters, dreamPlace = :dreamPlace, dreamText = :dreamText'
                     . ', dreamPointOfVue = :dreamPointOfVue, dreamFunFacts = :dreamFunFacts, dreamFeelings = :dreamFeelings'
+                    . ', dreamStatus = :dreamStatus'
                     . ' WHERE dreamId = :dreamId');
                 $qry->bindParam(':dreamerId', $values['dreamerId'], PDO::PARAM_INT);
                 $qry->bindParam(':dreamDate', $values['date'], PDO::PARAM_STR);
@@ -99,6 +101,7 @@ if($user['isLoggedIn']) {
                 $qry->bindParam(':dreamPointOfVue', $values['pointOfVue'], PDO::PARAM_STR);
                 $qry->bindParam(':dreamFunFacts', $values['funFacts'], PDO::PARAM_STR);
                 $qry->bindParam(':dreamFeelings', $values['feelings'], PDO::PARAM_STR);
+                $qry->bindParam(':dreamStatus', $values['status'], PDO::PARAM_INT);
                 $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
                 $qry->execute();
                 
@@ -109,8 +112,8 @@ if($user['isLoggedIn']) {
                 $qry->execute();
             } else {
                 $qry = $db->prepare(
-                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK)'
-                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings, :userId)');
+                    'INSERT INTO ddb_dream (dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK, dreamStatus)'
+                    . ' VALUES (:dreamerId, :dreamDate, :dreamTitle, :dreamCharacters, :dreamPlace, :dreamText, :dreamPointOfVue, :dreamFunFacts, :dreamFeelings, :userId, :dreamStatus)');
                 $qry->bindParam(':dreamerId', $values['dreamerId'], PDO::PARAM_INT);
                 $qry->bindParam(':dreamDate', $values['date'], PDO::PARAM_STR);
                 $qry->bindParam(':dreamTitle', $values['title'], PDO::PARAM_STR);
@@ -120,6 +123,7 @@ if($user['isLoggedIn']) {
                 $qry->bindParam(':dreamPointOfVue', $values['pointOfVue'], PDO::PARAM_STR);
                 $qry->bindParam(':dreamFunFacts', $values['funFacts'], PDO::PARAM_STR);
                 $qry->bindParam(':dreamFeelings', $values['feelings'], PDO::PARAM_STR);
+                $qry->bindParam(':dreamStatus', $values['status'], PDO::PARAM_INT);
                 $qry->bindParam(':userId', $user['id'], PDO::PARAM_INT);
                 $qry->execute();
                 
@@ -182,7 +186,7 @@ if($user['isLoggedIn']) {
         //get dream informations
         $qryDream = $db->prepare(
             "SELECT a.dreamerName, a.dreamerId, strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings"
+            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamStatus"
             ." FROM ddb_dream d LEFT JOIN ddb_dreamer a on d.dreamerId_FK = a.dreamerId"
             ." WHERE dreamId = :dreamId");
         $qryDream->bindParam(':dreamId', $values['id'], PDO::PARAM_INT);
@@ -198,6 +202,7 @@ if($user['isLoggedIn']) {
         $qryDream->bindColumn('dreamPointOfVue', $values['pointOfVue']);
         $qryDream->bindColumn('dreamFunFacts', $values['funFacts']);
         $qryDream->bindColumn('dreamFeelings', $values['feelings']);
+        $qryDream->bindColumn('dreamStatus', $values['status']);
         
         //read the first line to feed the bind variables
         $row = $qryDream->fetch(PDO::FETCH_BOUND);

@@ -28,6 +28,13 @@
                 <select name="filter">
                     <option value="noFilter">Tous les rêves</option>
                     <option value="myDreams"{if condition="isset($getParam.filter) && $getParam.filter=='myDreams'"} selected="true"{/if}>Mes rêves</option>
+                    <option value="myUnpublished"{if condition="isset($getParam.filter) && $getParam.filter=='myUnpublished'"} selected="true"{/if}>Mes brouillons</option>
+                    {if="$user.role=='admin'"}
+                    <optgroup label="Administrateurs">
+                        <option value="all"{if condition="isset($getParam.filter) && $getParam.filter=='all'"} selected="true"{/if}>Base complète</option>
+                        <option value="unpublished"{if condition="isset($getParam.filter) && $getParam.filter=='unpublished'"} selected="true"{/if}>Tous les brouillons</option>
+                    </optgroup>
+                    {/if}
                 </select>
                 <select name="sortOrder">
                     <option value="date|asc" {if condition="isset($getParam.sortOrder) && $getParam.sortOrder=='date|asc'"}selected="true"{/if}>Date ▲</option>
@@ -43,7 +50,7 @@
         {if condition="isset($criteria.tag)"} tagués "{$criteria.tag}"{/if}
         {if condition="isset($criteria.text)"} contenant "{$criteria.text}"{/if}</h2>
         <ul>
-            {loop="dreams"}<li>{if="$settings.useTagIcon"}{loop="value.tags"}<img class="inline" src="img/{$value.tagIcon}" title="{$value.tagName}">{/loop} {/if}<a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>,
+            {loop="dreams"}<li>{if="$value.dreamStatus == 0"}<img class="inline" src="img/notebook--pencil.png" title="brouillon"> {/if}{if="$settings.useTagIcon"}{loop="value.tags"}<img class="inline" src="img/{$value.tagIcon}" title="{$value.tagName}">{/loop} {/if}<a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a>,
             par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}</li>{else}Aucun rêve trouvé{/loop}
         </ul>
 {include="footer"}

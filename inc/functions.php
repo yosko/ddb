@@ -24,6 +24,9 @@ require_once "inc/debug.php";
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 
+define("DREAM_STATUS_UNPUBLISHED", 0);
+define("DREAM_STATUS_PUBLISHED", 1);
+
 function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
     $settings = getSettings();

@@ -81,10 +81,24 @@ if($user['isLoggedIn']) {
             ."))";
         $criteria["text"] = $_GET['text'];
     }
-    
+
     //specific filter
     if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
+        $status = DREAM_STATUS_PUBLISHED;
         $where .= ' AND u.userId=:userId';
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'myUnpublished') {
+        $status = DREAM_STATUS_UNPUBLISHED;
+        $where .= ' AND d.dreamStatus = :status AND u.userId=:userId';
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'all' && $user['role'] == 'admin') {
+        //nothing to do here
+        //used only to avoid unauthorized user to list all dreams, including unpublished by other users
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'unpublished' && $user['role'] == 'admin') {
+        $status = DREAM_STATUS_UNPUBLISHED;
+        $where .= ' AND d.dreamStatus = :status';
+    } else {
+        //only published dreams, or unpublished by current user
+        $status = DREAM_STATUS_PUBLISHED;
+        $where .= ' AND (d.dreamStatus = :status OR d.userId_FK = :userId)';
     }
 
     //replace the first "AND" by a "WHERE"
@@ -117,7 +131,8 @@ if($user['isLoggedIn']) {
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
+        .", d.dreamDate as dreamDateUnformated, d.dreamStatus"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
@@ -157,8 +172,21 @@ if($user['isLoggedIn']) {
         $searchText = '%'.$_GET['text'].'%';
         $qryDreams->bindParam(':searchText', $searchText, PDO::PARAM_STR);
     }
+
     if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
-        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_STR);
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'myUnpublished') {
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'all' && $user['role'] == 'admin') {
+        //nothing to do here
+        //used only to avoid unauthorized user to list all dreams, including unpublished by other users
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'unpublished' && $user['role'] == 'admin') {
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+    } else {
+        //only published dreams, or unpublished by current user
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
     }
     
     $qryDreams->execute();

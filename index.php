@@ -25,18 +25,22 @@ include_once "inc/functions.php";
 initDDb($db, $settings, $tpl, $user);
 
 if($user['isLoggedIn']) {
-    $qryLastDreams = $db->prepare(
-        "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
+    $status = DREAM_STATUS_PUBLISHED;
+
+    $sql = "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
         .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, count(c.commentId) as nbComments"
+        .", d.dreamStatus"
         ." FROM ddb_dream d LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_comment c on c.dreamId_FK = d.dreamId"
+        ." WHERE d.dreamStatus = :status OR d.userId_FK = :userId"
         ." GROUP BY d.dreamId, dr.dreamerId"
-        ." ORDER BY d.dreamCreation DESC, d.dreamDate DESC LIMIT 10"
-    );
+        ." ORDER BY d.dreamCreation DESC, d.dreamDate DESC LIMIT 10";
+    $qryLastDreams = $db->prepare($sql);
+    $qryLastDreams->bindParam(':status', $status, PDO::PARAM_INT);
+    $qryLastDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
     $qryLastDreams->execute();
-    $lastDreams = $qryLastDreams->fetchAll();
-    //$lastDreams = array_reverse($qryLastDreams->fetchAll());
+    $lastDreams = $qryLastDreams->fetchAll(PDO::FETCH_ASSOC);
     
     $qryLastTags = $db->prepare(
         "SELECT t.tagId, t.tagName, t.tagIcon, count(dt.dreamId_FK) as nbUse FROM ddb_tag t LEFT JOIN ddb_dream_tag dt on dt.tagId_FK = t.tagId GROUP BY t.tagId, t.tagName ORDER BY tagId DESC LIMIT 10");

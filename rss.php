@@ -26,15 +26,16 @@ initDDb($db, $settings, $tpl, $user, $publicFeed, true);
 
 if($publicFeed) {
     header("Content-Type: application/rss+xml; charset=UTF-8");
+    $status = DREAM_STATUS_PUBLISHED;
 
 	if(isset($_GET['comments'])) {
-		$where = '';
+		$where = ' WHERE d.dreamStatus = :status';
 		$limit = ' LIMIT 10';
 		$orderBy = ' ORDER BY c.commentLastEdit DESC';
 
 		if(isset($_GET['dream']) && is_numeric($_GET['dream'])) {
 			$dreamId = (int)$_GET['dream'];
-			$where = ' WHERE d.dreamId=:dreamId';
+			$where .= ' AND d.dreamId=:dreamId';
 		}
 
 	    $sql = "SELECT u.userLogin, c.commentId, c.commentText, d.dreamId, d.dreamTitle, dr.dreamerName"
@@ -49,6 +50,7 @@ if($publicFeed) {
 	    
 	    $qryComments = $db->prepare($sql);
 
+        $qryComments->bindParam(':status', $status, PDO::PARAM_INT);
     	if(isset($dreamId)) {
             $qryComments->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
     	}
@@ -70,7 +72,7 @@ if($publicFeed) {
         $tpl->assign( "comments", $comments );
         $tpl->draw( "rssComments" );
     } elseif(isset($_GET['dreams'])) {
-        $where = '';
+        $where = ' WHERE d.dreamStatus = :status';
         $orderBy = ' ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC';
         $limit = ' LIMIT 10';
 
@@ -97,6 +99,7 @@ if($publicFeed) {
             .$limit;
         
         $qryDreams = $db->prepare($sql);
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
         $qryDreams->execute();
         $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
 

@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS ddb_comment (
     'commentLastEdit'   DATETIME NOT NULL DEFAULT current_timestamp
 );
 
+ALTER TABLE ddb_dream ADD COLUMN dreamStatus INTEGER NOT NULL DEFAULT 1;
+
 QUERY;
 
 

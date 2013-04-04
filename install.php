@@ -107,7 +107,8 @@ CREATE TABLE IF NOT EXISTS ddb_dream (
     'dreamFunFacts'     TEXT,
     'dreamFeelings'     TEXT,
     'userId_FK'         INT NOT NULL,
-    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp
+    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp,
+    'dreamStatus'       INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS ddb_dream_tag (
