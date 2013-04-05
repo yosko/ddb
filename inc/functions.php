@@ -162,7 +162,8 @@ function logUser($tpl) {
         'ddb',
         $settings['nbLTSession'],
         $settings['LTDuration'],
-        $settings['LTDir']
+        $settings['LTDir'],
+        DEBUG_MODE
     );
 
     if(isset($_GET['logout'])) {
