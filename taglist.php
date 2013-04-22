@@ -30,7 +30,35 @@ if($user['isLoggedIn']) {
         "SELECT t.tagId, t.tagName, t.tagIcon, count(dt.dreamId_FK) as nbUse FROM ddb_tag t LEFT JOIN ddb_dream_tag dt on dt.tagId_FK = t.tagId GROUP BY t.tagId, t.tagName ORDER BY tagName ASC");
     $qryTags->execute();
     $tags = $qryTags->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $qryCountTags = $db->prepare(
+        "SELECT count(*) FROM ddb_tag");
+    $qryCountTags->execute();
+    $nbTag = $qryCountTags->fetchColumn();
     
+    $qryCountTagUse = $db->prepare(
+        "SELECT count(*) FROM ddb_dream_tag");
+    $qryCountTagUse->execute();
+    $nbTagUse = $qryCountTagUse->fetchColumn();
+
+    $average = $nbTagUse / $nbTag;
+
+    foreach($tags as $key => $value) {
+        if($value['nbUse'] > 8*$average ) {
+            $tags[$key]['weight'] = 5;
+        } elseif($value['nbUse'] > 4*$average ) {
+            $tags[$key]['weight'] = 4;
+        } elseif($value['nbUse'] > 2*$average ) {
+            $tags[$key]['weight'] = 3;
+        } elseif($value['nbUse'] > $average ) {
+            $tags[$key]['weight'] = 2;
+        } else {
+            $tags[$key]['weight'] = 1;
+        }
+    }
+    
+    $tpl->assign( "average", $average );
     $tpl->assign( "tags", $tags );
     $tpl->draw( "taglist" );
 }
