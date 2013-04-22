@@ -40,7 +40,7 @@
             <li><a class="tag" href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
             <li><a class="tag" href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
             <li><a class="tag" href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
-            <li><a class="tag" href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
+            <li><a class="tag" href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Modifier un tag</a></li>
             <li><a class="tag" href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
             <li><a class="tag" href="?p=users"><img class="inline" src="img/users.png"> Gérer les utilisateurs</a></li>
             {/if}
@@ -95,7 +95,7 @@
             </fieldset>
         </form>
 {elseif="$page=='renameDreamer'"}
-        <h2>Renommer un rêveur</h2>
+        <h2>Modifier un rêveur</h2>
         <form id="renameDreamer" method="post" action="">
             <fieldset>
             
@@ -109,25 +109,31 @@
                 <label for="newDreamerName">Nouveau nom</label>
                 <input type="text" autofocus="autofocus" name="newDreamerName" placeholder="">
                 
-                <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Renommer" />
+                <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Enregistrer" />
             </fieldset>
         </form>
 {elseif="$page=='renameTag'"}
-        <h2>Renommer un tag</h2>
+        <h2>Modifier un tag</h2>
         <form id="renameTag" method="post" action="">
             <fieldset>
             
-                <label for="tag">Rêveur</label>
+                <label for="tag">Tag</label>
                 <select name="tag" autofocus="autofocus">
                     <option value="">-</option>
 {loop="tags"}
-                    <option value="{$value.tagId}">{$value.tagName}</option>
+                    <option value="{$value.tagId}"{if="isset($tag) && $tag.tag == $value.tagId"} selected{/if}>{$value.tagName}</option>
 {/loop}
                 </select>
                 <label for="newTagName">Nouveau nom</label>
-                <input type="text" autofocus="autofocus" name="newTagName" placeholder="">
+                <input type="text" autofocus="autofocus" name="newTagName" placeholder=""{if="isset($tag)"} value="{$tag.newTagName}"{/if}>
+                {if="isset($errors.existingName) && $errors.existingName"}<div class="error">Un tag existe déjà avec ce nom. Pour les fusionner, cochez la case "Forcer la fusion".</div>
+                {/if}
+                <div>
+                    <input type="checkbox" name="merge" id="merge" value="merge">
+                    <label for="merge">Forcer la fusion (si le nouveau nom existe déjà)</label>
+                </div>
                 
-                <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Renommer" />
+                <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Enregistrer" />
             </fieldset>
         </form>
 {elseif="$page=='settings'"}
