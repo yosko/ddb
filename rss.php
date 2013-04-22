@@ -30,7 +30,7 @@ if($publicFeed) {
 
 	if(isset($_GET['comments'])) {
 		$where = ' WHERE d.dreamStatus = :status';
-		$limit = ' LIMIT 10';
+		$limit = ' LIMIT 50';
 		$orderBy = ' ORDER BY c.commentLastEdit DESC';
 
 		if(isset($_GET['dream']) && is_numeric($_GET['dream'])) {

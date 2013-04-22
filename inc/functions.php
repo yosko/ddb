@@ -254,26 +254,6 @@ function setSettings($settings) {
     //TODO
 }
 
-function updateParams($login, $password) {
-    $count = 3; $hashedPassword = '';
-    while($count > 0 && strlen($hashedPassword) < 200) {
-        $hashedPassword = YosLoginTools::hashPassword($password);
-        $count--;
-    }
-    $string = "<?php\n\n"
-    ."/* AUTOMATICALLY GENERATED - DO NOT ADD ANYTHING: IT WILL BE LOST */\n\n"
-    ."\$param['login'] = \"".htmlentities(trim($login))."\";\n"
-    ."\$param['password'] = \"".YosLoginTools::hashPassword($password)."\";\n"
-    ."\$param['LTDir'] = 'cache/';\n"
-    ."\$param['nbLTSession'] = 200;\n"
-    ."\$param['LTDuration'] = 2592000;\n"
-    ."\n?>";
-    
-    $fp = fopen("inc/param.php", "w");
-    fwrite($fp, $string);
-    fclose($fp);
-}
-
 /**
  * Check if given user is the author of a given dream
  * @param  int     $userId  user id
