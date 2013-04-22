@@ -35,7 +35,29 @@ CREATE TABLE IF NOT EXISTS ddb_comment (
     'commentLastEdit'   DATETIME NOT NULL DEFAULT current_timestamp
 );
 
-ALTER TABLE ddb_dream ADD COLUMN dreamStatus INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE ddb_dream RENAME TO ddb_dream_old;
+
+CREATE TABLE IF NOT EXISTS ddb_dream (
+    'dreamId'           INTEGER NULL PRIMARY KEY AUTOINCREMENT,
+    'dreamerId_FK'      INT NOT NULL,
+    'dreamDate'         DATETIME,
+    'dreamTitle'        VARCHAR(256),
+    'dreamCharacters'   TEXT,
+    'dreamPlace'        TEXT,
+    'dreamText'         TEXT,
+    'dreamPointOfVue'   TEXT,
+    'dreamFunFacts'     TEXT,
+    'dreamFeelings'     TEXT,
+    'userId_FK'         INT NOT NULL,
+    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp,
+    'dreamPublication'  DATETIME NOT NULL DEFAULT current_timestamp,
+    'dreamStatus'       INTEGER NOT NULL DEFAULT 1
+);
+
+INSERT INTO ddb_dream (dreamId, dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK, dreamCreation, dreamPublication)
+SELECT dreamId, dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace, dreamText, dreamPointOfVue, dreamFunFacts, dreamFeelings, userId_FK, dreamCreation, dreamCreation FROM ddb_dream_old;
+
+DROP TABLE ddb_dream_old;
 
 QUERY;
 

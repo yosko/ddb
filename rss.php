@@ -73,13 +73,13 @@ if($publicFeed) {
         $tpl->draw( "rssComments" );
     } elseif(isset($_GET['dreams'])) {
         $where = ' WHERE d.dreamStatus = :status';
-        $orderBy = ' ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC';
+        $orderBy = ' ORDER BY qry.dreamPublication DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC';
         $limit = ' LIMIT 10';
 
         $sql = 
             "SELECT dr.dreamerName, d.dreamId"
             .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
+            .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, d.dreamPublication, u.userLogin, d.dreamDate as dreamDateUnformated"
             ." FROM ddb_dream d"
             ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
             ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
@@ -105,7 +105,7 @@ if($publicFeed) {
 
         //format creation date to RFC822
         foreach($dreams as $key => $value) {
-            $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
+            $dreams[$key]['formatedPublication'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamPublication']));
         }
         
         $tpl->assign( "dreams", $dreams );
