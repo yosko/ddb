@@ -35,7 +35,7 @@ if($user['isLoggedIn']) {
         ." LEFT JOIN ddb_comment c on c.dreamId_FK = d.dreamId"
         ." WHERE d.dreamStatus = :status OR d.userId_FK = :userId"
         ." GROUP BY d.dreamId, dr.dreamerId"
-        ." ORDER BY d.dreamCreation DESC, d.dreamDate DESC LIMIT 10";
+        ." ORDER BY d.dreamPublication DESC, d.dreamDate DESC LIMIT 10";
     $qryLastDreams = $db->prepare($sql);
     $qryLastDreams->bindParam(':status', $status, PDO::PARAM_INT);
     $qryLastDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
