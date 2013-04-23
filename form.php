@@ -85,6 +85,20 @@ if($user['isLoggedIn']) {
             
             //2- save the dream with the right dreamer id
             if( $dreamEdition == true ) {
+
+                //if dream wasn't published yet update the publication date
+                $qryDream = $db->prepare(
+                    "SELECT dreamStatus as status FROM ddb_dream WHERE dreamId = :dreamId");
+                $qryDream->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
+                $qryDream->execute();
+                $previousStatus = $qryDream->fetch(PDO::FETCH_BOUND);
+                if($previousStatus == false && $values['status'] == true) {
+                    $qry = $db->prepare(
+                        'UPDATE ddb_dream SET dreamPublication = current_timestamp'
+                        . ' WHERE dreamId = :dreamId');
+                    $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
+                    $qry->execute();
+                }
                 
                 $qry = $db->prepare(
                     'UPDATE ddb_dream SET dreamerId_FK = :dreamerId, dreamDate = :dreamDate, dreamTitle = :dreamTitle'
@@ -104,20 +118,6 @@ if($user['isLoggedIn']) {
                 $qry->bindParam(':dreamStatus', $values['status'], PDO::PARAM_INT);
                 $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
                 $qry->execute();
-
-                //if dream wasn't published yet update the publication date
-                $qryDream = $db->prepare(
-                    "SELECT dreamStatus as status FROM ddb_dream WHERE dreamId = :dreamId");
-                $qryDream->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
-                $qryDream->execute();
-                $dream = $qryDream->fetch(PDO::FETCH_BOUND);
-                if($dream['status'] == false && $values['status'] == true) {
-                    $qry = $db->prepare(
-                        'UPDATE ddb_dream SET dreamPublication = current_timestamp'
-                        . ' WHERE dreamId = :dreamId');
-                    $qry->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
-                    $qry->execute();
-                }
                 
                 //delete all tags attached to the dream (will be recreated)
                 $qry = $db->prepare(
