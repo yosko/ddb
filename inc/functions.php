@@ -26,6 +26,7 @@ require_once "inc/yoslogin.class.php";
 
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
+define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
 
 function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
@@ -55,7 +56,7 @@ function setRainTpl($tplDir = '', $tplCache = '') {
     $tpl = new RainTPL;
         
     //define base url for RSS & others
-    $ddbUrl = $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']);
+    $ddbUrl = BASE_URL;
     $tpl->assign( 'ddbUrl', $ddbUrl );
         
     return $tpl;
@@ -268,6 +269,23 @@ function wikiFormat($string) {
         '#\[i\](.*?)\[/i\]#s',          //italic text: [i]text[/i]
         '#\[s\](.*?)\[/s\]#s',          //strike text: [s]text[/s]
         '#\[u\](.*?)\[/u\]#s',          //underlined text: [u]text[/u]
+        '#(O|o):-?\)#',
+        '#&gt;:-?\)#',
+        '#\^_*\^\'#',
+        '#(:(-?|o)\)|\^_*\^)#',
+        '#:-?(S|s)#',
+        '#8-?\)#',
+        '#(T_+T|:\'-?\()#',
+        '#(o|O)(\.+|_+)(o|O)#',
+        '#:-?\*#',
+        '#:-?3#',
+        '#(:|x|X)-?D#',
+        '#:-?(p|P)#',
+        '#:-?\$#',
+        '#:-?\(#',
+        '#;-?\)#',
+        '#&gt;.?&lt;#',
+        '#:-?&amp;#',
     );
     $destinationTags = array(
         '<a href="$2">$1</a>',
@@ -278,6 +296,23 @@ function wikiFormat($string) {
         '<span style="font-style: italic;">$1</span>',
         '<span style="text-decoration: line-through;">$1</span>',
         '<span style="text-decoration: underline;">$1</span>',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-angel.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-evil.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sweat.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-confuse.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cool.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cry.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-eek.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kiss.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kitty.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-lol.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-razz.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-red.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sad.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-yell.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-zipper.png">',
     );
 
     $string = preg_replace($sourceTags, $destinationTags, $string);
