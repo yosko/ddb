@@ -254,6 +254,37 @@ function setSettings($settings) {
     //TODO
 }
 
+function wikiFormat($string) {
+    //turn newlines to paragrpahs
+    $string = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $string)."</p>";
+
+    //wiki syntax inspired by Le Hollandais Volant's Blogotext
+    $sourceTags = array(
+        '#\[([^[]+)\|([^[]+)\]#',       //url with title: [title|url]
+        '#\[(https?://)([^[]+)\]#',     //url with http(s): [url]
+        '#\(\(([^ ]*?)\|(.*?)\)\)#',    //image with alt text: (text|image url)
+        '#\[img\](.*?)\[/img\]#s',      //image: [img]image url[/img]
+        '#\[b\](.*?)\[/b\]#s',          //bold text: [b]text[/b]
+        '#\[i\](.*?)\[/i\]#s',          //italic text: [i]text[/i]
+        '#\[s\](.*?)\[/s\]#s',          //strike text: [s]text[/s]
+        '#\[u\](.*?)\[/u\]#s',          //underlined text: [u]text[/u]
+    );
+    $destinationTags = array(
+        '<a href="$2">$1</a>',
+        '<a href="$1$2">$2</a>',
+        '<img src="$1" alt="$2" />',
+        '<img src="$1" />',
+        '<span style="font-weight: bold;">$1</span>',
+        '<span style="font-style: italic;">$1</span>',
+        '<span style="text-decoration: line-through;">$1</span>',
+        '<span style="text-decoration: underline;">$1</span>',
+    );
+
+    $string = preg_replace($sourceTags, $destinationTags, $string);
+
+    return $string;
+}
+
 /**
  * Check if given user is the author of a given dream
  * @param  int     $userId  user id

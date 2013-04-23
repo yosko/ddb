@@ -67,8 +67,33 @@
             <label for="place">Lieu</label>
             <input type="text" name="place" id="place" value="{if condition="isset($dream)"}{$dream.place}{/if}">
             
-            <label for="text">Le rêve <span class="required">*</span></label>
+            <label for="text">Le rêve <span class="required">*</span> (<a id="textInfo" href="#textInfo">info</a>)</label>
             <textarea class="bigText" name="text" placeholder="Description détaillée ou résumée du rêve">{if condition="isset($dream)"}{$dream.text}{/if}</textarea>
+            <div id="dialogTextInfo">
+                <p>Balises autorisées dans les rêves et commentaires :</p>
+                <ul>
+                    <li>[url] donne <a href="example.com">http://example.com</a></li>
+                    <li>[texte|url] donne  <a href="http://example.com">texte</a></li>
+                    <li>[img]url[/img] donne <img src="img/ddb-icon-16.png"></li>
+                    <li>Image avec alt : en cours...</li>
+                    <li>[b]texte[/b] donne <span style="font-weight: bold;">texte</span></li>
+                    <li>[i]texte[/i] donne <span style="font-style: italic;">texte</span></li>
+                    <li>[s]texte[/s] donne <span style="text-decoration: line-through;">texte</span></li>
+                    <li>[u]texte[/u] donne <span style="text-decoration: underline;">texte</span></li>
+                </ul>
+                Note : pensez à préciser <u>http(s)://</u> devant vos liens.
+            </div>
+            <script>
+                $(function() {
+                    $( "#dialogTextInfo" ).dialog({
+                        autoOpen: false,
+                        width: 250
+                    });
+                    $('#textInfo').click(function(){
+                        $( "#dialogTextInfo" ).dialog( "open" );
+                    });
+                });
+            </script>
             
             <label for="pointofvue">Point de vue</label>
             <input type="text" name="pointofvue" id="pointofvue" value="{if condition="isset($dream)"}{$dream.pointOfVue}{/if}" placeholder="Interne, externe, omniscient, etc...">

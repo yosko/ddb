@@ -67,6 +67,8 @@ if($publicFeed) {
         		$itemDate = $comments[$key]['commentLastEdit'];
         	}
             $comments[$key]['itemDate'] = gmdate(DATE_RSS, strtotime($itemDate));
+            
+            $comments[$key]['commentText'] = wikiFormat($value['commentText']);
         }
         
         $tpl->assign( "comments", $comments );
@@ -106,6 +108,8 @@ if($publicFeed) {
         //format creation date to RFC822
         foreach($dreams as $key => $value) {
             $dreams[$key]['formatedPublication'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamPublication']));
+            
+            $dreams[$key]['dreamText'] = wikiFormat($value['dreamText']);
         }
         
         $tpl->assign( "dreams", $dreams );

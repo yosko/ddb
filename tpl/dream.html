@@ -49,8 +49,33 @@
         </div>
         <form id="newComment" method="post" action="">
         <fieldset>
-            <label for="text">Ajouter un commentaire</label>
+            <label for="text">Ajouter un commentaire (<a id="textInfo" href="#textInfo">info</a>)</label>
             <textarea class="smallText" name="text" placeholder="Commentaire..."></textarea>
+            <div id="dialogTextInfo">
+                <p>Balises autorisées dans les rêves et commentaires :</p>
+                <ul>
+                    <li>[url] donne <a href="example.com">http://example.com</a></li>
+                    <li>[texte|url] donne  <a href="http://example.com">texte</a></li>
+                    <li>[img]url[/img] donne <img src="img/ddb-icon-16.png"></li>
+                    <li>Image avec alt : en cours...</li>
+                    <li>[b]texte[/b] donne <span style="font-weight: bold;">texte</span></li>
+                    <li>[i]texte[/i] donne <span style="font-style: italic;">texte</span></li>
+                    <li>[s]texte[/s] donne <span style="text-decoration: line-through;">texte</span></li>
+                    <li>[u]texte[/u] donne <span style="text-decoration: underline;">texte</span></li>
+                </ul>
+                Note : pensez à préciser <u>http(s)://</u> devant vos liens.
+            </div>
+            <script>
+                $(function() {
+                    $( "#dialogTextInfo" ).dialog({
+                        autoOpen: false,
+                        width: 250
+                    });
+                    $('#textInfo').click(function(){
+                        $( "#dialogTextInfo" ).dialog( "open" );
+                    });
+                });
+            </script>
             
             <input type="submit" name="submitNewComment" id="submitNewComment" value="Poster commentaire" />
         </fieldset>

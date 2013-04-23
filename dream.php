@@ -97,7 +97,7 @@ if($user['isLoggedIn']) {
         $row = $qryDream->fetch(PDO::FETCH_BOUND);
         
         //format text
-        $dream['text'] = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $dream['text'])."</p>";
+        $dream['text'] = wikiFormat($dream['text']);
         
         //get dream tags
         $dreamId = intval($dream['id']);
@@ -120,6 +120,10 @@ if($user['isLoggedIn']) {
         $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
         $qry->execute();
         $comments = $qry->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($comments as $key => $value) {
+            $comments[$key]['commentText'] = wikiFormat($value['commentText']);
+        }
         
         $tpl->assign( "editButtons", $editButtons );
         $tpl->assign( "dream", $dream );
@@ -127,6 +131,7 @@ if($user['isLoggedIn']) {
         $tpl->assign( "errors", $errors );
         $tpl->assign( "comments", $comments );
         $tpl->assign( "tagArray", $tagArray );
+        $tpl->assign( 'js', true );
         $tpl->draw( "dream" );
     }
 }

@@ -24,12 +24,13 @@
     <title>{$pageTitle}</title>
     <link rel="stylesheet" href="style.css">
     {if="isset($settings) && $settings.isNightTime==true"}<link rel="stylesheet" href="style-night.css" />{/if}
+    <link rel="stylesheet" href="js/jquery-ui-1.10.2.custom.min.css" />
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
     {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?dreams&key={$settings.appKey}" title="Flux des rêves" />
     <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&key={$settings.appKey}" title="Flux des commentaires" />{if condition="isset($dream)"}
     <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&dream={$dream.id}&key={$settings.appKey}" title="Flux des commentaires du rêve {if condition="empty($dream.title)"}n°{$dream.id}{else}&laquo; {$dream.title} &raquo;{/if}" />{/if}{/if}
-    {if="isset($js)"}<script src="js/jquery-1.8.3.min.js"></script>
-    <script src="js/jquery-ui-1.9.2.custom.min.js"></script>
+    {if="isset($js)"}<script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
     <style>
         .ui-menu { list-style: none outside none;margin:0;padding:2px;text-align:left;background:#eee;border: 1px solid #aaa;border-radius:3px;
             max-height: 150px;
