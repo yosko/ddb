@@ -283,8 +283,8 @@ function wikiFormat($string) {
         '#:-?(p|P)#',
         '#:-?\$#',
         '#:-?\(#',
-        '#;-?\)#',
         '#&gt;.?&lt;#',
+        '#;-?\)#',
         '#:-?&amp;#',
         '#&lt;3#'
     );
@@ -311,8 +311,8 @@ function wikiFormat($string) {
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-razz.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-red.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sad.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-yell.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-zipper.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/heart.png">'
     );
