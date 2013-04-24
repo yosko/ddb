@@ -286,6 +286,7 @@ function wikiFormat($string) {
         '#;-?\)#',
         '#&gt;.?&lt;#',
         '#:-?&amp;#',
+        '#&lt;3#'
     );
     $destinationTags = array(
         '<a href="$2">$1</a>',
@@ -313,6 +314,7 @@ function wikiFormat($string) {
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-yell.png">',
         '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-zipper.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/heart.png">'
     );
 
     $string = preg_replace($sourceTags, $destinationTags, $string);
