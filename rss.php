@@ -67,7 +67,7 @@ if($publicFeed) {
         		$itemDate = $comments[$key]['commentLastEdit'];
         	}
             $comments[$key]['itemDate'] = gmdate(DATE_RSS, strtotime($itemDate));
-            
+
             $comments[$key]['commentText'] = wikiFormat($value['commentText']);
         }
         
@@ -110,6 +110,11 @@ if($publicFeed) {
             $dreams[$key]['formatedPublication'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamPublication']));
             
             $dreams[$key]['dreamText'] = wikiFormat($value['dreamText']);
+            $dreams[$key]['dreamCharacter'] = wikiFormat($value['dreamCharacter'], false);
+            $dreams[$key]['dreamPlace'] = wikiFormat($value['dreamPlace'], false);
+            $dreams[$key]['dreamPointOfVue'] = wikiFormat($value['dreamPointOfVue'], false);
+            $dreams[$key]['dreamFunFacts'] = wikiFormat($value['dreamFunFacts'], false);
+            $dreams[$key]['dreamFeelings'] = wikiFormat($value['dreamFeelings'], false);
         }
         
         $tpl->assign( "dreams", $dreams );

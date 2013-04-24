@@ -98,6 +98,11 @@ if($user['isLoggedIn']) {
         
         //format text
         $dream['text'] = wikiFormat($dream['text']);
+        $dream['characters'] = wikiFormat($dream['characters'], false);
+        $dream['place'] = wikiFormat($dream['place'], false);
+        $dream['pointOfVue'] = wikiFormat($dream['pointOfVue'], false);
+        $dream['funFacts'] = wikiFormat($dream['funFacts'], false);
+        $dream['feelings'] = wikiFormat($dream['feelings'], false);
         
         //get dream tags
         $dreamId = intval($dream['id']);

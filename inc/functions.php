@@ -255,9 +255,10 @@ function setSettings($settings) {
     //TODO
 }
 
-function wikiFormat($string) {
+function wikiFormat($string, $paragraphs = true) {
     //turn newlines to paragrpahs
-    $string = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $string)."</p>";
+    if($paragraphs == true)
+        $string = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $string)."</p>";
 
     //wiki syntax inspired by Le Hollandais Volant's Blogotext
     $sourceTags = array(
