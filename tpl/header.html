@@ -101,13 +101,10 @@
 </head>
 <body>
     <h1><a href="index.php" class="logo"><img src="img/ddb-logo.png" /></a></h1>
-    <div class="content">
-    {if condition="!isset($noLogout) || $noLogout == false"}
-        <span class="right menu-icon">
-        {if condition="isset($csvLink)"}
+    <div class="content">{if condition="!isset($noLogout) || $noLogout == false"}
+        <span class="right menu-icon">{if condition="isset($csvLink)"}
             <a href="{$csvLink}" class="menu-download" title="Télécharger au format CSV les rêves sélectionnés"><img src="img/navigation-270-button.png" alt="Télécharger" /></a>
-        {/if}
-        {if condition="isset($dream) && $editButtons==true"}
+        {/if}{if condition="isset($dream) && $editButtons==true"}
             <a href="form.php?id={$dream.id}" class="menu-edit" title="Modifier le rêve"><img src="img/pencil-button.png" alt="Modification" /></a>
             <a href="delete.php?id={$dream.id}" class="menu-delete" title="Supprimer le rêve"><img src="img/minus-button.png" alt="Suppression" /></a>
         {/if}
@@ -117,40 +114,39 @@
             <a href="form.php" class="menu-add" title="Ajouter un rêve"><img src="img/plus-button.png" alt="Nouveau" /></a>
             <a href="config.php" class="menu-conf" title="Configurer DDb"><img src="img/gear.png" alt="Configuration" /></a>
             <a href="index.php?logout" class="menu-logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>
-        </span>
-    {/if}
-    {if="isset($js)"}<div id="dialogTextInfo">
-        <p>Balises autorisées dans les rêves et commentaires :</p>
-        <ul>
-            <li>[url] donne <a href="example.com">http://example.com</a></li>
-            <li>[texte|url] donne  <a href="http://example.com">texte</a></li>
-            <li>[num rêve] donne  <a href="dream.php?id=35">n°35</a></li>
-            <li>[img]url[/img] donne <img src="img/ddb-icon-16.png"></li>
-            <li>Image avec alt : en cours...</li>
-            <li>[b]texte[/b] donne <span style="font-weight: bold;">texte</span></li>
-            <li>[i]texte[/i] donne <span style="font-style: italic;">texte</span></li>
-            <li>[s]texte[/s] donne <span style="text-decoration: line-through;">texte</span></li>
-            <li>[u]texte[/u] donne <span style="text-decoration: underline;">texte</span></li>
-            <li>Survolez pour voir les syntaxes :
-                <img class="inline" title=":) :-) :o) ^^ ^_^" src="img/smiley.png">
-                <img class="inline" title=":D :-D xD X-D" src="img/smiley-lol.png">
-                <img class="inline" title=">< >.<" src="img/smiley-yell.png">
-                <img class="inline" title=":P :-p" src="img/smiley-razz.png">
-                <img class="inline" title=";) ;-)" src="img/smiley-wink.png">
-                <img class="inline" title="8) 8-)" src="img/smiley-cool.png">
-                <img class="inline" title=":( :-(" src="img/smiley-sad.png">
-                <img class="inline" title=":'( :'-( T_T T__ T" src="img/smiley-cry.png">
-                <img class="inline" title=":S :-S" src="img/smiley-confuse.png">
-                <img class="inline" title="o.O o_O" src="img/smiley-eek.png">
-                <img class="inline" title=":* :-*" src="img/smiley-kiss.png">
-                <img class="inline" title=":3 :-3" src="img/smiley-kitty.png">
-                <img class="inline" title=":&amp; :-&amp;" src="img/smiley-zipper.png">
-                <img class="inline" title=":$ :-$" src="img/smiley-red.png">
-                <img class="inline" title="^^' ^_^'" src="img/smiley-sweat.png">
-                <img class="inline" title="O:) O:-)" src="img/smiley-angel.png">
-                <img class="inline" title=">:) >:-)" src="img/smiley-evil.png">
-                <img class="inline" title="<3" src="img/heart.png">
-            </li>
-        </ul>
-        Note : pensez à préciser <u>http(s)://</u> devant vos liens.
-    </div>{/if}
+        </span>{/if}
+        {if="isset($js)"}<div id="dialogTextInfo">
+            <p>Balises autorisées dans les rêves et commentaires :</p>
+            <ul>
+                <li>[url] donne <a href="example.com">http://example.com</a></li>
+                <li>[texte|url] donne  <a href="http://example.com">texte</a></li>
+                <li>[num rêve] donne  <a href="dream.php?id=35">n°35</a></li>
+                <li>[img]url[/img] donne <img src="img/ddb-icon-16.png"></li>
+                <li>Image avec alt : en cours...</li>
+                <li>[b]texte[/b] donne <span style="font-weight: bold;">texte</span></li>
+                <li>[i]texte[/i] donne <span style="font-style: italic;">texte</span></li>
+                <li>[s]texte[/s] donne <span style="text-decoration: line-through;">texte</span></li>
+                <li>[u]texte[/u] donne <span style="text-decoration: underline;">texte</span></li>
+                <li>Survolez pour voir les syntaxes :
+                    <img class="inline" title=":) :-) :o) ^^ ^_^" src="img/smiley.png">
+                    <img class="inline" title=":D :-D xD X-D" src="img/smiley-lol.png">
+                    <img class="inline" title=">< >.<" src="img/smiley-yell.png">
+                    <img class="inline" title=":P :-p" src="img/smiley-razz.png">
+                    <img class="inline" title=";) ;-)" src="img/smiley-wink.png">
+                    <img class="inline" title="8) 8-)" src="img/smiley-cool.png">
+                    <img class="inline" title=":( :-(" src="img/smiley-sad.png">
+                    <img class="inline" title=":'( :'-( T_T T__ T" src="img/smiley-cry.png">
+                    <img class="inline" title=":S :-S" src="img/smiley-confuse.png">
+                    <img class="inline" title="o.O o_O" src="img/smiley-eek.png">
+                    <img class="inline" title=":* :-*" src="img/smiley-kiss.png">
+                    <img class="inline" title=":3 :-3" src="img/smiley-kitty.png">
+                    <img class="inline" title=":&amp; :-&amp;" src="img/smiley-zipper.png">
+                    <img class="inline" title=":$ :-$" src="img/smiley-red.png">
+                    <img class="inline" title="^^' ^_^'" src="img/smiley-sweat.png">
+                    <img class="inline" title="O:) O:-)" src="img/smiley-angel.png">
+                    <img class="inline" title=">:) >:-)" src="img/smiley-evil.png">
+                    <img class="inline" title="<3" src="img/heart.png">
+                </li>
+            </ul>
+            Note : pensez à préciser <u>http(s)://</u> devant vos liens.
+        </div>{/if}
