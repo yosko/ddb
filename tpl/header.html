@@ -24,13 +24,13 @@
     <title>{$pageTitle}</title>
     <link rel="stylesheet" href="style.css">
     {if="isset($settings) && $settings.isNightTime==true"}<link rel="stylesheet" href="style-night.css" />{/if}
-    <link rel="stylesheet" href="js/jquery-ui-1.10.2.custom.min.css" />
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
     {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?dreams&key={$settings.appKey}" title="Flux des rêves" />
     <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&key={$settings.appKey}" title="Flux des commentaires" />{if condition="isset($dream)"}
     <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&dream={$dream.id}&key={$settings.appKey}" title="Flux des commentaires du rêve {if condition="empty($dream.title)"}n°{$dream.id}{else}&laquo; {$dream.title} &raquo;{/if}" />{/if}{/if}
     {if="isset($js)"}<script src="js/jquery-1.9.1.min.js"></script>
     <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
+    <link rel="stylesheet" href="js/jquery-ui-1.10.2.custom.min.css" />
     <style>
         .ui-menu { list-style: none outside none;margin:0;padding:2px;text-align:left;background:#eee;border: 1px solid #aaa;border-radius:3px;
             max-height: 150px;
@@ -48,7 +48,7 @@
     </style>
     <script>
         $(function() {
-            var availableTags = {$tagList};
+            var availableTags = {if="isset($taglist)"}{$tagList}{else}[]{/if};
             function split( val ) { return val.split( /,\s*/ ); }
             function extractLast( term ) { return split( term ).pop(); }
             
@@ -84,6 +84,18 @@
                         return false;
                     }
                 });
+
+            $( "#dialogTextInfo" ).dialog({
+                autoOpen: false,
+                width: 250
+            });
+            $('#textInfo').click(function(){
+                $( "#dialogTextInfo" ).dialog( "open" );
+            });
+            $(".hidden").hide();
+            $("#addDreamer").click(function () {
+                $(".hidden").toggle("fast");
+            });
         });
     </script>{/if}
 </head>
@@ -107,3 +119,38 @@
             <a href="index.php?logout" class="menu-logout" title="Se déconnecter"><img src="img/door-open-out.png" alt="Déconnexion" /></a>
         </span>
     {/if}
+    {if="isset($js)"}<div id="dialogTextInfo">
+        <p>Balises autorisées dans les rêves et commentaires :</p>
+        <ul>
+            <li>[url] donne <a href="example.com">http://example.com</a></li>
+            <li>[texte|url] donne  <a href="http://example.com">texte</a></li>
+            <li>[num rêve] donne  <a href="dream.php?id=35">n°35</a></li>
+            <li>[img]url[/img] donne <img src="img/ddb-icon-16.png"></li>
+            <li>Image avec alt : en cours...</li>
+            <li>[b]texte[/b] donne <span style="font-weight: bold;">texte</span></li>
+            <li>[i]texte[/i] donne <span style="font-style: italic;">texte</span></li>
+            <li>[s]texte[/s] donne <span style="text-decoration: line-through;">texte</span></li>
+            <li>[u]texte[/u] donne <span style="text-decoration: underline;">texte</span></li>
+            <li>Survolez pour voir les syntaxes :
+                <img class="inline" title=":) :-) :o) ^^ ^_^" src="img/smiley.png">
+                <img class="inline" title=":D :-D xD X-D" src="img/smiley-lol.png">
+                <img class="inline" title=">< >.<" src="img/smiley-yell.png">
+                <img class="inline" title=":P :-p" src="img/smiley-razz.png">
+                <img class="inline" title=";) ;-)" src="img/smiley-wink.png">
+                <img class="inline" title="8) 8-)" src="img/smiley-cool.png">
+                <img class="inline" title=":( :-(" src="img/smiley-sad.png">
+                <img class="inline" title=":'( :'-( T_T T__ T" src="img/smiley-cry.png">
+                <img class="inline" title=":S :-S" src="img/smiley-confuse.png">
+                <img class="inline" title="o.O o_O" src="img/smiley-eek.png">
+                <img class="inline" title=":* :-*" src="img/smiley-kiss.png">
+                <img class="inline" title=":3 :-3" src="img/smiley-kitty.png">
+                <img class="inline" title=":&amp; :-&amp;" src="img/smiley-zipper.png">
+                <img class="inline" title=":$ :-$" src="img/smiley-red.png">
+                <img class="inline" title="^^' ^_^'" src="img/smiley-sweat.png">
+                <img class="inline" title="O:) O:-)" src="img/smiley-angel.png">
+                <img class="inline" title=">:) >:-)" src="img/smiley-evil.png">
+                <img class="inline" title="<3" src="img/heart.png">
+            </li>
+        </ul>
+        Note : pensez à préciser <u>http(s)://</u> devant vos liens.
+    </div>{/if}

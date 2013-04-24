@@ -263,6 +263,7 @@ function wikiFormat($string) {
     $sourceTags = array(
         '#\[([^[]+)\|([^[]+)\]#',       //url with title: [title|url]
         '#\[(https?://)([^[]+)\]#',     //url with http(s): [url]
+        '#\[([0-p]*)\]#',                 //url for dream: [dreamId]
         '#\(\(([^ ]*?)\|(.*?)\)\)#',    //image with alt text: (text|image url)
         '#\[img\](.*?)\[/img\]#s',      //image: [img]image url[/img]
         '#\[b\](.*?)\[/b\]#s',          //bold text: [b]text[/b]
@@ -291,6 +292,7 @@ function wikiFormat($string) {
     $destinationTags = array(
         '<a href="$2">$1</a>',
         '<a href="$1$2">$2</a>',
+        '<a href="dream.php?id=$1">n°$1</a>',
         '<img src="$1" alt="$2" />',
         '<img src="$1" />',
         '<span style="font-weight: bold;">$1</span>',
