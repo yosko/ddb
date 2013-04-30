@@ -95,6 +95,11 @@ if($user['isLoggedIn']) {
         
         //read the first line to feed the bind variables
         $row = $qryDream->fetch(PDO::FETCH_BOUND);
+
+        //no title: get the beginning of the text
+        if(empty($dream['title'])) {
+            $dream['title'] = substr($dream['text'], 0, 40).'...';
+        }
         
         //format text
         $dream['text'] = wikiFormat($dream['text']);

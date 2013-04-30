@@ -26,7 +26,7 @@
 		<copyright>{$ddbUrl}/index.php</copyright>
         {loop="dreams"}
         <item>
-			<title>{if="$value.dreamPublication > $value.dreamCreation"}[màj] {/if}{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</title>
+			<title>{if="$value.dreamPublication > $value.dreamCreation"}[màj] {/if}{$value.dreamTitle}</title>
 			<guid>http://{$ddbUrl}/dream.php?id={$value.dreamId}</guid>
 			<link>http://{$ddbUrl}/dream.php?id={$value.dreamId}</link>
     		<pubDate>{$value.formatedPublication}</pubDate>

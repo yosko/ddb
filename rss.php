@@ -109,8 +109,13 @@ if($publicFeed) {
         foreach($dreams as $key => $value) {
             $dreams[$key]['formatedPublication'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamPublication']));
             
+            //no title: get the beginning of the text
+            if(empty($dreams[$key]['dreamTitle'])) {
+                $dreams[$key]['dreamTitle'] = substr($dreams[$key]['dreamText'], 0, 40).'...';
+            }
+
             $dreams[$key]['dreamText'] = wikiFormat($value['dreamText']);
-            $dreams[$key]['dreamCharacter'] = wikiFormat($value['dreamCharacter'], false);
+            $dreams[$key]['dreamCharacters'] = wikiFormat($value['dreamCharacters'], false);
             $dreams[$key]['dreamPlace'] = wikiFormat($value['dreamPlace'], false);
             $dreams[$key]['dreamPointOfVue'] = wikiFormat($value['dreamPointOfVue'], false);
             $dreams[$key]['dreamFunFacts'] = wikiFormat($value['dreamFunFacts'], false);
