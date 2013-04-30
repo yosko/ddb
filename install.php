@@ -146,6 +146,7 @@ CREATE TABLE IF NOT EXISTS ddb_settings (
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('adulte', 'notification-counter-18.png');
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('cauchemar', 'skull.png');
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('lucide', 'brain.png');
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('récurrent', 'arrow-circle-225.png');
 
 QUERY;
 

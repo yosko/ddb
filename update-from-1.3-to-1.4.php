@@ -59,6 +59,8 @@ SELECT dreamId, dreamerId_FK, dreamDate, dreamTitle, dreamCharacters, dreamPlace
 
 DROP TABLE ddb_dream_old;
 
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('récurrent', 'arrow-circle-225.png');
+
 QUERY;
 
 
