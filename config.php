@@ -40,7 +40,7 @@ if($user['isLoggedIn']) {
         $page = 'homeConfig';
         if(isset($_GET['p'])) {
             if(
-                $user['role'] == 'admin' && in_array($_GET['p'], array('import', 'purge', 'renameDreamer', 'renameTag', 'settings', 'users'))
+                $user['role'] == 'admin' && in_array($_GET['p'], array('import', 'purge', 'dreamers', 'tags', 'settings', 'users'))
                 || in_array($_GET['p'], array('password'))
             ) {
                 $page = $_GET['p'];
@@ -299,7 +299,7 @@ if($user['isLoggedIn']) {
             }
             $tpl->assign( "unusedTags", $unusedTags );
 
-        } elseif($page == 'renameDreamer') {
+        } elseif($page == 'dreamers') {
 
             //dreamers
             $dreamers = array();
@@ -328,66 +328,98 @@ if($user['isLoggedIn']) {
                 }
             }
 
-        } elseif($page == 'renameTag') {
+        } elseif($page == 'tags') {
             $errors = array();
 
-            //rename a tag
-            if (isset($_POST["submitRenameTag"])) {
-                if(isset($_POST['tag']) && !empty($_POST['tag'])
-                        && isset($_POST['newTagName']) && trim($_POST['newTagName']) != "") {
-                    
-                    $values['tag'] = $_POST['tag'];
-                    $values['newTagName'] = htmlspecialchars(trim($_POST['newTagName']));
-                    $values['merge'] = isset($_POST['merge']);
+            if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
-                    //check if new name already exists
-                    $qry = $db->prepare('SELECT tagId FROM ddb_tag WHERE tagName = :tagName');
-                    $qry->bindParam(':tagName', $values['newTagName'], PDO::PARAM_STR);
-                    $qry->execute();
-                    $existingId = $qry->fetchColumn();
+                $tagId = $_GET['id'];
 
-                    //merge
-                    if($values['merge'] == true && $existingId !== false) {
-                        $qry = $db->prepare(
-                            'UPDATE ddb_dream_tag SET tagId_FK = :existingId'
-                            . ' WHERE tagId_FK = :tagId');
-                        $qry->bindParam(':existingId', $existingId, PDO::PARAM_INT);
-                        $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
-                        $qry->execute();
-
-                        $qry = $db->prepare(
-                            'DELETE FROM ddb_tag WHERE tagId = :tagId');
-                        $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
-                        $qry->execute();
-
-                    //update
-                    } elseif($existingId === false) {
-                        $qry = $db->prepare(
-                            'UPDATE ddb_tag SET tagName = :tagName'
-                            . ' WHERE tagId = :tagId');
-                        $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
-                        $qry->bindParam(':tagName', $values['newTagName'], PDO::PARAM_STR);
-                        $qry->execute();
-
-                    //error: can't use name, already in use
+                if (isset($_POST['submitIconTag'])) {
+                    $fileName = '';
+                    if(!empty($_POST['iconFileName']) && file_exists('tpl/img/'.$_POST['iconFileName'])) {
+                        $fileName = $_POST['iconFileName'];
                     } else {
-                        $errors['existingName'] = true;
-                        $tpl->assign( "tag", $values );
+                        $errors['unknownFile'] = true;
+                    }
+
+                    if(empty($errors)) {
+                        $qry = $db->prepare(
+                            'UPDATE ddb_tag SET tagIcon = :tagIcon'
+                            . ' WHERE tagId = :tagId');
+                        $qry->bindParam(':tagId', $tagId, PDO::PARAM_INT);
+                        $qry->bindParam(':tagIcon', $fileName, PDO::PARAM_STR);
+                        $qry->execute();
                     }
                 }
 
+                $qry = $db->prepare(
+                    'SELECT * FROM ddb_tag  WHERE tagId = :tagId');
+                $qry->bindParam(':tagId', $tagId, PDO::PARAM_INT);
+                $qry->execute();
+                $tag = $qry->fetch(PDO::FETCH_ASSOC);
+
                 $tpl->assign( "errors", $errors );
+                $tpl->assign( "tag", $tag );
+
+            } else {
+                //rename a tag
+                if (isset($_POST["submitRenameTag"])) {
+                    if(isset($_POST['tag']) && !empty($_POST['tag'])
+                            && isset($_POST['newTagName']) && trim($_POST['newTagName']) != "") {
+                        
+                        $values['tag'] = $_POST['tag'];
+                        $values['newTagName'] = htmlspecialchars(trim($_POST['newTagName']));
+                        $values['merge'] = isset($_POST['merge']);
+
+                        //check if new name already exists
+                        $qry = $db->prepare('SELECT tagId FROM ddb_tag WHERE tagName = :tagName');
+                        $qry->bindParam(':tagName', $values['newTagName'], PDO::PARAM_STR);
+                        $qry->execute();
+                        $existingId = $qry->fetchColumn();
+
+                        //merge
+                        if($values['merge'] == true && $existingId !== false) {
+                            $qry = $db->prepare(
+                                'UPDATE ddb_dream_tag SET tagId_FK = :existingId'
+                                . ' WHERE tagId_FK = :tagId');
+                            $qry->bindParam(':existingId', $existingId, PDO::PARAM_INT);
+                            $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
+                            $qry->execute();
+
+                            $qry = $db->prepare(
+                                'DELETE FROM ddb_tag WHERE tagId = :tagId');
+                            $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
+                            $qry->execute();
+
+                        //update
+                        } elseif($existingId === false) {
+                            $qry = $db->prepare(
+                                'UPDATE ddb_tag SET tagName = :tagName'
+                                . ' WHERE tagId = :tagId');
+                            $qry->bindParam(':tagId', $values['tag'], PDO::PARAM_INT);
+                            $qry->bindParam(':tagName', $values['newTagName'], PDO::PARAM_STR);
+                            $qry->execute();
+
+                        //error: can't use name, already in use
+                        } else {
+                            $errors['existingName'] = true;
+                            $tpl->assign( "tag", $values );
+                        }
+                    }
+
+                    $tpl->assign( "errors", $errors );
+                }
+
+                //tags
+                $tags = array();
+                $qry = $db->prepare(
+                    "SELECT * FROM ddb_tag ORDER BY tagName ASC");
+                $qry->execute();
+                $tags = $qry->fetchAll(PDO::FETCH_ASSOC);
+                $tpl->assign( "tags", $tags );
             }
 
-            //tags
-            $tags = array();
-            $qry = $db->prepare(
-                "SELECT * FROM ddb_tag ORDER BY tagName ASC");
-            $qry->execute();
-            while ($row = $qry->fetch(PDO::FETCH_ASSOC)) {
-                $tags[] = $row;
-            }
-            $tpl->assign( "tags", $tags );
 
         //display settings
         } elseif($page == 'settings') {
