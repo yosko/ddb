@@ -38,7 +38,7 @@
             <li><b><img class="inline" src="img/heart.png" /> Emotions, état au réveil :</b> {$dream.feelings}</li>
         </ul>
 
-        <div class="comments">
+        <div id="comments">
             <header>Commentaires</header>
             {loop="comments"}<div class="comment" id="{$value.commentId}">
                 <h4><a class="comAnchor" href="#{$value.commentId}"><img class="inline" src="img/balloon-box.png" /></a> {$value.userLogin} :</h4>
