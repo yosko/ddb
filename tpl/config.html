@@ -39,8 +39,8 @@
             {if="$user.role == 'admin'"}
             <li><a class="tag" href="?p=import"><img class="inline" src="img/navigation-090-button.png" /> Importer des rêves</a></li>
             <li><a class="tag" href="?p=purge"><img class="inline" src="img/broom.png" /> Nettoyer la base</a></li>
-            <li><a class="tag" href="?p=renameDreamer"><img class="inline" src="img/user--pencil.png" /> Modifier un rêveur</a></li>
-            <li><a class="tag" href="?p=renameTag"><img class="inline" src="img/tag--pencil.png" /> Renommer un tag</a></li>
+            <li><a class="tag" href="?p=dreamers"><img class="inline" src="img/user--pencil.png" /> Gérer les rêveurs</a></li>
+            <li><a class="tag" href="?p=tags"><img class="inline" src="img/tag--pencil.png" /> Gérer les tags</a></li>
             <li><a class="tag" href="?p=settings"><img class="inline" src="img/gear.png"> Paramètres de DDb</a></li>
             <li><a class="tag" href="?p=users"><img class="inline" src="img/users.png"> Gérer les utilisateurs</a></li>
             {/if}
@@ -71,7 +71,7 @@
                     <input type="checkbox" name="replace" id="replace" value="replace">
                     <label for="replace">Remplacer la base</label>
                 </div>
-                <div class="warning">Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv&sortOrder=date|asc" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a></div>
+                <div class="warning">Pensez d&apos;abord à effectuer une sauvegarde : <a href="list.php?csv&sortOrder=date|asc&filter=all" title="Télécharger toute les rêves au format CSV"><img class="inline" src="img/navigation-270-button.png" alt="Télécharger" /></a></div>
                 
                 <input type="submit" name="import" id="submitImport" value="Importer" />
             </fieldset>
@@ -94,8 +94,8 @@
                 <input type="submit" name="submitPurge" id="submitPurge" value="Purger" />
             </fieldset>
         </form>
-{elseif="$page=='renameDreamer'"}
-        <h2>Renommer un rêveur</h2>
+{elseif="$page=='dreamers'"}
+        <h2>Modifier un rêveur</h2>
         <form id="renameDreamer" method="post" action="">
             <fieldset>
             
@@ -103,33 +103,80 @@
                 <select name="dreamer" autofocus="autofocus">
                     <option value="">-</option>
 {loop="dreamers"}
-                    <option value="{$value.dreamerId}">{$value.dreamerName}</option>
-{/loop}
+                    <option value="{$value.dreamerId}">{$value.dreamerName}</option>{/loop}
                 </select>
                 <label for="newDreamerName">Nouveau nom</label>
                 <input type="text" autofocus="autofocus" name="newDreamerName" placeholder="">
                 
-                <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Renommer" />
+                <input type="submit" name="submitRenameDreamer" id="submitRenameDreamer" value="Enregistrer" />
             </fieldset>
         </form>
-{elseif="$page=='renameTag'"}
-        <h2>Renommer un tag</h2>
+{elseif="$page=='tags'"}
+{if="isset($tag)"}
+        <h2>Ajouter/Modifier icône d'un tag</h2>
+        {if="$tag != false"}
+        <div>
+            Aperçu : <a class="tag" href="list.php?tag={$tag.tagId}"><img class="inline" src="img/{$tag.tagIcon}" /> {$tag.tagName}</a>
+        </div>
+        <form id="iconTag" method="post" action="">
+            <fieldset>
+                <label for="iconFileName">Image</label>
+                <input type="text" autofocus="autofocus" name="iconFileName" placeholder="image.png" value="{$tag.tagIcon}">
+                {if="isset($errors.unknownFile) && $errors.unknownFile"}<div class="error">Fichier non trouvé.</div>
+                {/if}
+                <div class="warning">L'image doit faire approximativement 16x16 pixels.</div>
+                <div class="warning">le fichier doit être placé dans le dossier <code>tpl/img/</code> de DDb.</div>
+                <div class="warning">Laissez vide pour retirer l'icône (l'image restera dans le dossier).</div>
+                <div class="warning">Si vous souhaitez ajouter des icônes, nous vous conseillons le pack d'icônes de <a href="http://p.yusukekamiyamane.com/">Yusuke Kamiyamane</a>, dont font déjà partie toutes les icônes utilisées dans DDb.</div>
+                
+                <input type="submit" name="submitIconTag" id="submitIconTag" value="Enregistrer" />
+            </fieldset>
+        </form>{else}
+        <div class="error">Ce tag n'existe pas.</div>{/if}
+{else}
+        <h2>Modifier un tag</h2>
         <form id="renameTag" method="post" action="">
             <fieldset>
             
-                <label for="tag">Rêveur</label>
+                <label for="tag">Tag</label>
                 <select name="tag" autofocus="autofocus">
                     <option value="">-</option>
 {loop="tags"}
-                    <option value="{$value.tagId}">{$value.tagName}</option>
-{/loop}
+                    <option value="{$value.tagId}"{if="isset($tag) && $tag.tag == $value.tagId"} selected{/if}>{$value.tagName}</option>{/loop}
                 </select>
                 <label for="newTagName">Nouveau nom</label>
-                <input type="text" autofocus="autofocus" name="newTagName" placeholder="">
+                <input type="text" autofocus="autofocus" name="newTagName" placeholder=""{if="isset($tag)"} value="{$tag.newTagName}"{/if}>
+                {if="isset($errors.existingName) && $errors.existingName"}<div class="error">Un tag existe déjà avec ce nom. Pour les fusionner, cochez la case "Forcer la fusion".</div>
+                {/if}
+                <div>
+                    <input type="checkbox" name="merge" id="merge" value="merge">
+                    <label for="merge">Forcer la fusion (si le nouveau nom existe déjà)</label>
+                </div>
+                <div class="warning">Si vous fusionnez deux tags, l'icône du premier (celui sélectionné dans la liste) sera perdue.</div>
                 
-                <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Renommer" />
+                <input type="submit" name="submitRenameTag" id="submitRenameTag" value="Enregistrer" />
             </fieldset>
         </form>
+        <hr>
+        <h2>Gérer les icônes</h2>
+        <header>Tags avec icône (cliquez pour modifier)</header>
+        <div>
+{loop="tags"}{if="!empty($value.tagIcon)"}
+            <a class="tag" href="config.php?p=tags&id={$value.tagId}"><img class="inline" src="img/{$value.tagIcon}" /> {$value.tagName}</a>{/loop}{/if}
+        </div>
+        <form id="addIconToTag" method="get" action="">
+            <fieldset>
+                <input type="hidden" name="p" value="tags" /> 
+                <label for="id">Tags sans icône</label>
+                <select name="id" autofocus="autofocus">
+{loop="tags"}{if="empty($value.tagIcon)"}
+                    <option value="{$value.tagId}"{if="isset($tag) && $tag.tag == $value.tagId"} selected{/if}>{$value.tagName}</option>{/loop}{/if}
+                </select>
+                
+                <input type="submit" id="submitAddIconToTag" value="Ajouter une icône" />
+            </fieldset>
+        </form>
+{/if}
 {elseif="$page=='settings'"}
         <h2>Paramètre de DDb</h2>
         <form id="settings" method="post" action="">

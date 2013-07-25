@@ -22,9 +22,9 @@
 
 include_once "inc/functions.php";
 
-initDDb($db, $settings, $tpl, $user, $publicFeed, true);
+initDDb($db, $settings, $tpl, $user);
 
-if($publicFeed || $user['isLoggedIn']) {
+if($user['isLoggedIn']) {
     
     //filters
     $where = "";
@@ -81,7 +81,26 @@ if($publicFeed || $user['isLoggedIn']) {
             ."))";
         $criteria["text"] = $_GET['text'];
     }
-    
+
+    //specific filter
+    if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
+        $status = DREAM_STATUS_PUBLISHED;
+        $where .= ' AND u.userId=:userId';
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'myUnpublished') {
+        $status = DREAM_STATUS_UNPUBLISHED;
+        $where .= ' AND d.dreamStatus = :status AND u.userId=:userId';
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'all' && $user['role'] == 'admin') {
+        //nothing to do here
+        //used only to avoid unauthorized user to list all dreams, including unpublished by other users
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'unpublished' && $user['role'] == 'admin') {
+        $status = DREAM_STATUS_UNPUBLISHED;
+        $where .= ' AND d.dreamStatus = :status';
+    } else {
+        //only published dreams, or unpublished by current user
+        $status = DREAM_STATUS_PUBLISHED;
+        $where .= ' AND (d.dreamStatus = :status OR d.userId_FK = :userId)';
+    }
+
     //replace the first "AND" by a "WHERE"
     $where = preg_replace('/AND/', 'WHERE', $where, 1);
     
@@ -108,20 +127,18 @@ if($publicFeed || $user['isLoggedIn']) {
     
     //pagination and limit for RSS
     $limit = "";
-    if($publicFeed) {
-        $orderBy = " ORDER BY qry.dreamCreation DESC, qry.dreamDateUnformated DESC, qry.dreamId DESC";
-        $limit = " LIMIT 10";
-    }
     
     $sql = 
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
-        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin, d.dreamDate as dreamDateUnformated"
+        .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
+        .", d.dreamDate as dreamDateUnformated, d.dreamStatus, count(c.commentId) as nbComments"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
         ." LEFT JOIN ddb_tag t on dt.tagId_FK = t.tagId"
         ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
+        ." LEFT JOIN ddb_comment c on c.dreamId_FK = d.dreamId"
         .$where
         ." GROUP BY dr.dreamerName, d.dreamId";
 
@@ -156,23 +173,26 @@ if($publicFeed || $user['isLoggedIn']) {
         $searchText = '%'.$_GET['text'].'%';
         $qryDreams->bindParam(':searchText', $searchText, PDO::PARAM_STR);
     }
+
+    if(isset($_GET['filter']) && $_GET['filter'] == 'myDreams') {
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'myUnpublished') {
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'all' && $user['role'] == 'admin') {
+        //nothing to do here
+        //used only to avoid unauthorized user to list all dreams, including unpublished by other users
+    } elseif(isset($_GET['filter']) && $_GET['filter'] == 'unpublished' && $user['role'] == 'admin') {
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+    } else {
+        //only published dreams, or unpublished by current user
+        $qryDreams->bindParam(':status', $status, PDO::PARAM_INT);
+        $qryDreams->bindParam(':userId', $user['id'], PDO::PARAM_INT);
+    }
     
     $qryDreams->execute();
 
-    if($publicFeed) {
-        header("Content-Type: application/rss+xml; charset=UTF-8");
-        $dreams = $qryDreams->fetchAll(PDO::FETCH_ASSOC);
-
-        //format creation date to RFC822
-        foreach($dreams as $key => $value) {
-            $dreams[$key]['dreamCreation'] = gmdate(DATE_RSS, strtotime($dreams[$key]['dreamCreation']));
-        }
-        
-        $tpl->assign( "dreams", $dreams );
-        $tpl->assign( "criteria", $criteria );
-        $tpl->draw( "rss" );
-        
-    } elseif(isset($_GET['csv'])) {
+    if(isset($_GET['csv'])) {
         header("Content-type: text/csv");
         header("Content-Disposition: attachment; filename=ddb_".date("Y-m-d_H-i").".csv");
         header("Pragma: no-cache");

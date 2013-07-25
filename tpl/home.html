@@ -23,8 +23,8 @@
         <header>Derniers rêves ajoutés</header>
         <ul>
             {loop="lastDreams"}<li>
-                <b><a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a></b>,
-                par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
+                <b>{if="$value.dreamStatus == 0"}<img class="inline" src="img/notebook--pencil.png" title="brouillon"> {/if}<a href="dream.php?id={$value.dreamId}">{if condition="$value.dreamTitle == ''"}{if condition="$value.dreamText == ''"}# Sans titre #{else}{$value.dreamText|substr:0,40}...{/if}{else}{$value.dreamTitle}{/if}</a></b>,
+                par <a href="list.php?dreamer={$value.dreamerId}">{$value.dreamerName}</a>{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}{if="$value.nbComments > 0"} <a href="dream.php?id={$value.dreamId}#comments"><img class="inline" src="img/balloon-box.png" title="{$value.nbComments} commentaire(s)" /></a>{/if}
             </li>{/loop}
         </ul>
         <p><a href="list.php">Tous les rêves</a></p>
@@ -38,5 +38,6 @@
             <li>Rêveurs : {$nbDreamers} (<a href="dreamerlist.php">Tous les rêveurs</a>)</li>
             <li>Rêves : {$nbDreams}</li>
             <li>Tags : {$nbTags} différents, pour un total de {$nbDreamTags} utilisations</li>
+            <li>Commentaires : {$nbComments}</li>
         </ul>
 {include="footer"}

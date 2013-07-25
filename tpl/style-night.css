@@ -77,3 +77,7 @@ input[type=submit]:active {
     background-color: #000;
     color: #7aa3f5;
 }
+
+.comment:target {
+    background-color: #495465;
+}

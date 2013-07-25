@@ -113,11 +113,12 @@ input[type="submit"] {
 }
 
 textarea {
-    height: 150px;
     resize: vertical;
     text-align: justify;
     border: 1px solid #ccc;
 }
+.bigText { height: 200px; }
+.smallText { height: 60px; }
 
 select {
     margin: 3px 0 0 0;
@@ -186,6 +187,12 @@ label.error {
     background-color: #ccc;
 }
 
+.weight1 { font-size: 0.7em; }
+.weight2 { font-size: 1em; }
+.weight3 { font-size: 1.3em; }
+.weight4 { font-size: 1.6em; }
+.weight5 { font-size: 1.9em; }
+
 .no-bullet {
     list-style-type: none;
     padding-left: 0;
@@ -212,10 +219,27 @@ label.error {
     padding: 2px 5px;
 }
 
+#dialogTextInfo ul {
+    padding-left: 1em;
+}
+
 footer {
     font-size: 0.8em;
     color: #666;
     text-align: center;
+}
+
+.comment {
+    margin: 0.5em 0 0 0;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #ccc;
+}
+.comment:target {
+    background-color: #ffa;
+}
+
+.comment footer {
+    text-align: left;
 }
 
 /* For small screens */

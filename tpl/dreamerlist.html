@@ -22,8 +22,19 @@
 {include="header"}
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêveurs</p>
         <h2>Tous les rêveurs</h2>
-        <div>
-            {loop="dreamers"}<b><a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value.nbDream} rêves"><img src="img/user.png" /> {$value.dreamerName}</a></b>{/loop}
+        <ul>{loop="dreamers"}
+
+            <li>
+                <b><a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}"><img src="img/user.png" /> {$value.dreamerName}</a> : {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}</b>.<br>Tags préférés :
+                <ul>{loop="value.tags"}
+
+                    <li>
+                        <a class="tag" href="list.php?dreamer={$value.dreamerId}&tag={$value.tagId}" title="{$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}"><img src="img/tag-label.png" /> {$value.tagName}</a> : {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}
+                    </li>{/loop}
+
+                </ul>
+            </li>{/loop}
+
         </div>
         </ul>
 {include="footer"}

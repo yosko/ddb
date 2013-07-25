@@ -20,15 +20,13 @@
  * 
  */
 
-define("DEBUG_MODE", false);
-
-if(DEBUG_MODE === true) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 'On');
-}
-
+require_once "inc/debug.php";
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
+
+define("DREAM_STATUS_UNPUBLISHED", 0);
+define("DREAM_STATUS_PUBLISHED", 1);
+define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
 
 function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
@@ -37,10 +35,11 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
     $tpl->assign( "settings", $settings );
 
     $publicFeed = false;
-    if($rss && isset($_GET['feed']) && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
+    if($rss && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
         $publicFeed = true;
+    } else {
+        $user = logUser($tpl);
     }
-    $user = logUser($tpl, $publicFeed);
 }
 
 function setRainTpl($tplDir = '', $tplCache = '') {
@@ -57,7 +56,7 @@ function setRainTpl($tplDir = '', $tplCache = '') {
     $tpl = new RainTPL;
         
     //define base url for RSS & others
-    $ddbUrl = $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']);
+    $ddbUrl = BASE_URL;
     $tpl->assign( 'ddbUrl', $ddbUrl );
         
     return $tpl;
@@ -157,14 +156,15 @@ class DDbLogin extends YosLogin {
     }
 }
 
-function logUser($tpl, $public=false) {
+function logUser($tpl) {
     global $settings;
 
     $logger = new DDbLogin(
         'ddb',
         $settings['nbLTSession'],
         $settings['LTDuration'],
-        $settings['LTDir']
+        $settings['LTDir'],
+        DEBUG_MODE
     );
 
     if(isset($_GET['logout'])) {
@@ -187,7 +187,7 @@ function logUser($tpl, $public=false) {
         $tpl->assign( "user", $user );
     }
     
-    if($user['isLoggedIn'] === false && $public === false) {
+    if($user['isLoggedIn'] === false) {
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
     }
@@ -199,7 +199,7 @@ function getUser($login) {
     global $db;
 
     $qry = $db->prepare(
-        "SELECT userId as id, userLogin as login, userPassword as password, userRole as role FROM ddb_user where userLogin = :login LIMIT 1");
+        "SELECT userId as id, userLogin as login, userPassword as password, userRole as role FROM ddb_user where lower(userLogin) = lower(:login) LIMIT 1");
     $qry->bindParam(':login', $login, PDO::PARAM_STR);
     $qry->execute();
     $user = $qry->fetch(PDO::FETCH_ASSOC);
@@ -255,24 +255,74 @@ function setSettings($settings) {
     //TODO
 }
 
-function updateParams($login, $password) {
-    $count = 3; $hashedPassword = '';
-    while($count > 0 && strlen($hashedPassword) < 200) {
-        $hashedPassword = YosLoginTools::hashPassword($password);
-        $count--;
-    }
-    $string = "<?php\n\n"
-    ."/* AUTOMATICALLY GENERATED - DO NOT ADD ANYTHING: IT WILL BE LOST */\n\n"
-    ."\$param['login'] = \"".htmlentities(trim($login))."\";\n"
-    ."\$param['password'] = \"".YosLoginTools::hashPassword($password)."\";\n"
-    ."\$param['LTDir'] = 'cache/';\n"
-    ."\$param['nbLTSession'] = 200;\n"
-    ."\$param['LTDuration'] = 2592000;\n"
-    ."\n?>";
-    
-    $fp = fopen("inc/param.php", "w");
-    fwrite($fp, $string);
-    fclose($fp);
+function wikiFormat($string, $paragraphs = true) {
+    //turn newlines to paragrpahs
+    if($paragraphs == true)
+        $string = "<p>".str_replace("\n", "</p>\n\t\t\t<p>", $string)."</p>";
+
+    //wiki syntax inspired by Le Hollandais Volant's Blogotext
+    $sourceTags = array(
+        '#\[([^[]+)\|([^[]+)\]#',       //url with title: [title|url]
+        '#\[(https?://)([^[]+)\]#',     //url with http(s): [url]
+        '#\[([0-9]*)\]#',               //url for dream: [dreamId]
+        '#\(\(([^ ]*?)\|(.*?)\)\)#',    //image with alt text: (text|image url)
+        '#\[img\](.*?)\[/img\]#s',      //image: [img]image url[/img]
+        '#\[b\](.*?)\[/b\]#s',          //bold text: [b]text[/b]
+        '#\[i\](.*?)\[/i\]#s',          //italic text: [i]text[/i]
+        '#\[s\](.*?)\[/s\]#s',          //strike text: [s]text[/s]
+        '#\[u\](.*?)\[/u\]#s',          //underlined text: [u]text[/u]
+        '#(O|o):-?\)#',
+        '#&gt;:-?\)#',
+        '#\^_*\^\'#',
+        '#(:(-?|o)\)|\^_*\^)#',
+        '#:-?(S|s)#',
+        '#8-?\)#',
+        '#(T_+T|:\'-?\()#',
+        '#(o|O)(\.+|_+)(o|O)#',
+        '#:-?\*#',
+        '#:-?3#',
+        '#(:|x|X)-?D#',
+        '#:-?(p|P)#',
+        '#:-?\$#',
+        '#:-?\(#',
+        '#&gt;.?&lt;#',
+        '#;-?\)#',
+        '#:-?&amp;#',
+        '#&lt;3#'
+    );
+    $destinationTags = array(
+        '<a href="$2">$1</a>',
+        '<a href="$1$2">$2</a>',
+        '<a href="dream.php?id=$1">n°$1</a>',
+        '<img src="$1" alt="$2" />',
+        '<img src="$1" />',
+        '<span style="font-weight: bold;">$1</span>',
+        '<span style="font-style: italic;">$1</span>',
+        '<span style="text-decoration: line-through;">$1</span>',
+        '<span style="text-decoration: underline;">$1</span>',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-angel.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-evil.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sweat.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-confuse.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cool.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cry.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-eek.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kiss.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kitty.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-lol.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-razz.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-red.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sad.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-yell.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-zipper.png">',
+        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/heart.png">'
+    );
+
+    $string = preg_replace($sourceTags, $destinationTags, $string);
+
+    return $string;
 }
 
 /**

@@ -107,7 +107,9 @@ CREATE TABLE IF NOT EXISTS ddb_dream (
     'dreamFunFacts'     TEXT,
     'dreamFeelings'     TEXT,
     'userId_FK'         INT NOT NULL,
-    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp
+    'dreamCreation'     DATETIME NOT NULL DEFAULT current_timestamp,
+    'dreamPublication'  DATETIME NOT NULL DEFAULT current_timestamp,
+    'dreamStatus'       INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS ddb_dream_tag (
@@ -144,6 +146,7 @@ CREATE TABLE IF NOT EXISTS ddb_settings (
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('adulte', 'notification-counter-18.png');
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('cauchemar', 'skull.png');
 INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('lucide', 'brain.png');
+INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('récurrent', 'arrow-circle-225.png');
 
 QUERY;
 
