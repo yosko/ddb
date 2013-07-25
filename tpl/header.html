@@ -48,7 +48,7 @@
     </style>
     <script>
         $(function() {
-            var availableTags = {if="isset($taglist)"}{$tagList}{else}[]{/if};
+            var availableTags = {if="isset($tagList)"}{$tagList}{else}[]{/if};
             function split( val ) { return val.split( /,\s*/ ); }
             function extractLast( term ) { return split( term ).pop(); }
             
