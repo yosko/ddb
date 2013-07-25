@@ -264,7 +264,7 @@ function wikiFormat($string, $paragraphs = true) {
     $sourceTags = array(
         '#\[([^[]+)\|([^[]+)\]#',       //url with title: [title|url]
         '#\[(https?://)([^[]+)\]#',     //url with http(s): [url]
-        '#\[([0-p]*)\]#',                 //url for dream: [dreamId]
+        '#\[([0-9]*)\]#',               //url for dream: [dreamId]
         '#\(\(([^ ]*?)\|(.*?)\)\)#',    //image with alt text: (text|image url)
         '#\[img\](.*?)\[/img\]#s',      //image: [img]image url[/img]
         '#\[b\](.*?)\[/b\]#s',          //bold text: [b]text[/b]
