@@ -132,13 +132,14 @@ if($user['isLoggedIn']) {
         "SELECT dr.dreamerName, dr.dreamerId, d.dreamId"
         .", strftime('%d/%m/%Y', d.dreamDate) AS dreamDate, d.dreamTitle, d.dreamCharacters, d.dreamPlace"
         .", d.dreamText, d.dreamPointOfVue, d.dreamFunFacts, d.dreamFeelings, d.dreamCreation, u.userLogin"
-        .", d.dreamDate as dreamDateUnformated, d.dreamStatus, count(c.commentId) as nbComments"
+        .", d.dreamDate as dreamDateUnformated, d.dreamStatus, cc.nbComments"
         ." FROM ddb_dream d"
         ." LEFT JOIN ddb_dreamer dr on d.dreamerId_FK = dr.dreamerId"
         ." LEFT JOIN ddb_dream_tag dt on d.dreamId = dt.dreamId_FK"
         ." LEFT JOIN ddb_tag t on dt.tagId_FK = t.tagId"
         ." LEFT JOIN ddb_user u on u.userId = d.userId_FK"
         ." LEFT JOIN ddb_comment c on c.dreamId_FK = d.dreamId"
+        ." LEFT JOIN (SELECT dreamId_FK, count(commentId) nbComments FROM ddb_comment GROUP BY dreamId_FK) cc ON cc.dreamId_FK = d.dreamId"
         .$where
         ." GROUP BY dr.dreamerName, d.dreamId";
 
