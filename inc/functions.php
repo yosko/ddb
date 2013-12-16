@@ -24,6 +24,7 @@ require_once "inc/debug.php";
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 
+define("DDB_VERSION", "1.5");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
 define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
@@ -32,6 +33,7 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
     $db = openDatabase();
     $settings = getSettings();
     $tpl = setRainTpl();
+    $tpl->assign( "version", DDB_VERSION );
     $tpl->assign( "settings", $settings );
 
     $publicFeed = false;
