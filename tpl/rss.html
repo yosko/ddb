@@ -33,12 +33,12 @@
 			<category domain="{$ddbUrl}/index.php">fun</category>
 			<description><![CDATA[Rêve de {$value.dreamerName} écrit par {$value.userLogin}{if="$value.dreamDate != ''"} le {$value.dreamDate}{/if}
             <div>{$value.dreamText}</div>
-            <ul>
-                <li>Personnages : {$value.dreamCharacters}</li>
-                <li>Lieux : {$value.dreamPlace}</li>
-                <li>Point de vue : {$value.dreamPointOfVue}</li>
-                <li>Fun facts : {$value.dreamFunFacts}</li>
-                <li>Emotions, état au réveil : {$value.dreamFeelings}</li>
+            <ul>{if="!empty($value.dreamCharacters)"}
+                <li>Personnages : {$value.dreamCharacters}</li>{/if}{if="!empty($value.dreamPlace)"}
+                <li>Lieux : {$value.dreamPlace}</li>{/if}{if="!empty($value.dreamPointOfVue)"}
+                <li>Point de vue : {$value.dreamPointOfVue}</li>{/if}{if="!empty($value.dreamFunFacts)"}
+                <li>Fun facts : {$value.dreamFunFacts}</li>{/if}{if="!empty($value.dreamFeelings)"}
+                <li>Emotions, état au réveil : {$value.dreamFeelings}</li>{/if}
             </ul>]]></description>
             <dc:creator>{$value.userLogin}</dc:creator>
 		</item>{/loop}
