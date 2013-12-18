@@ -1,0 +1,33 @@
+{*
+ * DDb - Copyright 2013 Yosko (www.yosko.net)
+ * 
+ * This file is part of DDb.
+ * 
+ * DDb is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DDb is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *}
+
+{$pageTitle="DDb - Rêveurs"}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Statistiques</p>
+        <h2>Statistiques</h2>{loop="users"}
+
+        <hr>
+        <h3>{$value.userLogin} ({$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} et {$value.nbComment} commentaire{if="$value.nbComment > 1"}s{/if})</h3>
+        <p>Rêveurs : {loop="value.byDreamer"}
+        <a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value1.userLogin} a renseigné {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} pour le rêveur {$value.dreamerName}"><img src="img/user.png" /> {$value.dreamerName} ({$value.nbDream})</a>{/loop}</p>
+        <p>Tags : {loop="value.byTags"}
+        <a class="tag" href="list.php?tag={$value.tagId}" title="{$value1.userLogin} a utilisé le tag {$value.tagName} {$value.nbDream} fois"><img src="img/user.png" /> {$value.tagName} ({$value.nbDream})</a>{/loop}</p>{/loop}
+
+{include="footer"}
