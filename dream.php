@@ -124,7 +124,7 @@ if($user['isLoggedIn']) {
 
         //get dream comments
         $qry = $db->prepare(
-            "SELECT u.userLogin, c.commentId, c.commentText, strftime('%d/%m/%Y, %H:%M', c.commentCreation) AS commentCreation, strftime('%d/%m/%Y, %H:%M', c.commentLastEdit) AS commentLastEdit"
+            "SELECT u.userId, u.userLogin, c.commentId, c.commentText, strftime('%d/%m/%Y, %H:%M', c.commentCreation) AS commentCreation, strftime('%d/%m/%Y, %H:%M', c.commentLastEdit) AS commentLastEdit"
             ." FROM ddb_comment c INNER JOIN ddb_user u on u.userId = c.userId_FK"
             ." WHERE c.dreamId_FK = :dreamId ORDER BY c.commentCreation");
         $qry->bindParam(':dreamId', $dream['id'], PDO::PARAM_INT);
@@ -133,6 +133,7 @@ if($user['isLoggedIn']) {
 
         foreach($comments as $key => $value) {
             $comments[$key]['commentText'] = wikiFormat($value['commentText']);
+            $comments[$key]['editAuthorized'] = ($user['id'] == $comments[$key]['userId'] || $user['role'] == 'admin');
         }
         
         $tpl->assign( "editButtons", $editButtons );

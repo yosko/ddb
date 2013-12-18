@@ -1,0 +1,38 @@
+{*
+ * DDb - Copyright 2013 Yosko (www.yosko.net)
+ * 
+ * This file is part of DDb.
+ * 
+ * DDb is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DDb is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *}
+
+{if condition="$comment.editAuthorized"}{$pageTitle="DDb - Modifier commentaire test"}{else}{$pageTitle="DDb - Erreur"}{/if}
+{include="header"}
+        <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > {if="$comment.editAuthorized"}<a href="dream.php?id={$comment.dreamId_FK}">Rêve n°{$comment.dreamId_FK}</a> > Modifier commentaire{else}Erreur{/if}</p>{if="$comment.editAuthorized"}
+        <h2>Modifier le commentaire n°{$comment.id}</h2>
+
+        <form id="comment" method="post" action="">
+        <fieldset>
+            <label for="text">Commentaire (<a id="textInfo" href="#textInfo">info</a>)</label>
+            <textarea class="smallText" name="text" placeholder="Commentaire...">{$comment.text}</textarea>
+            
+            <input type="submit" name="submitComment" id="submitComment" value="Enregistrer commentaire" />
+        </fieldset>
+        </form>{else}
+        <h2>Erreur</h2>
+
+        <p>Ce commentaire n'existe pas ou vous n'avez pas le droit de le modifier.</p>{/if}
+        
+{include="footer"}

@@ -41,7 +41,7 @@
         <div id="comments">
             <header>Commentaires</header>
             {loop="comments"}<div class="comment" id="{$value.commentId}">
-                <h4><a class="comAnchor" href="#{$value.commentId}"><img class="inline" src="img/balloon-box.png" /></a> {$value.userLogin} :</h4>
+                <h4><a class="comAnchor" title="Lien direct vers ce commentaire" href="#{$value.commentId}"><img class="inline" src="img/balloon-box.png" /></a> {$value.userLogin} :{if="$value.editAuthorized"} <a class="right" title="Modifier ce commentaire" href="formComment.php?id={$value.commentId}"><img class="inline" src="img/pencil-button.png" /></a>{/if}</h4>
                 <div>{$value.commentText}</div>
                 <footer>{$value.commentCreation}{if="$value.commentLastEdit!=$value.commentCreation"} (modifié le {$value.commentLastEdit}){/if}</footer>
             </div>{/loop}
