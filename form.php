@@ -91,7 +91,7 @@ if($user['isLoggedIn']) {
                     "SELECT dreamStatus as status FROM ddb_dream WHERE dreamId = :dreamId");
                 $qryDream->bindParam(':dreamId', $dreamId, PDO::PARAM_INT);
                 $qryDream->execute();
-                $previousStatus = $qryDream->fetch(PDO::FETCH_BOUND);
+                $previousStatus = $qryDream->fetchColumn();
                 if($previousStatus == false && $values['status'] == true) {
                     $qry = $db->prepare(
                         'UPDATE ddb_dream SET dreamPublication = current_timestamp'
