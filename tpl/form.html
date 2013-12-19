@@ -73,15 +73,14 @@
             
             <label for="tags">Tags</label>
             <input type="text" name="tags" id="tags" value="{if condition="isset($dream)"}{$dream.tagList}{/if}" placeholder="Séparés par des virgules. Ex : chute, dinosaures, ski">
-
-            <div>
-                <input type="checkbox" name="published" id="published" value="published"{if condition="!isset($dream) || $dream.status == 1"} checked{/if}>
-                <label for="published">Rêve publié (décocher pour conserver comme brouillon)</label>
-            </div>
             
-            <p><span class="required">*</span> Champs requis</p>
+            <p><span class="required">*</span> Champs requis</p>{$buttonPublish="Publier"}{$buttonUnpublish="Sauver le Brouillon"}{if="isset($dream) && $dream.status == 1"}
             
-            <input type="submit" name="submit" id="submit" value="Enregistrer" />
+            <p><em>Rêve publié</em></p>{$buttonPublish="Enregistrer"}{$buttonUnpublish="Dépublier"}{else}
+            
+            <p><em>Rêve non publié</em></p>{/if}
+            <input type="submit" name="submitPublish" id="submitPublish" value="{$buttonPublish}" />
+            <input type="submit" name="submitUnpublish" id="submitUnpublish" value="{$buttonUnpublish}" />
         </fieldset>
         </form>
         <script type="text/javascript">

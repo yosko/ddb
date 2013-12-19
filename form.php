@@ -59,7 +59,7 @@ if($user['isLoggedIn']) {
         $values['funFacts'] = htmlspecialchars(trim($_POST['funfacts']));
         $values['feelings'] = htmlspecialchars(trim($_POST['feelings']));
         $values['tagList'] = htmlspecialchars(trim($_POST['tags']));
-        $values['status'] = isset($_POST['published']);
+        $values['status'] = isset($_POST['submitPublish']);
 
         $errors['noDreamer'] = (!isset($_POST['dreamer']) && empty($_POST['newdreamer']));
         
