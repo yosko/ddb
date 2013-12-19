@@ -117,6 +117,15 @@ CREATE TABLE IF NOT EXISTS ddb_dream_tag (
 	'tagId_FK'			INT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS ddb_comment (
+    'commentId'         INTEGER NULL PRIMARY KEY AUTOINCREMENT,
+    'dreamId_FK'        INT NOT NULL,
+    'userId_FK'         INT NOT NULL,
+    'commentText'       TEXT,
+    'commentCreation'   DATETIME NOT NULL DEFAULT current_timestamp,
+    'commentLastEdit'   DATETIME NOT NULL DEFAULT current_timestamp
+);
+
 CREATE TABLE IF NOT EXISTS ddb_user (
     'userId'            INTEGER NULL PRIMARY KEY AUTOINCREMENT,
     'userLogin'         VARCHAR(256) NOT NULL,
