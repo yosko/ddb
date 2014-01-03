@@ -126,15 +126,17 @@ function checkForUpdates() {
     global $db;
 
     $updater = new PhpGithubUpdater('yosko', 'ddb');
+    $current = DDB_VERSION;
     $next = $updater->getNextVersion(DDB_VERSION);
     $latest = $updater->getLatestVersion();
     $mustUpdate = !$updater->isUpToDate(DDB_VERSION);
     if(!is_null($next) && !is_null($latest) && !is_null($mustUpdate)) {
         //insert a dummy check log
         $qry = $db->prepare(
-            'UPDATE ddb_version SET next = :next, last = :last,'
+            'UPDATE ddb_version SET current = :current, next = :next, last = :last,'
             .' lastCheck = current_timestamp, mustUpdate = :mustUpdate'
         );
+        $qry->bindParam(':current', $current, PDO::PARAM_STR);
         $qry->bindParam(':next', $next, PDO::PARAM_STR);
         $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
         $qry->bindParam(':mustUpdate', $mustUpdate, PDO::PARAM_INT);
