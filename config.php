@@ -40,7 +40,7 @@ if($user['isLoggedIn']) {
         $page = 'homeConfig';
         if(isset($_GET['p'])) {
             if(
-                $user['role'] == 'admin' && in_array($_GET['p'], array('import', 'purge', 'dreamers', 'tags', 'settings', 'users'))
+                $user['role'] == 'admin' && in_array($_GET['p'], array('import', 'purge', 'dreamers', 'tags', 'settings', 'users', 'update'))
                 || in_array($_GET['p'], array('password'))
             ) {
                 $page = $_GET['p'];
@@ -644,6 +644,14 @@ if($user['isLoggedIn']) {
                 $qryUsers->execute();
                 $users = $qryUsers->fetchAll(PDO::FETCH_ASSOC);
                 $tpl->assign( "users", $users );
+            }
+
+        //check for updates and apply them
+        } elseif($page == 'update') {
+            if (isset($_POST["submitUpdate"])) {
+                //TODO: download & extract update
+            } elseif (isset($_POST["submitApply"])) {
+                //TODO: replace files with new version
             }
         }
     }

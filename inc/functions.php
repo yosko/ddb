@@ -65,6 +65,7 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
                 'next' => DDB_VERSION,
                 'last' => DDB_VERSION,
                 'lastCheck' => null,
+                'mustUdpate' => false,
             );
 
             //create it
@@ -127,14 +128,18 @@ function checkForUpdates() {
     $updater = new PhpGithubUpdater('yosko', 'ddb');
     $next = $updater->getNextVersion(DDB_VERSION);
     $latest = $updater->getLatestVersion();
-
-    //insert a dummy check log
-    $qry = $db->prepare(
-        'UPDATE ddb_version SET next = :next, last = :last, lastCheck = current_timestamp'
-    );
-    $qry->bindParam(':next', $next, PDO::PARAM_STR);
-    $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
-    $qry->execute();
+    $mustUpdate = !$updater->isUpToDate(DDB_VERSION);
+    if(!is_null($next) && !is_null($latest) && !is_null($mustUpdate)) {
+        //insert a dummy check log
+        $qry = $db->prepare(
+            'UPDATE ddb_version SET next = :next, last = :last,'
+            .' lastCheck = current_timestamp, mustUpdate = :mustUpdate'
+        );
+        $qry->bindParam(':next', $next, PDO::PARAM_STR);
+        $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
+        $qry->bindParam(':mustUpdate', $mustUpdate, PDO::PARAM_INT);
+        $qry->execute();
+    }
 }
 
 function createTableVersion($version) {
@@ -145,7 +150,8 @@ CREATE TABLE IF NOT EXISTS ddb_version (
     'current'           TEXT     NOT NULL,
     'next'              TEXT     NOT NULL,
     'last'              TEXT     NOT NULL,
-    'lastCheck'         DATETIME NOT NULL
+    'lastCheck'         DATETIME NOT NULL,
+    'mustUpdate'        INTEGER  NOT NULL DEFAULT 0
 );
 QUERY;
 
