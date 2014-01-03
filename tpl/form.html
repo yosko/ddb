@@ -76,7 +76,7 @@
             
             <p><span class="required">*</span> Champs requis</p>{$buttonPublish="Publier"}{$buttonUnpublish="Sauver le Brouillon"}{if="isset($dream) && $dream.status == 1"}
             
-            <p><em>Rêve publié</em></p>{$buttonPublish="Enregistrer"}{$buttonUnpublish="Dépublier"}{else}
+            <p><em>Rêve publié</em></p>{$buttonPublish="Sauver"}{$buttonUnpublish="Sauver et Dépublier"}{else}
             
             <p><em>Rêve non publié</em></p>{/if}
             <input type="submit" name="submitPublish" id="submitPublish" value="{$buttonPublish}" />

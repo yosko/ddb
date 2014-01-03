@@ -19,7 +19,7 @@
  *}{$pageTitle="DDb - Consulter le rêve n°".$dream.id}{include="header"}
         
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Rêve n°{$dream.id}</p>
-        <h2>{$dream.title}</h2>
+        <h2>{if="$dream.status == 0"}<img src="img/notebook--pencil.png" title="brouillon"> {/if}{$dream.title}</h2>
         <p>
             <span class="right">{loop="tagArray"}<a class="tag" href="list.php?tag={$value.id}"><img class="inline" src="{$settings.tplDir}img/{if="$settings.useTagIcon && isset($value.icon)"}{$value.icon}{else}tag-label.png{/if}" /> {$key}</a>{/loop}</span>
         </p>
