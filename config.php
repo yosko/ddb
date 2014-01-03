@@ -648,7 +648,10 @@ if($user['isLoggedIn']) {
 
         //check for updates and apply them
         } elseif($page == 'update') {
-            if (isset($_POST["submitUpdate"])) {
+            if (isset($_POST["submitCheck"])) {
+                checkForUpdates();
+                header("Location: $_SERVER[REQUEST_URI]");
+            } elseif (isset($_POST["submitUpdate"])) {
                 //TODO: download & extract update
             } elseif (isset($_POST["submitApply"])) {
                 //TODO: replace files with new version

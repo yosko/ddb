@@ -284,14 +284,15 @@
 {/if}
 {elseif="$page=='update'"}
         <h2>Mise à jour de DDb</h2>
-        <p>Version actuelle : {$version.current}</p>{if="$version.mustUpdate == false"}
-
-        <p class="success">Vous êtes déjà à jour</p>{else}
-
-        <p class="warning">Une nouvelle version est disponible</p>
         <form id="updateForm" method="post" action="">
-            <input type="submit" name="submitUpdate" id="submitUpdate" value="Mettre à jour vers la {$version.next}" />
-        </form>{/if}
+            <p>Version actuelle : {$version.current}</p>{if="$version.mustUpdate == false"}
+
+            <p class="success">Vous êtes déjà à jour (dernière vérification effectuée : {$version.lastCheck}).</p>
+            <input type="submit" name="submitCheck" id="submitCheck" value="Vérifier maintenant" />{else}
+
+            <p class="warning">Une nouvelle version est disponible</p>
+            <input type="submit" name="submitUpdate" id="submitUpdate" value="Mettre à jour vers la {$version.next}" />{/if}
+        </form>
 {/if}
 {/if}
 {include="footer"}
