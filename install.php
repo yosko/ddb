@@ -160,7 +160,11 @@ INSERT INTO ddb_tag (tagName, tagIcon) VALUES ('récurrent', 'arrow-circle-225.p
 QUERY;
 
         try {
+            //install everything for version 1.4
         	$db->exec($sql);
+
+            //update for v1.5
+            createTableVersion(DDB_VERSION);
         } catch(PDOException $e) {
         	echo $e->getMessage();
         }

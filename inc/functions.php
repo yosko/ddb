@@ -23,8 +23,9 @@
 require_once "inc/debug.php";
 require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
+require_once "inc/php-github-updater.php";
 
-define("DDB_VERSION", "1.5");
+define("DDB_VERSION", "v1.5");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
 define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
@@ -33,7 +34,7 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
     $db = openDatabase();
     $settings = getSettings();
     $tpl = setRainTpl();
-    $tpl->assign( "version", DDB_VERSION );
+
     $tpl->assign( "settings", $settings );
 
     $publicFeed = false;
@@ -42,6 +43,41 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
     } else {
         $user = logUser($tpl);
     }
+
+    //check for updates
+    $version = array(
+        'current' => DDB_VERSION,
+        'next' => DDB_VERSION,
+        'last' => DDB_VERSION,
+        'lastCheck' => null,
+    );
+    if(isset($user['role']) && $user['role'] == 'admin') {
+        try {
+            $qry = $db->prepare(
+                'SELECT * FROM ddb_version'
+            );
+            $qry->execute();
+            $version = $qry->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            //the table doesn't exist yet
+            $version = array(
+                'current' => DDB_VERSION,
+                'next' => DDB_VERSION,
+                'last' => DDB_VERSION,
+                'lastCheck' => null,
+            );
+
+            //create it
+            createTableVersion(DDB_VERSION);
+        }
+
+        //perform update check if previous on is older than a week or never occured
+        if(is_null($version['lastCheck']) || strtotime('now') > strtotime($version['lastCheck'].'+1 week')) {
+            checkForUpdates();
+        }
+    }
+
+    $tpl->assign( "version", $version );
 }
 
 function setRainTpl($tplDir = '', $tplCache = '') {
@@ -83,6 +119,45 @@ function openDatabase() {
         //avoid call to logUser which also does some header("Location: ...")
         exit;
     }
+}
+
+function checkForUpdates() {
+    global $db;
+
+    $updater = new PhpGithubUpdater('yosko', 'ddb');
+    $next = $updater->getNextVersion(DDB_VERSION);
+    $latest = $updater->getLatestVersion();
+
+    //insert a dummy check log
+    $qry = $db->prepare(
+        'UPDATE ddb_version SET next = :next, last = :last, lastCheck = current_timestamp'
+    );
+    $qry->bindParam(':next', $next, PDO::PARAM_STR);
+    $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
+    $qry->execute();
+}
+
+function createTableVersion($version) {
+    global $db;
+
+$sql = <<<QUERY
+CREATE TABLE IF NOT EXISTS ddb_version (
+    'current'           TEXT     NOT NULL,
+    'next'              TEXT     NOT NULL,
+    'last'              TEXT     NOT NULL,
+    'lastCheck'         DATETIME NOT NULL
+);
+QUERY;
+
+    $db->exec($sql);
+
+    //insert a dummy check log
+    $qry = $db->prepare(
+        'INSERT INTO ddb_version (current, next, last, lastCheck)'
+        .' VALUES(:version, :version, :version, current_timestamp)'
+    );
+    $qry->bindParam(':version', $version, PDO::PARAM_STR);
+    $qry->execute();
 }
 
 class DDbLogin extends YosLogin {
