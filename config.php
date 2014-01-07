@@ -648,14 +648,72 @@ if($user['isLoggedIn']) {
 
         //check for updates and apply them
         } elseif($page == 'update') {
+            $tempDirectory = 'cache/update';
+            $errors = array();
+
+            //check for updates
             if (isset($_POST["submitCheck"])) {
                 checkForUpdates();
                 header("Location: $_SERVER[REQUEST_URI]");
+
+            //download and extract the next version
             } elseif (isset($_POST["submitUpdate"])) {
-                //TODO: download & extract update
-            } elseif (isset($_POST["submitApply"])) {
-                //TODO: replace files with new version
+                try {
+                    $updater = new PhpGithubUpdater('yosko', 'ddb');
+                    $archive = $updater->downloadVersion(
+                        $updater->getNextVersion(DDB_VERSION),
+                        $tempDirectory
+                    );
+                    $extractDir = $updater->extractArchive($archive);
+                } catch (PguRemoteException $e) {
+                    $errors['remote'] = true;
+                } catch (PguExtractException $e) {
+                    $errors['extract'] = true;
+                }
+
+                if(!in_array(true, $errors)) {
+                    $tpl->assign( "extractDir", $extractDir );
+                }
+
+            //apply the downloaded and extracted version
+            } elseif (isset($_POST["submitOverwrite"])) {
+                $directory = $_POST['directory'];
+                $root = dirname(__FILE__);
+                $errors['extractPath'] = !isset($_POST['directory']) || strpos($_POST['directory'], '..') !== false;
+
+                //backup current install
+                //TODO: do it in the previous step and let user download it?
+                $errors['backup'] = !createBackup();
+
+                //replace files with new version
+                if(!in_array(true, $errors)) {
+                    try {
+                        //update ddb_version (and check again for updates, just in case)
+                        checkForUpdates(true);
+
+                        $updater = new PhpGithubUpdater('yosko', 'ddb');
+                        $result = $updater->moveFilesRecursive(
+                            $tempDirectory.DIRECTORY_SEPARATOR.$directory,
+                            $root
+                        );
+
+                        //empty template cache
+                        rrmdir($settings['tplCache'], false);
+
+                        //delete extraction directory and zip
+                        rrmdir($tempDirectory, true);
+
+                        //purge all backups
+                        deleteBackup();
+
+                    } catch (PguOverwriteException $e) {
+                        //TODO: restore backup
+                        var_dump('unhandled error...');
+                        $errors['unknown'] = true;
+                    }
+                }
             }
+            $tpl->assign( "errors", $errors );
         }
     }
 

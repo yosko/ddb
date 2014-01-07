@@ -25,7 +25,7 @@ require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 require_once "inc/php-github-updater.php";
 
-define("DDB_VERSION", "v1.5");
+define("DDB_VERSION", "v1.3");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
 define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
@@ -122,25 +122,31 @@ function openDatabase() {
     }
 }
 
-function checkForUpdates() {
+function checkForUpdates($mustUpgrade = false) {
     global $db;
 
-    $updater = new PhpGithubUpdater('yosko', 'ddb');
-    $current = DDB_VERSION;
-    $next = $updater->getNextVersion(DDB_VERSION);
-    $latest = $updater->getLatestVersion();
-    $mustUpdate = !$updater->isUpToDate(DDB_VERSION);
-    if(!is_null($next) && !is_null($latest) && !is_null($mustUpdate)) {
-        //insert a dummy check log
-        $qry = $db->prepare(
-            'UPDATE ddb_version SET current = :current, next = :next, last = :latest'
-            .', lastCheck = current_timestamp, mustUpdate = :mustUpdate'
-        );
-        $qry->bindParam(':current', $current, PDO::PARAM_STR);
-        $qry->bindParam(':next', $next, PDO::PARAM_STR);
-        $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
-        $qry->bindParam(':mustUpdate', $mustUpdate, PDO::PARAM_INT);
-        $qry->execute();
+    try {
+        $updater = new PhpGithubUpdater('yosko', 'ddb');
+        $current = DDB_VERSION;
+        $next = $updater->getNextVersion(DDB_VERSION);
+        $latest = $updater->getLatestVersion();
+        $mustUpdate = !$updater->isUpToDate(DDB_VERSION);
+        if(!is_null($next) && !is_null($latest) && !is_null($mustUpdate)) {
+            //insert a dummy check log
+            $qry = $db->prepare(
+                'UPDATE ddb_version SET current = :current, next = :next, last = :latest'
+                .', lastCheck = current_timestamp, mustUpdate = :mustUpdate, mustUpgrade = :mustUpgrade'
+            );
+            $qry->bindParam(':current', $current, PDO::PARAM_STR);
+            $qry->bindParam(':next', $next, PDO::PARAM_STR);
+            $qry->bindParam(':latest', $latest, PDO::PARAM_STR);
+            $qry->bindParam(':mustUpdate', $mustUpdate, PDO::PARAM_INT);
+            $qry->bindParam(':mustUpgrade', $mustUpgrade, PDO::PARAM_INT);
+            $qry->execute();
+        }
+        return true;
+    } catch (PguRemoteException $e) {
+        return false;
     }
 }
 
@@ -153,7 +159,8 @@ CREATE TABLE IF NOT EXISTS ddb_version (
     'next'              TEXT     NOT NULL,
     'last'              TEXT     NOT NULL,
     'lastCheck'         DATETIME NOT NULL,
-    'mustUpdate'        INTEGER  NOT NULL DEFAULT 0
+    'mustUpdate'        INTEGER  NOT NULL DEFAULT 0,
+    'mustUpgrade'       INTEGER  NOT NULL DEFAULT 0
 );
 QUERY;
 
@@ -430,6 +437,81 @@ function isAuthor($userId, $dreamId) {
     $isAuthor = $qryAccess->fetchColumn();
 
     return ($isAuthor > 0);
+}
+
+function createBackup() {
+    $root = dirname(dirname(__FILE__));
+    $destinationZip = $root.'/cache/backup/ddb-backup_'.date('Y-m-d_H-i-s').'.zip';
+
+    try {
+        if(!file_exists(dirname($destinationZip))) {
+            mkdir(dirname($destinationZip), 0777, true);
+        }
+        $zip = new ZipArchive;
+        $zip->open($destinationZip, ZIPARCHIVE::CREATE);
+        recursiveZipDirectory($root, $zip, strlen($root.'/'), $root);
+        $zip->close();
+    } catch (Exception $e) {
+        return false;
+    }
+    return substr($destinationZip, strlen($root)+1);
+}
+
+function deleteBackup($file = false) {
+    $root = dirname(dirname(__FILE__));
+
+    //purge all backups
+    if($file === false) {
+        rrmdir($root.'/cache/backup');
+
+    //TODO: delete only a given backup
+    } else {
+
+    }
+}
+
+//function to recursively zip a directory's content
+//taken from http://www.php.net/manual/en/class.ziparchive.php#110719
+//and adapted to exclude some subdirectories
+function recursiveZipDirectory($folder, &$zip, $exclusiveLength, $isRoot = true) {
+    $exclude = array('.git', '.ssh', 'cache');
+    $handle = opendir($folder);
+    while (false !== $file = readdir($handle)) {
+        if ($file != '.' && $file != '..'
+            && (!$isRoot || !in_array($file, $exclude))
+        ) {
+            $filePath = "$folder/$file";
+            // Remove prefix from file path before add to zip.
+            $localPath = substr($filePath, $exclusiveLength);
+            if (is_file($filePath)) {
+                $zip->addFile($filePath, $localPath);
+            } elseif (is_dir($filePath)) {
+                // Add sub-directory.
+                $zip->addEmptyDir($localPath);
+                recursiveZipDirectory($filePath, $zip, $exclusiveLength, false);
+            }
+        }
+    }
+    closedir($handle);
+}
+
+/**
+ * Recursive directory deletion function
+ * from: http://php.net/manual/en/function.rmdir.php#108113
+ * @param  string  $dir           path to directory
+ * @param  boolean $deleteRootDir false if you just want to empty that directory
+ */
+function rrmdir($dir, $deleteRootDir = true) {
+    if(substr($dir, -1) != '/')
+        $dir .= '/';
+    foreach(glob($dir . '*') as $file) {
+        if(is_dir($file))
+            rrmdir($file);
+        else
+            unlink($file);
+    }
+    if($deleteRootDir)
+        rmdir($dir);
 }
 
 ?>

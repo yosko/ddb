@@ -283,15 +283,31 @@
         </form>
 {/if}
 {elseif="$page=='update'"}
-        <h2>Mise à jour de DDb</h2>
+        <h2>Mise à jour de DDb</h2>{if="isset($errors.remote) && $errors.remote"}
+
+        <p class="error">Impossible de joindre Github pour la mise à jour.</p>{elseif="isset($errors.extract) && $errors.extract"}
+
+        <p class="error">L'achive récupérée ne peut être lue. Elle est peut-être corrompue. Merci de relancer le téléchargement de la mise à jour.</p>{elseif="isset($errors.extractPath) && $errors.extractPath"}
+
+        <p class="error">Dossier d&apos;extraction invalide. Veuillez retélécharger la mise à jour.</p>{elseif="isset($errors.backup) && $errors.backup"}
+
+        <p class="error">Impossible d&apos;effectuer une sauvegarde du site. Il serait imprudent d&apos;effectuer la mise à jour dans ces conditions.</p>{elseif="isset($errors.unknown) && $errors.unknown"}
+
+        <p class="error">Erreur non prévue.</p>{/if}
         <form id="updateForm" method="post" action="">
+{if="!isset($extractDir)"}
             <p>Version actuelle : {$version.current}</p>{if="$version.mustUpdate == false"}
 
             <p class="success">Vous êtes déjà à jour (dernière vérification effectuée : {$version.lastCheck}).</p>
             <input type="submit" name="submitCheck" id="submitCheck" value="Vérifier maintenant" />{else}
 
             <p class="warning">Une nouvelle version est disponible</p>
-            <input type="submit" name="submitUpdate" id="submitUpdate" value="Mettre à jour vers la {$version.next}" />{/if}
+            <input type="submit" name="submitUpdate" id="submitUpdate" value="Télécharger la {$version.next}" />{/if}
+{else}
+            <p>Version {$version.next} téléchargée et prête à installer : &quot;{$extractDir}&quot;</p>
+            <input type="hidden" name="directory" value="{$extractDir}" />
+            <input type="submit" name="submitOverwrite" id="submitOverwrite" value="Installer la version {$version.next}" />
+{/if}
         </form>
 {/if}
 {/if}

@@ -100,7 +100,7 @@
     </script>{/if}
 </head>
 <body>
-    <h1><a href="index.php" class="logo"><img src="img/ddb-logo.png" /></a></h1>{if="$user.role == 'admin' && $version.mustUpdate"}
+    <h1><a href="index.php" class="logo"><img src="img/ddb-logo.png" /></a></h1>{if="isset($user.role) && $user.role == 'admin' && $version.mustUpdate"}
 
     <p class="update">DDb {$version.next} disponible : <a href="#">appliquer la mise à jour</a></p>{/if}
     <div class="content">{if condition="!isset($noLogout) || $noLogout == false"}
