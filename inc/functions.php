@@ -25,7 +25,7 @@ require_once "inc/rain.tpl.class.php";
 require_once "inc/yoslogin.class.php";
 require_once "inc/php-github-updater.php";
 
-define("DDB_VERSION", "v1.3");
+define("DDB_VERSION", "v1.5");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
 define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
@@ -72,6 +72,8 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
             createTableVersion(DDB_VERSION);
         }
 
+        //TODO: brefore checking for updates, compare code and database current
+        //versions to make sure there is no need for upgrade (not necessary up to v1.5)
         //perform update check if previous on is older than a week or never occured
         if(is_null($version['lastCheck']) || strtotime('now') > strtotime($version['lastCheck'].'+1 week')) {
             checkForUpdates();

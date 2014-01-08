@@ -661,17 +661,23 @@ if($user['isLoggedIn']) {
                 try {
                     //download and extract next version
                     $updater = new PhpGithubUpdater('yosko', 'ddb');
+                    $nextVersion = $updater->getNextVersion(DDB_VERSION);
                     $archive = $updater->downloadVersion(
-                        $updater->getNextVersion(DDB_VERSION),
+                        $nextVersion,
                         $tempDirectory
                     );
                     $extractDir = $updater->extractArchive($archive);
 
-                    //TODO get update message if existing in new version (chagelog, etc...)
-
                     //backup current install
                     $backupFile = createBackup();
                     $errors['backup'] = !$backupFile;
+
+                    //get update message if existing in new version (chagelog, etc...)
+                    $updateTitle = $updater->getTitle($nextVersion);
+                    $updateDescription = $updater->getDescription($nextVersion);
+                    
+                    $tpl->assign( "updateTitle", $updateTitle );
+                    $tpl->assign( "updateDescription", $updateDescription );
 
                 } catch (PguRemoteException $e) {
                     $errors['remote'] = true;

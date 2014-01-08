@@ -220,6 +220,10 @@ label.error {
     border-radius: 5px;
     box-shadow: 0 0 10px #ccc; 
 }
+.changelog {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
 
 .code {
     font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;

@@ -310,8 +310,11 @@
             <p class="warning">Une nouvelle version est disponible</p>
             <input type="submit" name="submitUpdate" id="submitUpdate" value="Télécharger la {$version.next}" />{/if}
 {else}
-            <p>Version {$version.next} téléchargée et prête à installer : &quot;{$extractDir}&quot;</p>
-            <p>Une sauvegarde de l'installation courante a été réalisée : <a href="{$backupFile}">{$backupFile}</a> (ce fichier sera supprimé après installation).</p>
+            <p>Version {$version.next} téléchargée et prête à installer. Description :</p>
+            <h3>{$version.next} : {$updateTitle}</h3>
+            <pre class="changelog">{$updateDescription}</pre>
+            <hr>
+            <p>Une sauvegarde de l'installation courante a été réalisée (ce fichier sera supprimé après installation) : <a href="{$backupFile}">{$backupFile}</a></p>
             <input type="hidden" name="backupFile" value="{$backupFile}" />
             <input type="hidden" name="directory" value="{$extractDir}" />
             <input type="submit" name="submitOverwrite" id="submitOverwrite" value="Installer la version {$version.next}" />

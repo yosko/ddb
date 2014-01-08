@@ -16,6 +16,11 @@
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with PHP Github Updater.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @author  yosko (http://www.yosko.net/)
+ * @link    https://github.com/yosko/php-github-updater
+ * @version v2
  * 
  */
 
@@ -24,9 +29,10 @@ class PhpGithubUpdater {
         $server,
         $user,
         $repository,
-        $remoteTags,
+        $releases,
         $archiveExtension,
-        $proxy;
+        $proxy,
+        $prereleasesToo;
 
     /**
      * Init the updater with remote repository information
@@ -40,8 +46,9 @@ class PhpGithubUpdater {
         $this->repository       = $repository;
         $this->server           = $server;
         $this->archiveExtension = '.zip';
-        $this->remoteTags       = false;
+        $this->releases         = false;
         $this->proxy            = false;
+        $this->prereleasesToo   = false;
     }
 
     /**
@@ -51,6 +58,16 @@ class PhpGithubUpdater {
      */
     function useProxy($proxy) {
         $this->proxy = $proxy;
+    }
+
+    /**
+     * Define a simple proxy through which all requests to Github
+     * will have to go
+     * @param  string $proxy proxy url (in the format ip:port)
+     */
+    function fetchPrereleasesToo($prereleasesToo = true) {
+        $previousState = $this->prereleasesToo;
+        $this->prereleasesToo = $prereleasesToo;
     }
 
     /**
@@ -240,22 +257,28 @@ class PhpGithubUpdater {
     }
 
     /**
-     * Return the list of tags from the remote (in the Github API v3 format)
-     * See: http://developer.github.com/v3/repos/#list-tags
-     * @return array list of tags and their information
+     * Return the list of releases from the remote (in the Github API v3 format)
+     * See: http://developer.github.com/v3/repos/releases/
+     * @param  boolean $forceFetch force (re)fetching
+     * @return array               list of releases and their information
      */
-    public function getRemoteTags() {
-        //load tags only once
-        if(empty($this->remoteTags) && !is_array($this->remoteTags)) {
-            $url = $this->server.'repos/'.$this->user.'/'.$this->repository.'/tags';
-            $remoteTags = json_decode($this->getContentFromGithub( $url ), true);
+    public function getReleases($forceFetch = false) {
+        if($forceFetch)
+            $this->releases = false;
 
-            $this->remoteTags = array();
-            foreach($remoteTags as $key => $tag) {
-                $this->remoteTags[$tag['name']] = $tag;
+        //load releases only once
+        if($this->releases === false) {
+            $url = $this->server.'repos/'.$this->user.'/'.$this->repository.'/releases';
+            $releases = json_decode($this->getContentFromGithub( $url ), true);
+
+            $this->releases = array();
+            foreach($releases as $key => $release) {
+                //keep pre-releases only if asked to
+                if($this->prereleasesToo || $release['prerelease'] == false)
+                    $this->releases[$release['tag_name']] = $release;
             }
         }
-        return $this->remoteTags;
+        return $this->releases;
     }
 
     /**
@@ -264,11 +287,11 @@ class PhpGithubUpdater {
      * @return string          next version number (or false if no result)
      */
     public function getNextVersion($version) {
-        $this->getRemoteTags();
+        $this->getReleases();
         $nextVersion = false;
-        foreach($this->remoteTags as $tag) {
-            if($this->compareVersions($version, $tag['name']) < 0) {
-                $nextVersion = $tag['name'];
+        foreach($this->releases as $release) {
+            if($this->compareVersions($version, $release['tag_name']) < 0) {
+                $nextVersion = $release['tag_name'];
                 break;
             }
         }
@@ -277,13 +300,16 @@ class PhpGithubUpdater {
 
     /**
      * Return the latest remote version number
-     * @return string version number
+     * @return string version number (or false if no result)
      */
     public function getLatestVersion() {
-        $this->getRemoteTags();
-        reset($this->remoteTags);
-        $latest = current($this->remoteTags);
-        return $latest['name'];
+        $this->getReleases();
+        $latest = false;
+        if(!empty($this->releases)) {
+            reset($this->releases);
+            $latest = current($this->releases);
+        }
+        return $latest['tag_name'];
     }
 
     /**
@@ -292,8 +318,8 @@ class PhpGithubUpdater {
      * @return string          URL to zipball
      */
     public function getZipballUrl($version) {
-        $this->getRemoteTags();
-        return isset($this->remoteTags[$version])?$this->remoteTags[$version]['zipball_url']:false;
+        $this->getReleases();
+        return isset($this->releases[$version])?$this->releases[$version]['zipball_url']:false;
     }
 
     /**
@@ -302,8 +328,28 @@ class PhpGithubUpdater {
      * @return string          URL to tarball
      */
     public function getTarballUrl($version) {
-        $this->getRemoteTags();
-        return isset($this->remoteTags[$version])?$this->remoteTags[$version]['tarball_url']:false;
+        $this->getReleases();
+        return isset($this->releases[$version])?$this->releases[$version]['tarball_url']:false;
+    }
+
+    /**
+     * Get the title of a release
+     * @param  string $version release version number
+     * @return string          title
+     */
+    public function getTitle($version) {
+        $this->getReleases();
+        return isset($this->releases[$version]['name'])?$this->releases[$version]['name']:'';
+    }
+
+    /**
+     * Get the description of a release
+     * @param  string $version release version number
+     * @return string          description (in Markdown syntax format)
+     */
+    public function getdescription($version) {
+        $this->getReleases();
+        return isset($this->releases[$version]['body'])?$this->releases[$version]['body']:'';
     }
 
     /**
@@ -312,10 +358,10 @@ class PhpGithubUpdater {
      * @return boolean          true if $version >= latest remote version
      */
     public function isUpToDate($version) {
-        $this->getRemoteTags();
-        reset($this->remoteTags);
-        $latest = current($this->remoteTags);
-        return ($this->compareVersions($version, $latest['name']) >= 0);
+        $this->getReleases();
+        reset($this->releases);
+        $latest = current($this->releases);
+        return ($this->compareVersions($version, $latest['tag_name']) >= 0);
     }
 
     /**
