@@ -54,7 +54,7 @@ DDb utilise aussi le travail d'autres personnes :
 
 Retrouvez ces informations sur mon site : [DDb sur yosko.net](http://dev.yosko.net/wiki/doku.php?id=web:php:ddb)
 
-* version 1.5 ([zip](https://github.com/yosko/ddb/archive/v1.5.zip), [tar.gz](https://github.com/yosko/ddb/archive/v1.5.tar.gz))
+* version 1.5 ([zip](https://github.com/yosko/ddb/archive/v1.5.zip), [tar.gz](https://github.com/yosko/ddb/archive/v1.5.tar.gz)) - désormais, la mise à jour de la base se fera automatiquement (et les prochaines installations de version aussi)
   * Modification possible des commentaires
   * clarification de la notion brouillon/publié : case à cocher "Publier" remplacée par des boutons de sauvegarde différents
   * Refonte de la page de statistiques
