@@ -21,13 +21,37 @@
 {$pageTitle="DDb - Rêveurs"}
 {include="header"}
         <p><a href="index.php"><img src="img/ddb-icon-16.png"></a> > Statistiques</p>
-        <h2>Statistiques</h2>{loop="users"}
+        <h2>Statistiques</h2>
+        <h3>Les rêveurs</h3>
+        <ul>{loop="dreamers"}
 
+            <li>
+                <b><a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}"><img src="img/user.png" /> {$value.dreamerName}</a> : {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}</b>.<br>Tags préférés :
+                <ul>{loop="value.tags"}
+
+                    <li>
+                        <a class="tag" href="list.php?dreamer={$value.dreamerId}&tag={$value.tagId}" title="{$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}"><img src="img/tag-label.png" /> {$value.tagName}</a> : {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}
+                    </li>{/loop}
+
+                </ul>
+            </li>{/loop}
+
+        </ul>
         <hr>
-        <h3>{$value.userLogin} ({$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} et {$value.nbComment} commentaire{if="$value.nbComment > 1"}s{/if})</h3>
-        <p>Rêveurs : {loop="value.byDreamer"}
-        <a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value1.userLogin} a renseigné {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} pour le rêveur {$value.dreamerName}"><img src="img/user.png" /> {$value.dreamerName} ({$value.nbDream})</a>{/loop}</p>
-        <p>Tags : {loop="value.byTags"}
-        <a class="tag" href="list.php?tag={$value.tagId}" title="{$value1.userLogin} a utilisé le tag {$value.tagName} {$value.nbDream} fois"><img src="img/user.png" /> {$value.tagName} ({$value.nbDream})</a>{/loop}</p>{/loop}
+        <h3>Les utilisateurs</h3>
+        <ul>{loop="users"}
+
+            <li>
+                <b>{$value.userLogin}</b> ({$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} et {$value.nbComment} commentaire{if="$value.nbComment > 1"}s{/if})<br>A renseigné des rêves pour :
+                <ul>{loop="value.byDreamer"}
+
+                    <li>
+                        <a class="tag" href="list.php?dreamer={$value.dreamerId}" title="{$value1.userLogin} a renseigné {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if} pour le rêveur {$value.dreamerName}"><img src="img/user.png" /> {$value.dreamerName}</a> : {$value.nbDream} rêve{if="$value.nbDream > 1"}s{/if}
+                    </li>{/loop}
+
+                </ul>
+            </li>{/loop}
+
+        </ul>
 
 {include="footer"}
