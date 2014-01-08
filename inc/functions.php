@@ -470,6 +470,22 @@ function deleteBackup($file = false) {
     }
 }
 
+function restoreBackup($file) {
+    $root = dirname(dirname(__FILE__));
+    try {
+        $zip = new ZipArchive;
+        if ($zip->open($root.'/cache/backup/'.$file) === true) {
+            $zip->extractTo( $root );
+            $zip->close();
+        } else {
+            throw new PguExtractException("Archive extraction failed. The file might be corrupted and you should download it again.");
+        }
+    } catch (Exception $e) {
+        return false;
+    }
+    return true;
+}
+
 //function to recursively zip a directory's content
 //taken from http://www.php.net/manual/en/class.ziparchive.php#110719
 //and adapted to exclude some subdirectories

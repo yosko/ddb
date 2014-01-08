@@ -1,5 +1,7 @@
-cache/session/*
+cache/backup/*
 cache/tpl/*
+cache/session/*
+cache/update/*
 inc/debug.php
 tpl/img/unused/
 .ssh/

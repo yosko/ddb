@@ -659,12 +659,20 @@ if($user['isLoggedIn']) {
             //download and extract the next version
             } elseif (isset($_POST["submitUpdate"])) {
                 try {
+                    //download and extract next version
                     $updater = new PhpGithubUpdater('yosko', 'ddb');
                     $archive = $updater->downloadVersion(
                         $updater->getNextVersion(DDB_VERSION),
                         $tempDirectory
                     );
                     $extractDir = $updater->extractArchive($archive);
+
+                    //TODO get update message if existing in new version (chagelog, etc...)
+
+                    //backup current install
+                    $backupFile = createBackup();
+                    $errors['backup'] = !$backupFile;
+
                 } catch (PguRemoteException $e) {
                     $errors['remote'] = true;
                 } catch (PguExtractException $e) {
@@ -672,18 +680,16 @@ if($user['isLoggedIn']) {
                 }
 
                 if(!in_array(true, $errors)) {
+                    $tpl->assign( "backupFile", $backupFile );
                     $tpl->assign( "extractDir", $extractDir );
                 }
 
             //apply the downloaded and extracted version
             } elseif (isset($_POST["submitOverwrite"])) {
                 $directory = $_POST['directory'];
+                $backupFile = $_POST['backupFile'];
                 $root = dirname(__FILE__);
-                $errors['extractPath'] = !isset($_POST['directory']) || strpos($_POST['directory'], '..') !== false;
-
-                //backup current install
-                //TODO: do it in the previous step and let user download it?
-                $errors['backup'] = !createBackup();
+                $errors['paths'] = !isset($_POST['directory']) || strpos($_POST['directory'], '..') !== false;
 
                 //replace files with new version
                 if(!in_array(true, $errors)) {
@@ -707,9 +713,8 @@ if($user['isLoggedIn']) {
                         deleteBackup();
 
                     } catch (PguOverwriteException $e) {
-                        //TODO: restore backup
-                        var_dump('unhandled error...');
-                        $errors['unknown'] = true;
+                        $errors['overwrite'] = true;
+                        $errors['restore'] = restoreBackup( $backupFile );
                     }
                 }
             }
