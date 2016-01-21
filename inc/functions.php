@@ -2,22 +2,22 @@
 
 /**
  * DDb - Copyright 2013 Yosko (www.yosko.net)
- * 
+ *
  * This file is part of DDb.
- * 
+ *
  * DDb is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * DDb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 require_once "inc/debug.php";
@@ -28,7 +28,7 @@ require_once "inc/php-github-updater.php";
 define("DDB_VERSION", "v1.5");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
-define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']));
+define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']) . (empty(dirname($_SERVER['SCRIPT_NAME']))?'':'/') );
 
 function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
@@ -95,11 +95,11 @@ function setRainTpl($tplDir = '', $tplCache = '') {
     raintpl::configure('tpl_dir', $tplDir );
     raintpl::configure('cache_dir', $tplCache );
     $tpl = new RainTPL;
-        
+
     //define base url for RSS & others
     $ddbUrl = BASE_URL;
     $tpl->assign( 'ddbUrl', $ddbUrl );
-        
+
     return $tpl;
 }
 
@@ -118,7 +118,7 @@ function openDatabase() {
     } else {
         //install wasn't done yet
         header("Location: install.php");
-        
+
         //avoid call to logUser which also does some header("Location: ...")
         exit;
     }
@@ -192,7 +192,7 @@ class DDbLogin extends YosLogin {
         $value = false;
         $file = $this->LTDir.$cookieValue.'.ses';
         if (file_exists($file)) {
-            
+
             //unset long-term session if expired
             if(filemtime($file)+$this->LTDuration <= time()) {
                 unsetLTSession($cookieValue);
@@ -222,7 +222,7 @@ class DDbLogin extends YosLogin {
 
     protected function flushOldLTSessions() {
         $dir = $this->LTDir;
-        
+
         //list all the session files
         $files = array();
         if ($dh = opendir($dir)) {
@@ -235,10 +235,10 @@ class DDbLogin extends YosLogin {
             }
             closedir($dh);
         }
-        
+
         //sort files by date (descending)
         arsort($files);
-        
+
         //check each file
         $i = 1;
         foreach($files as $file => $date) {
@@ -280,7 +280,7 @@ function logUser($tpl) {
     if(isset($user)) {
         $tpl->assign( "user", $user );
     }
-    
+
     if($user['isLoggedIn'] === false) {
         $tpl->assign( "noLogout", true );
         $tpl->draw( "login" );
@@ -394,24 +394,24 @@ function wikiFormat($string, $paragraphs = true) {
         '<span style="font-style: italic;">$1</span>',
         '<span style="text-decoration: line-through;">$1</span>',
         '<span style="text-decoration: underline;">$1</span>',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-angel.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-evil.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sweat.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-confuse.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cool.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-cry.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-eek.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kiss.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-kitty.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-lol.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-razz.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-red.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-sad.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-yell.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-wink.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/smiley-zipper.png">',
-        '<img class="inline" src="http://'.BASE_URL.'/tpl/img/heart.png">'
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-angel.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-evil.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-sweat.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-confuse.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-cool.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-cry.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-eek.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-kiss.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-kitty.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-lol.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-razz.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-red.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-sad.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-yell.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-wink.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/smiley-zipper.png">',
+        '<img class="inline" src="http://'.BASE_URL.'tpl/img/heart.png">'
     );
 
     $string = preg_replace($sourceTags, $destinationTags, $string);

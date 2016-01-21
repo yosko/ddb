@@ -1,21 +1,21 @@
 {*
  * DDb - Copyright 2013 Yosko (www.yosko.net)
- * 
+ *
  * This file is part of DDb.
- * 
+ *
  * DDb is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * DDb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with DDb.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  *}<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -25,9 +25,9 @@
     <link rel="stylesheet" href="style.css">
     {if="isset($settings) && $settings.isNightTime==true"}<link rel="stylesheet" href="style-night.css" />{/if}
     <link href="img/ddb-icon-16.png" rel="icon" type="image/x-icon" />
-    {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?dreams&key={$settings.appKey}" title="Flux des rêves" />
-    <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&key={$settings.appKey}" title="Flux des commentaires" />{if condition="isset($dream)"}
-    <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}/rss.php?comments&dream={$dream.id}&key={$settings.appKey}" title="Flux des commentaires du rêve {if condition="empty($dream.title)"}n°{$dream.id}{else}&laquo; {$dream.title} &raquo;{/if}" />{/if}{/if}
+    {if="!isset($noLogout) || $noLogout == false"}<link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}rss.php?dreams&key={$settings.appKey}" title="Flux des rêves" />
+    <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}rss.php?comments&key={$settings.appKey}" title="Flux des commentaires" />{if condition="isset($dream)"}
+    <link rel="alternate" type="application/rss+xml" href="http://{$ddbUrl}rss.php?comments&dream={$dream.id}&key={$settings.appKey}" title="Flux des commentaires du rêve {if condition="empty($dream.title)"}n°{$dream.id}{else}&laquo; {$dream.title} &raquo;{/if}" />{/if}{/if}
     {if="isset($js)"}<script src="js/jquery-1.9.1.min.js"></script>
     <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
     <link rel="stylesheet" href="js/jquery-ui-1.10.2.custom.min.css" />
@@ -51,7 +51,7 @@
             var availableTags = {if="isset($tagList)"}{$tagList}{else}[]{/if};
             function split( val ) { return val.split( /,\s*/ ); }
             function extractLast( term ) { return split( term ).pop(); }
-            
+
             $( "#tags" )
                 // don't navigate away from the field on tab when selecting an item
                 .bind( "keydown", function( event ) {
