@@ -28,7 +28,7 @@ require_once "inc/php-github-updater.php";
 define("DDB_VERSION", "v1.5");
 define("DREAM_STATUS_UNPUBLISHED", 0);
 define("DREAM_STATUS_PUBLISHED", 1);
-define("BASE_URL", $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']) . (empty(dirname($_SERVER['SCRIPT_NAME']))?'':'/') );
+define("BASE_URL", $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']),'/').'/' );
 
 function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false) {
     $db = openDatabase();
