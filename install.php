@@ -203,14 +203,23 @@ QUERY;
 //STEP 2: ask settings
 if(!file_exists("database.sqlite") && isset($_GET['step']) && intval($_GET['step']) == 2) {
     $step = 2;
-    
+
 //STEP 1: check server configuration
 } elseif(!file_exists("database.sqlite") && ((!isset($_GET['step']) || intval($_GET['step']) == 1))) {
     $step = 1;
-    
+
     $tpl->assign( "serverConfig", $serverConfig );
-    
+
 }
+
+$version = array(
+    'current' => DDB_VERSION,
+    'next' => DDB_VERSION,
+    'last' => DDB_VERSION,
+    'lastCheck' => null,
+    'mustUpdate' => false,
+);
+$tpl->assign( "version", $version );
 
 $tpl->assign( "noLogout", true );   //no DDb command button
 $tpl->assign( "step", $step );

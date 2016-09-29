@@ -37,21 +37,8 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
 
     $tpl->assign( "settings", $settings );
 
-    $publicFeed = false;
-    if($rss && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
-        $publicFeed = true;
-    } else {
-        $user = logUser($tpl);
-    }
-
     //check for updates
-    $version = array(
-        'current' => DDB_VERSION,
-        'next' => DDB_VERSION,
-        'last' => DDB_VERSION,
-        'lastCheck' => null,
-    );
-    if(isset($user['role']) && $user['role'] == 'admin') {
+    // if(isset($user['role']) && $user['role'] == 'admin') {
         try {
             $qry = $db->prepare(
                 'SELECT * FROM ddb_version'
@@ -65,7 +52,7 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
                 'next' => DDB_VERSION,
                 'last' => DDB_VERSION,
                 'lastCheck' => null,
-                'mustUdpate' => false,
+                'mustUpdate' => false,
             );
 
             //create it
@@ -78,9 +65,16 @@ function initDDb(&$db, &$settings, &$tpl, &$user, &$publicFeed=false, $rss=false
         if(is_null($version['lastCheck']) || strtotime('now') > strtotime($version['lastCheck'].'+1 week')) {
             checkForUpdates();
         }
+    // }
+    $tpl->assign( "version", $version );
+
+    $publicFeed = false;
+    if($rss && isset($_GET['key']) && $_GET['key'] == $settings['appKey']) {
+        $publicFeed = true;
+    } else {
+        $user = logUser($tpl);
     }
 
-    $tpl->assign( "version", $version );
 }
 
 function setRainTpl($tplDir = '', $tplCache = '') {
