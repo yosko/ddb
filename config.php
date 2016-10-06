@@ -247,8 +247,8 @@ if($user['isLoggedIn']) {
                         ) {
                             $userId = $users[$row[$header['userLogin']]];
                         }
-                        $status = (isset($row[$header['dreamStatus']]))?$row[$header['dreamStatus']]:DREAM_STATUS_PUBLISHED;
-                        
+                        $status = (isset($header['dreamStatus']) && isset($row[$header['dreamStatus']]))?$row[$header['dreamStatus']]:DREAM_STATUS_PUBLISHED;
+
                         $insertDream->execute();
                         $dreamId = $db->lastInsertId();
                         
